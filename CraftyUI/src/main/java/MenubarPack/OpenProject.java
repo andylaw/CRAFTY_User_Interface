@@ -1,37 +1,40 @@
 package MenubarPack;
 
 import java.io.File;
-
-import UtilitiesFx.CsvTools;
+import java.util.List;
 import UtilitiesFx.Path;
-import  Main.Main_CraftyFx;
-import javafx.stage.DirectoryChooser;
+import UtilitiesFx.ReadFile;
+import UtilitiesFx.WarningWindowes;
+import javafx.application.Platform;
 
 public class OpenProject {
 	
-	
+
+
 	static void openProject() {
-		DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Select Project");
-        File initialDirectory = new File("C:\\Users\\byari-m\\Documents\\Data");
-        chooser.setInitialDirectory(initialDirectory);
-        File selectedDirectory = chooser.showDialog(Main_CraftyFx.primaryStage);
-        if (selectedDirectory != null) {
-        	Path.setProjectPath(selectedDirectory.getAbsolutePath());
-        	Path.AllfilePatheInData = Path.pathWithconditions();
-        	String[]  tmp= CsvTools.columnFromscsv(0, Path.fileFilter("\\Services.csv").get(0) );
-        	for (int i = 1; i < tmp.length; i++) {
-        		Path.servicesList.add(tmp[i]);
+		File selectedDirectory =ReadFile.selecFolder("C:\\Users\\byari-m\\Documents\\Data")  ;
+		if (selectedDirectory != null) {
+			List<String> folderMissig = Path.checkfolders(selectedDirectory.getAbsolutePath());
+			boolean ispathcorrect = true;
+			if (folderMissig.size() > 0) {
+				ispathcorrect = false;
+				WarningWindowes.showWarningMessage("Folders Missing",
+						"Try Again",x -> {
+							openProject();
+						},
+						"Exit",x->{
+							// Present only data visualisation and agents configuration 
+							// Close interaction with Cobra
+							Platform.exit();
+						},
+						 folderMissig);
 			}
-        
-        }
-        
-        
-      
-        
-        
-        
-        
+			if (ispathcorrect) {
+				Path.initialisation(selectedDirectory.getAbsolutePath());
+			}
+
+		}
+
 	}
 
 }

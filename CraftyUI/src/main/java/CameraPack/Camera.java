@@ -1,6 +1,7 @@
 package CameraPack;
 
-//import javafx.event.EventHandler;
+import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SubScene;
 import javafx.scene.input.KeyCode;
@@ -19,10 +20,10 @@ public class Camera extends PerspectiveCamera {
 
 	public Camera() {
 		cameraTransform.getChildren().addAll(this);
-		setFarClip(1000000.0);
-		setTranslateZ(-3000);
-		setTranslateX(4000);
-		setTranslateY(3500);
+//		setFarClip(1000000.0);
+//		setTranslateZ(-3000);
+//		setTranslateX(4000);
+//		setTranslateY(3500);
 	}
 
 	public void cameraKeyCodeControl(SubScene subScene) {
@@ -37,6 +38,7 @@ public class Camera extends PerspectiveCamera {
 			// Step 2c: Add Zoom controls
 			if (keycode == KeyCode.S) {
 				setTranslateZ(getTranslateZ() + change);
+				System.out.println("SSSSSSSSSSSSSSSS");
 			}
 			if (keycode == KeyCode.M) {
 				setTranslateZ(getTranslateZ() - change);
@@ -56,27 +58,47 @@ public class Camera extends PerspectiveCamera {
 			}
 			// default camera
 			if (keycode == KeyCode.H) {
-				defaultcamera(4000, 3500, -3000);
+				// defaultcamera(4000, 3500, -3000);
 			}
 
 		});
 	}
 
-	public void defaultcamera(double X, double Y, double Z) {
-		cameraTransform.t.setX(0);
-		cameraTransform.t.setY(0);
-		setTranslateX(X);
-		setTranslateY(Y);
-		setTranslateZ(Z);
+	/*
+	 * public void defaultcamera(double X, double Y, double Z) {
+	 * cameraTransform.t.setX(0); cameraTransform.t.setY(0); setTranslateX(X);
+	 * setTranslateY(Y); setTranslateZ(Z); }
+	 */
+
+	public void defaultcamera(Group root) {
+		root.boundsInParentProperty().addListener((obs, oldBounds, newBounds) -> {
+			// Calculate the center point of the bounding box
+			double centerX = newBounds.getMinX() + newBounds.getWidth() /2;
+			double centerY = newBounds.getMinY() + newBounds.getHeight() / 2;
+			 double centerZ = newBounds.getMinZ() + newBounds.getDepth()/2 ;
+
+			// Calculate the maximum dimension of the bounding box
+			double maxDimension = Math.max(newBounds.getWidth(), Math.max(newBounds.getHeight(), newBounds.getDepth()));
+
+			// Adjust the camera position based on the bounding box
+			double distance = maxDimension * 1.1; // Adjust the factor as needed
+			setTranslateX(centerX);
+			setTranslateY(centerY);
+			setTranslateZ(centerZ-distance);
+
+			// Adjust the camera's field of view to fit the bounding box
+			double fov = Math.toDegrees(2 * Math.atan(maxDimension / (2 * distance))); // Implement this method
+			setFieldOfView(fov);
+		});
 	}
 
 	public void cameraMousControl(SubScene scene) {
+
 		scene.setOnMousePressed((MouseEvent me) -> {
 			mousePosX = me.getSceneX();
 			mousePosY = me.getSceneY();
 			mouseOldX = me.getSceneX();
 			mouseOldY = me.getSceneY();
-
 		});
 		scene.setOnMouseDragged((MouseEvent me) -> {
 			if (!isHover()) {
@@ -100,39 +122,40 @@ public class Camera extends PerspectiveCamera {
 					cameraTransform.t.setX(cameraTransform.t.getX() - mouseDeltaX * modifierFactor * modifier * 0.3); // -
 					cameraTransform.t.setY(cameraTransform.t.getY() - mouseDeltaY * modifierFactor * modifier * 0.3); // -
 
-				} /*
-					 * else if (me.isSecondaryButtonDown()) { double z = getTranslateZ(); double
-					 * newZ = z + (mouseDeltaX-mouseDeltaY) * modifierFactor * modifier;
-					 * setTranslateZ(newZ); }
-					 */
+				} else if (me.isSecondaryButtonDown()) {
+					double z = getTranslateZ();
+					double newZ = z + (mouseDeltaX - mouseDeltaY) * modifierFactor * modifier;
+					setTranslateZ(newZ);
+				}
+
 			}
 		});
 	}
 
 	public void newzoom(SubScene scene) {
-//		scene.setOnScroll(new EventHandler<ScrollEvent>() {
-//			@Override
-//			public void handle(ScrollEvent event) {
-//				double deltaY = event.getDeltaY();
-//
-//				setTranslateZ(getTranslateZ() + deltaY);
-//
-//				event.consume();
-////				System.out.println(
-////						cameraTransform.t.getX()+","+
-////								cameraTransform.t.getY()+","+
-////								getTranslateX()+","+
-////								getTranslateY()+","+
-////								getTranslateZ());
-//			}
-//		});
+		scene.setOnScroll(new EventHandler<ScrollEvent>() {
+			@Override
+			public void handle(ScrollEvent event) {
+				double deltaY = event.getDeltaY();
+
+				setTranslateZ(getTranslateZ() + deltaY);
+
+				event.consume();
+//				System.out.println(
+//						cameraTransform.t.getX()+","+
+//								cameraTransform.t.getY()+","+
+//								getTranslateX()+","+
+//								getTranslateY()+","+
+//								getTranslateZ());
+			}
+		});
 	}
 
 	public void cameraFocusBox(Rectangle rec, double Z) {
 		cameraTransform.t.setX(0);
 		cameraTransform.t.setY(0);
-		setTranslateX(getTranslateX()+rec.getX());
-		setTranslateY(getTranslateY()+rec.getY());
+		setTranslateX(getTranslateX() + rec.getX());
+		setTranslateY(getTranslateY() + rec.getY());
 		setTranslateZ(Z);
 	}
 }

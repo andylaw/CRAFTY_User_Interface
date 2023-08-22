@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import CameraPack.Camera;
-import Main.Main_CraftyFx;
 import TabsPane.NewWindow;
 import UtilitiesFx.CSVTableView;
 import UtilitiesFx.ColorsTools;
@@ -26,9 +25,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
@@ -36,37 +32,45 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.scene.layout.BorderPane;
 
 public class Regional {
 
-	public static Set<Patch> patchsInRergion = new HashSet<>();
+	public static Set<Cell> patchsInRergion = new HashSet<>();
 	public static Set<Rectangle> patchCopy = new HashSet<>();
-	static HashMap<Rectangle, Patch> rectToPach = new HashMap<>();
+	static HashMap<Rectangle, Cell> rectToPach = new HashMap<>();
 
 	static NewWindow window = new NewWindow();
 	static Group root = new Group();
 	static SubScene subScene;
 	static Camera camera = new Camera();
 	static Scene scene;
-	static StackPane rootPane = new StackPane();
+	static BorderPane rootPane = new BorderPane();
 
 	public static void RegionWindow() {
 
 		subScene = new NewWindow().subSceneWithCamera(rootPane, root);
-		TitledPane test = colorWorld();
+		TitledPane pane = colorWorld();
 
-		rootPane.getChildren().addAll(subScene, test);
-		rootPane.setAlignment(Pos.TOP_LEFT);
+	//	rootPane.getChildren().addAll(subScene, pane);
+	//	rootPane.setAlignment(Pos.TOP_LEFT);
 
 		window.creatwindows("CRAFTY Regional Analyse", 0.8, 0.9, rootPane);
 
 		CreatGegionalMap(root);
+//		double sceneWidth= Screen.getPrimary().getBounds().getWidth() / 4;
+		HBox contentBox = new HBox();
+        contentBox.getChildren().addAll(pane, subScene);
+        rootPane.setCenter(contentBox);
+//        pane.setPrefWidth(sceneWidth);
+//        pane.setMaxWidth(sceneWidth);
+//        pane.setMinWidth(sceneWidth);
+        BorderPane.setAlignment(contentBox, Pos.CENTER);
+        BorderPane.setMargin(contentBox, new javafx.geometry.Insets(1));
 
 	}
 
@@ -92,7 +96,7 @@ public class Regional {
 
 		HashMap<String, Consumer<String>> menu = new HashMap<>();
 
-		menu.put("Access to Cell (" + rectToPach.get(rec).coor.getX() + "," + rectToPach.get(rec).coor.getY()
+		menu.put("Access to Cell (" + rectToPach.get(rec).x + "," + rectToPach.get(rec).y
 				+ ") information", creatWindos);
 		menu.put("Print Info", printInfo);
 
@@ -102,17 +106,17 @@ public class Regional {
 
 	static void CreatGegionalMap(Group g) {
 		int size = 10;
-		ArrayList<Double> X = new ArrayList<>();
-		ArrayList<Double> Y = new ArrayList<>();
+		ArrayList<Integer> X = new ArrayList<>();
+		ArrayList<Integer> Y = new ArrayList<>();
 		patchsInRergion.forEach(p -> {
-			X.add(p.coor.getX());
-			Y.add(p.coor.getY());
+			X.add(p.x);
+			Y.add(p.y);
 		});
 		double minX = Collections.min(X), minY = Collections.min(Y);
 
 		patchsInRergion.forEach(p -> {
-			Rectangle rec = new Rectangle(size * (minX > 0 ? p.coor.getX() - minX : p.coor.getX() + minX),
-					-size * (minY > 0 ? p.coor.getY() - minY : p.coor.getY() + minY), size, size);
+			Rectangle rec = new Rectangle(size * (minX > 0 ? p.x - minX : p.y + minX),
+					-size * (minY > 0 ? p.y- minY : p.y + minY), size, size);
 			rec.setFill(p.color);
 			rectToPach.put(rec, p);
 			patchCopy.add(rec);
@@ -124,7 +128,7 @@ public class Regional {
 		System.out.println(g.getChildren().size() + "  -->  " + patchsInRergion.size());
 	}
 
-	public static void creatMenu(Patch p) {
+	public static void creatMenu(Cell p) {
 		HashMap<String, Consumer<String>> menu = new HashMap<>();
 		menu.put("Access to the Selected Area", (x) -> {
 			RegionWindow();
@@ -154,15 +158,15 @@ public class Regional {
 		} else {
 
 			patchCopy.forEach(p -> {
-				if (rectToPach.get(p).capitalsValue.get(name) != null)
-					values.add(rectToPach.get(p).capitalsValue.get(name));
+				if (rectToPach.get(p).capitals.get(name) != null)
+					values.add(rectToPach.get(p).capitals.get(name));
 			});
 
 			double max = Collections.max(values);
 
 			patchCopy.forEach(p -> {
-				if (rectToPach.get(p).capitalsValue.get(name) != null)
-					p.setFill(ColorsTools.getColorForValue(max, rectToPach.get(p).capitalsValue.get(name)));
+				if (rectToPach.get(p).capitals.get(name) != null)
+					p.setFill(ColorsTools.getColorForValue(max, rectToPach.get(p).capitals.get(name)));
 			});
 		}
 	}
@@ -170,7 +174,7 @@ public class Regional {
 	public static TitledPane colorWorld() {
 		VBox vbox = new VBox();
 
-		int length = Patch.capitalsName.size() + 3;
+		int length = Lattice.capitalsName.size() + 3;
 
 		RadioButton[] radioColor = new RadioButton[length];
 
@@ -178,13 +182,13 @@ public class Regional {
 		imageView.setVisible(false);
 
 		for (int i = 0; i < length; i++) {
-			if (i < Patch.capitalsName.size()) {
-				radioColor[i] = new RadioButton(Patch.capitalsName.get(i));
-			} else if (i == Patch.capitalsName.size()) {
+			if (i < Lattice.capitalsName.size()) {
+				radioColor[i] = new RadioButton(Lattice.capitalsName.get(i));
+			} else if (i == Lattice.capitalsName.size()) {
 				radioColor[i] = new RadioButton("FR");
-			} else if (i == Patch.capitalsName.size() + 1) {
+			} else if (i == Lattice.capitalsName.size() + 1) {
 				radioColor[i] = new RadioButton("LAD19NM");
-			} else if (i == Patch.capitalsName.size() + 2) {
+			} else if (i == Lattice.capitalsName.size() + 2) {
 				radioColor[i] = new RadioButton("nuts318nm");
 			}
 			vbox.getChildren().add(radioColor[i]);
@@ -193,17 +197,17 @@ public class Regional {
 				for (int j = 0; j < length; j++) {
 					if (k != j) {
 						radioColor[j].setSelected(false);
-						// key.setVisible(!Patch.capitalsName.contains(radioColor[k].getText()));
-						imageView.setVisible(Patch.capitalsName.contains(radioColor[k].getText()));
+						// key.setVisible(!Lattice.capitalsName.contains(radioColor[k].getText()));
+						imageView.setVisible(Lattice.capitalsName.contains(radioColor[k].getText()));
 					}
 				}
-				if (k < Patch.capitalsName.size()) {
-					colorMap(Patch.capitalsName.get(k));
-				} else if (k == Patch.capitalsName.size()) {
+				if (k < Lattice.capitalsName.size()) {
+					colorMap(Lattice.capitalsName.get(k));
+				} else if (k == Lattice.capitalsName.size()) {
 					colorMap("FR");
-				} else if (k == Patch.capitalsName.size() + 1) {
+				} else if (k == Lattice.capitalsName.size() + 1) {
 					colorMap("LAD19NM");
-				} else if (k == Patch.capitalsName.size() + 2) {
+				} else if (k == Lattice.capitalsName.size() + 2) {
 					colorMap("nuts318nm");
 				}
 			});
@@ -216,10 +220,6 @@ public class Regional {
 				updateChart(), statisticAvregeCapital());
 
 		titel.setStyle(" -fx-base: #d6d9df;");
-		titel.setMaxWidth(Main_CraftyFx.sceneWidth);
-		titel.setMinWidth(Main_CraftyFx.sceneWidth);
-		titel.setMaxHeight(Screen.getPrimary().getBounds().getHeight());
-		titel.setMinHeight(Screen.getPrimary().getBounds().getHeight());
 		return titel;
 	}
 
@@ -261,7 +261,7 @@ public class Regional {
 	static HBox statisticAvregeCapital() {
 		HashMap<String, Double> acumulationOfCapital = new HashMap<>();
 		patchsInRergion.forEach(p -> {
-			p.capitalsValue.forEach((k, v) -> {
+			p.capitals.forEach((k, v) -> {
 				if (acumulationOfCapital.containsKey(k)) {
 					acumulationOfCapital.put(k, acumulationOfCapital.get(k) + v);
 				} else {

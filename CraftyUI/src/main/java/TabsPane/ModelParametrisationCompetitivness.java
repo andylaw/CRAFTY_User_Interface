@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import Main.Main_CraftyFx;
 import UtilitiesFx.Path;
 import UtilitiesFx.ReadFile;
 import UtilitiesFx.Tools;
-
+import WorldPack.Lattice;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
@@ -21,13 +20,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 
 public class ModelParametrisationCompetitivness {
 
 	
 	LineChart<Number, Number> lineChart = Tools.lineChart("Competitiveness curves");
-	Series<Number, Number>[] series = new Series[Path.servicesList.size()];
+	Series<Number, Number>[] series = new Series[Lattice.servicesNames.size()];
 
 	TextField percentageCells = Tools.textField(4, "5");
 	TextField percentageTakeOvers = Tools.textField(4, "5");
@@ -37,9 +35,11 @@ public class ModelParametrisationCompetitivness {
 
 
 	public TitledPane pane() {
-
+		if (Path.fileFilter("\\xml\\", "Competition_", Path.scenario).size() == 0) {
+			return null;
+		}
 		VBox vbox = new VBox();
-	
+		
 		for (int i = 0; i < series.length; i++) {
 			series[i] = new XYChart.Series<Number, Number>();
 			lineChart.getData().add(series[i]);
@@ -52,16 +52,13 @@ public class ModelParametrisationCompetitivness {
 				Tools.T("Curve Competitiveness Model", true,
 						Tools.vBox(Tools.hBox(L1Competition),
 								Tools.T("",true,lineChart), 								
-								Tools.T("Modifies the competitiveness curve ",false,	equationsBTN(Path.servicesList))
+								Tools.T("Modifies the competitiveness curve ",false,	equationsBTN(Lattice.servicesNames))
 						)));
 
 		TitledPane titel = new TitledPane("World_withoutSN_multiplicativeNoise_linearcompetition_relative: ", vbox);
 		titel.setStyle(" -fx-base: #d6d9df;");
-		titel.setMaxWidth(Main_CraftyFx.sceneWidth);
-		titel.setMinWidth(Main_CraftyFx.sceneWidth);
-		titel.setMaxHeight(Screen.getPrimary().getBounds().getHeight());
-		titel.setMinHeight(Screen.getPrimary().getBounds().getHeight());
-		findEquations(Path.fileFilter("\\xml\\","Competition_",Path.senario).get(0));
+		
+		findEquations(Path.fileFilter("\\xml\\","Competition_",Path.scenario).get(0));
 		return titel;
 
 	}
@@ -69,7 +66,7 @@ public class ModelParametrisationCompetitivness {
 	void findEquations(String path) {
 		HashMap<String, String> str_eq = new ReadFile().findEquations(path);
 		
-		double[][] eq = new double[Path.servicesList.size()][3];
+		double[][] eq = new double[Lattice.servicesNames.size()][3];
 		
 		str_eq.forEach((name, e) -> {
 			String[] A = e.split("([^\\d.]|\\B\\.|\\.\\B)+");
@@ -77,7 +74,7 @@ public class ModelParametrisationCompetitivness {
 			int i = 0;
 			for (int x = 0; x < A.length; x++) {
 				if (A[x] != "") {
-					eq[Path.servicesList.indexOf(name)][i] = Tools.sToD(A[x]);
+					eq[Lattice.servicesNames.indexOf(name)][i] = Tools.sToD(A[x]);
 					i++;
 				}
 			}
@@ -96,11 +93,11 @@ public class ModelParametrisationCompetitivness {
 			double x = j * 0.04;
 			if (eq[2] == 0) {
 				y = eq[0] * x + eq[1];
-				series[index].setName(Path.servicesList.get(index) + ": y=" + eq[0] + " x +" + eq[1]);
+				series[index].setName(Lattice.servicesNames.get(index) + ": y=" + eq[0] + " x +" + eq[1]);
 			} else {
 				y = eq[0] + eq[1] * Math.exp(x * eq[2]);
 				series[index]
-						.setName(Path.servicesList.get(index) + ": y=" + eq[0] + " + " + eq[1] + " exp(x*" + eq[2] + ")");
+						.setName(Lattice.servicesNames.get(index) + ": y=" + eq[0] + " + " + eq[1] + " exp(x*" + eq[2] + ")");
 			}
 
 			series[index].getData().add(new XYChart.Data<>(x, y));
@@ -110,8 +107,8 @@ public class ModelParametrisationCompetitivness {
 	
 
 	Pane equationsBTN(List<String> list) {
-		RadioButton[] linrear = new RadioButton[Path.servicesList.size()];
-		RadioButton[] exp = new RadioButton[Path.servicesList.size()]; 
+		RadioButton[] linrear = new RadioButton[Lattice.servicesNames.size()];
+		RadioButton[] exp = new RadioButton[Lattice.servicesNames.size()]; 
 		ArrayList<TextField> A = new ArrayList<>();
 		ArrayList<TextField> B = new ArrayList<>();
 		ArrayList<TextField> C = new ArrayList<>();

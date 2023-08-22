@@ -1,8 +1,11 @@
 package MenubarPack;
 
 import java.io.IOException;
-import TabsPane.CreatSenario;
+
+//import org.volante.abm.serialization.MultiRunsByari;
+
 import TabsPane.NewWindow;
+import TabsPane.OpenTabs;
 import TabsPane.OutPutter;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
@@ -48,7 +51,7 @@ public class MenuBAR extends MenuBar{
 	    	
 	    	 OpenProject.openProject();
 	    	 try {
-				new CreatSenario();
+				new OpenTabs();
 				imageView.setVisible(false);
 				
 			} catch (IOException e1) {}
@@ -62,6 +65,8 @@ public class MenuBAR extends MenuBar{
 	    
 	    welcom.setOnAction(e->{
 	    	 welcomInfo();
+	   // 	System.out.println(new ModelRunner().tstNbr);
+	    	 
 	    	   }); 
 	    getMenus().addAll(fileMenu,OutPUT,Help);
 	}

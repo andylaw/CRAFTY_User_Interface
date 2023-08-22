@@ -3,6 +3,7 @@ package TabsPane;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import UtilitiesFx.Path;
 import UtilitiesFx.ReadFile;
 import UtilitiesFx.Tools;
 import javafx.scene.control.RadioButton;
@@ -20,19 +21,19 @@ public class OutPutter {
 	RadioButton[] L7 = Tools.radio(" PerRegion", " Add Region", " Add Cell Region", " Add Services", " Add Capitals",
 			" Add Competitiveness", " Add LandUseIndex", " Add LandUse", " Add Agent", " Add Pre Alloc Competitiveness",
 			" Add Pre Alloc LandUse", " Add Gi Threshold", " Add Pre Alloc Gu Threshold");
-	TextField startYear = Tools.textField(5, "2016");
+	TextField startYear = Tools.textField(5, Path.startYear+"");
 	TextField everyNYears = Tools.textField(5, "N");
 	/*********** ligne 8 *************************/
 	RadioButton[] L8 = Tools.radio(" Output Sums", " Per Region");
-	TextField startYearAgg = Tools.textField(5, "2016");
+	TextField startYearAgg = Tools.textField(5, Path.startYear+"");
 	TextField everyNYearsAgg = Tools.textField(5, "N");
 	/*********** ligne 9 *************************/
 	RadioButton perRegionAgg9 = new RadioButton(" Per Region");
-	TextField startYearAgg9 = Tools.textField(5, "2016");
+	TextField startYearAgg9 = Tools.textField(5, Path.startYear+"");
 	TextField everyNYearsAgg9 = Tools.textField(5, "N");
 	/*********** ligne 10 *************************/
 	RadioButton perRegionAgg10 = new RadioButton(" Per Region");
-	TextField startYearAgg10 = Tools.textField(5, "2016");
+	TextField startYearAgg10 = Tools.textField(5, Path.startYear+"");
 	TextField everyNYearsAgg10 = Tools.textField(5, "N");
 	/*********** ligne 11 *************************/
 	RadioButton[] L11 = Tools.radio(" Per Region", " Add Region");
@@ -40,11 +41,11 @@ public class OutPutter {
 	RadioButton filePerTick11 = new RadioButton(" file PerTick");
 	/*********** ligne 12 *************************/
 	RadioButton[] L12 = Tools.radio(" Per Region", " file PerTick", " Add Region");
-	TextField startYear12 = Tools.textField(5, "2016");
+	TextField startYear12 = Tools.textField(5, Path.startYear+"");
 	TextField everyNYears12 = Tools.textField(5, "N");
 	/*********** ligne 13 *************************/
 	RadioButton[] L13 = Tools.radio(" Per Region", " file PerTick");
-	TextField startYear13 = Tools.textField(5, "2016");
+	TextField startYear13 = Tools.textField(5, Path.startYear+"");
 	TextField everyNYears13 = Tools.textField(5, "N");
 
 
@@ -101,19 +102,19 @@ public class OutPutter {
 		for (int i = 0; i < L7.length; i++) {
 			s[i] = L7[i].isSelected();
 		}
-		writeFile.WrightLine(line(8, startYear.getText(), "2016", everyNYears.getText(), "1", s));
+		writeFile.WrightLine(line(8, startYear.getText(), Path.startYear+"", everyNYears.getText(), "1", s));
 
 		writeFile.WrightLine(
 				line(9, startYearAgg.getText(), everyNYearsAgg.getText(), L8[0].isSelected(), L8[1].isSelected()));
 		writeFile.WrightLine(
-				line(10, startYearAgg9.getText(), "2016", everyNYearsAgg9.getText(), "10", perRegionAgg9.isSelected()));
-		writeFile.WrightLine(line(11, startYearAgg10.getText(), "2016", everyNYearsAgg10.getText(), "10",
+				line(10, startYearAgg9.getText(), Path.startYear+"", everyNYearsAgg9.getText(), "10", perRegionAgg9.isSelected()));
+		writeFile.WrightLine(line(11, startYearAgg10.getText(), Path.startYear+"", everyNYearsAgg10.getText(), "10",
 				perRegionAgg10.isSelected()));
 		writeFile.WrightLine(line(12, everyNYearsAgg11.getText(), "10", L11[0].isSelected(), filePerTick11.isSelected(),
 				L11[1].isSelected()));
-		writeFile.WrightLine(line(13, startYear12.getText(), "2016", everyNYears12.getText(), "10", L12[0].isSelected(),
+		writeFile.WrightLine(line(13, startYear12.getText(), Path.startYear+"", everyNYears12.getText(), "10", L12[0].isSelected(),
 				L12[1].isSelected(), L12[2].isSelected()));
-		writeFile.WrightLine(line(14, startYear13.getText(), "2016", everyNYears13.getText(), "10",
+		writeFile.WrightLine(line(14, startYear13.getText(), Path.startYear+"", everyNYears13.getText(), "10",
 				L13[0].isSelected(), L13[1].isSelected()));
 
 		writeFile.WrightLine(line(path,15));

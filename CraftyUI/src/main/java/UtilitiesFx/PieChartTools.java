@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 import TabsPane.NewWindow;
-import WorldPack.Map;
+import WorldPack.Agents;
+import WorldPack.Lattice;
 //import javafx.collections.FXCollections;
 //import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -47,7 +48,7 @@ public class PieChartTools {
 			legendColorStatic(color, chart) ;
 	}
 	
-	public void updateChart(Map M,HashMap<String, Double> hash, HashMap<String, Color> color, PieChart chart) {
+	public void updateChart(Lattice M,HashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
 
 		updateChart(hash, chart);
 		for (int i = 0; i < data.size(); i++) {
@@ -95,7 +96,7 @@ public class PieChartTools {
 		}
 	}
 
-	void legendColorPicker(Map M, HashMap<String, Color> color, PieChart chart) {
+	void legendColorPicker(Lattice M, HashMap<String, Color> color, PieChart chart) {
 
 		int i = 0;
 		for (Node item : chart.lookupAll("Label.chart-legend-item")) {
@@ -113,8 +114,8 @@ public class PieChartTools {
 							n.setStyle("-fx-pie-color: " + ColorsTools.getStringColor(colorPicker.getValue()) + ";");
 						}
 						String  dataName = data.get(j).getName();
-						M.agents.AFT.forEach(agent -> {
-							if (dataName.equals(agent.label)) {
+						Agents.aftReSet.forEach((name,agent) -> {
+							if (dataName.equals(name)) {
 								agent.color = colorPicker.getValue();
 								M.colorMap("FR");}
 						});

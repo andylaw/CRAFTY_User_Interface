@@ -111,6 +111,7 @@ public class ColorsTools {
 	}
 
 	public static String getStringColor(Color color) {
+		if(color==null) return String.format("#%02x%02x%02x", 255, 255, 255);;
 		int r = (int) (255 * color.getRed());
 		int g = (int) (255 * color.getGreen());
 		int b = (int) (255 * color.getBlue());

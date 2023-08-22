@@ -9,7 +9,7 @@ import UtilitiesFx.Path;
 import UtilitiesFx.ReadFile;
 import UtilitiesFx.Tools;
 import WorldPack.Agents;
-import WorldPack.Map;
+import WorldPack.Lattice;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -20,16 +20,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class CreatSenario {
+public class OpenTabs {
 
-	Map M;
+	Lattice M;
 	Agents As;
 
-	public CreatSenario() throws IOException {
+	public OpenTabs() throws IOException {
 
 		ScrollPane sp = new ScrollPane();
 		sp.setContent(senarioPane());
-		M = new Map();
+		M = new Lattice();
 		
 		
 		
@@ -41,16 +41,28 @@ public class CreatSenario {
 		VBox vbox = new VBox();
 	//	vbox.getChildren().addAll(new SelectSenario().select(), creatSenarioBox());
 		Tools.showWaitingDialog(x -> {
-			As = new Agents(M);
-			As.initialise();
-			As.M.plotPatchs(Main_CraftyFx.root);
-			As.M.colorMap("FR");
-			Main_CraftyFx.tabPane.getTabs().addAll(
-					 new Tab("Data display", new DataDisplay(M).colorWorld())
-					,new Tab("Production", new ModelParametrisationCompetitivness().pane())
-					,new Tab("Agents Configuration", new Agnets_Configuration(As).pane())
-					,new Tab("OutPut", new SimulationOutPut(M).pane())		
-							);
+			Main_CraftyFx.tabPane.getTabs().clear();
+			Main_CraftyFx.root.getChildren().clear();
+			M.creatMap();
+			M.creatMapGIS();
+			M.plotPatchs(); 
+			M.colorMap("FR");
+			
+			
+			
+			try {
+				Main_CraftyFx.tabPane.getTabs().addAll(
+						  new DataDisplay(M).colorWorld()
+					//	,new Tab("Production", new ModelParametrisationCompetitivness().pane())
+						,new Agnets_Configuration(M).pane()
+					//	,new Tab("CRAFTY CoBRA Interface", new RunTab(M).pane())
+						, new CA_Pane(M).pane()
+					//	, new SimulationOutPut(M).pane()
+								
+								);
+			} catch (IOException e) {}
+			
+			
 		});
 		ScrollPane turn =new ScrollPane(vbox);
 	
@@ -69,8 +81,8 @@ public class CreatSenario {
 
 		
 		/*********** ligne 1 *************************/
-		TextField startTick = Tools.textField(5, "2016");
-		TextField endTick = Tools.textField(5, "2086");
+		TextField startTick = Tools.textField(5, Path.startYear+"");
+		TextField endTick = Tools.textField(5, Path.endtYear+"");
 	//	ChoiceBox<String> choiceword = Tools.chois(Path.getWorlds(), true);
 		//Path.setWorldName("UK");
 		
@@ -128,14 +140,14 @@ public class CreatSenario {
 	String line1(String startTick, String endTick, String choiceword) {
 
 		/*
-		 * try { OutPutter.line(1, startTick,"2016",endTick,"2086"); } catch
+		 * try { OutPutter.line(1, startTick,Path.startYear+"",endTick,"2086"); } catch
 		 * (FileNotFoundException e) {}
 		 */
 		if (startTick.length() == 0) {
-			startTick = "2016";
+			startTick = Path.startYear+"";
 		}
 		if (endTick.length() == 0) {
-			endTick = "2086";
+			endTick = Path.endtYear+"";
 		}
 		return "<scenario startTick=\"" + startTick + "\" endTick=\"" + endTick + "\" world=\"" + choiceword + "\"";
 	}

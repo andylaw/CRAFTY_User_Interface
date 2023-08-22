@@ -25,6 +25,7 @@ public final class CSVTableView extends TableView<String> {
 	String path;
 	public Agnets_Configuration pane;
 	
+
 	public CSVTableView(File file, double Width, double Height, boolean isEditable) throws IOException {
 		this(Files.readAllLines(Paths.get(file.toURI())), Width, Height, isEditable);
 		path=file.getPath();
@@ -34,6 +35,7 @@ public final class CSVTableView extends TableView<String> {
 	public CSVTableView(String[][] tab, double Width, double Height, boolean isEditable) throws IOException {
 		this(tabToLines(tab), Width, Height, isEditable);
 	}
+
 	
 	public CSVTableView(List<String> lines, double Width, double Height, boolean isEditable) throws IOException {
 		

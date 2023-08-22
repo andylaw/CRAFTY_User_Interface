@@ -9,6 +9,7 @@ import javafx.scene.SubScene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.scene.layout.BorderPane;
 
 public class  NewWindow extends Stage {
 
@@ -40,7 +41,7 @@ public class  NewWindow extends Stage {
 		show();
 	}
 	
-	public SubScene subSceneWithCamera(StackPane rootPane, Node... nodes) {
+	public SubScene subSceneWithCamera(BorderPane rootPane, Node... nodes) {
 		
 		 Group root = new Group();
 		 SubScene subScene;
@@ -48,19 +49,19 @@ public class  NewWindow extends Stage {
 		
 		
 
-		subScene = new SubScene(root, 400, 400);
+		subScene = new SubScene(root,Screen.getPrimary().getBounds().getWidth()*0.5,Screen.getPrimary().getBounds().getHeight()*.8);
 		subScene.setFocusTraversable(true);
-		subScene.widthProperty().bind(rootPane.widthProperty());
-		subScene.heightProperty().bind(rootPane.heightProperty());
+	//	subScene.widthProperty().bind(rootPane.widthProperty());
+	//	subScene.heightProperty().bind(rootPane.heightProperty());
 		subScene.setCamera(camera);
 		camera.cameraKeyCodeControl(subScene);
 		camera.cameraMousControl(subScene);
 		camera.newzoom(subScene);
-		camera.defaultcamera(-2000,-1500,-5000);
+		root.getChildren().addAll(nodes);
+	    camera.defaultcamera(root);
 		
     
-	    root.getChildren().addAll(nodes);
-	       
+	    
 
 		return subScene;
 	}

@@ -2,21 +2,26 @@ package UtilitiesFx;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
-
+import Main.Main_CraftyFx;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
@@ -24,8 +29,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.control.ButtonBar;
+
 
 public class Tools {
 
@@ -35,7 +43,7 @@ public class Tools {
 		return vbox;
 	}
 	
-	
+
 
 	public static HBox hBox(double fixeSize,Node... children) {
 	    HBox h = new HBox();
@@ -78,12 +86,13 @@ public class Tools {
 	
 	
 
-	public static ChoiceBox<String> chois(ArrayList<String> wordslist) {
-		
+	public static ChoiceBox<String> chois(ArrayList<String> list) {
+		if(list.size()==0) {list.add("Empty");}
 		ChoiceBox<String> choice = new ChoiceBox<>();
-		choice.getItems().addAll(wordslist);
-		choice.setValue(wordslist.get(0));
+		choice.getItems().addAll(list);
+		choice.setValue(list.get(0));
 		return choice;
+		
 	}
 
 
@@ -131,11 +140,14 @@ public class Tools {
 	}
 
 	public static double sToD(String str) {
-		if (str.matches("([0-9]*)\\.([0-9]*)") || str.matches("\\-([0-9]*)\\.([0-9]*)") || str.matches("[0-9]+")
-				|| str.matches("\\-[0-9]+")) {
+		try {
 			return Double.parseDouble(str);
+		}catch(NumberFormatException e) {
+			return 0;
 		}
-		return 0;
+//		if (str.matches("([0-9]*)\\.([0-9]*)") || str.matches("\\-([0-9]*)\\.([0-9]*)") || str.matches("[0-9]+")
+//				|| str.matches("\\-[0-9]+")) 
+		
 	}
 
 	public static String[] columnFromsMtrix(int colunNumber, String [][] M) {
@@ -169,10 +181,10 @@ public class Tools {
 			@Override
 			protected Void call() throws Exception {
 				 Thread.sleep(5);
-				
+				// method.accept("");
 				return null;
 			}
-
+ 
 			@Override
 			protected void succeeded() {
 				super.succeeded();
@@ -180,7 +192,7 @@ public class Tools {
 			}
 		};
 		
-		task.setOnSucceeded(wse -> {method.accept("");});
+		task.setOnSucceeded(wse -> {method.accept("");});// here
 
 		Thread thread = new Thread(task);
 		thread.start();
@@ -188,5 +200,23 @@ public class Tools {
 		
 	}
 	
+	  static public void modifyChoiceBoxList(ChoiceBox<String> choiceBox,ArrayList<String>  newlist) {
+	        choiceBox.getItems().clear();
+	        choiceBox.getItems().addAll(newlist);
+	        choiceBox.getSelectionModel().selectFirst();
+	        choiceBox.getSelectionModel().selectFirst();
+	        choiceBox.setValue(newlist.get(0));
+	    }
+		public static void initialisPane(Tab caPane,ChoiceBox<String> choiceSenario,double scale) {
+			
+			
+
+			caPane.setOnSelectionChanged(e -> {
+				Main_CraftyFx.tabPane.setPrefWidth(Screen.getPrimary().getBounds().getWidth()* scale);
+				Main_CraftyFx.tabPane.setMaxWidth(Screen.getPrimary().getBounds().getWidth() * scale);
+				Main_CraftyFx.tabPane.setMinWidth(Screen.getPrimary().getBounds().getWidth() * scale);
+				choiceSenario.setValue(Path.getSenario());
+			});
+		}
 
 }

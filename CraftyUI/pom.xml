@@ -72,6 +72,11 @@
 			<artifactId>A</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>de.cesr</groupId>
+			<artifactId>CRAFTY_CoBRA</artifactId>
+			<version>0.2.34</version>
+		</dependency>
 	</dependencies>
 
 

@@ -10,6 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import Main.Main_CraftyFx;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+
+
 
 public class ReadFile {
 	static File file = new File(Path.projectPath+"\\DefaultSENARIO.xml");
@@ -149,8 +154,23 @@ public class ReadFile {
 		return equation;
 	}
 
-	
+	public static File selecFolder(String projectPath) {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Select Project");
+		File initialDirectory = new File(projectPath);
+		chooser.setInitialDirectory(initialDirectory);
+		File selectedDirectory = chooser.showDialog(Main_CraftyFx.primaryStage);
+		return selectedDirectory;
+	}
 
+	public static File selecFile(String projectPath) {
+		FileChooser  chooser = new FileChooser ();
+		chooser.setTitle("Select Project");
+		File initialDirectory = new File(projectPath);
+		chooser.setInitialDirectory(initialDirectory);
+		File selectedDirectory = chooser.showOpenDialog(Main_CraftyFx.primaryStage);
+		return selectedDirectory;
+	}
 
 
 }
