@@ -1,13 +1,12 @@
 package Main;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 import CameraPack.Camera;
 import MenubarPack.MenuBAR;
-import WorldPack.Rules;
+import UtilitiesFx.CsvTools;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -20,8 +19,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.api.StringColumn;
+import tech.tablesaw.api.Table;
+import tech.tablesaw.io.DataFrameReader;
 import javafx.scene.layout.BorderPane;
-
 
 public class Main_CraftyFx extends Application { //
 	public static Camera camera = new Camera();
@@ -50,7 +52,12 @@ public class Main_CraftyFx extends Application { //
 		
 		//subScene.widthProperty().bind(primaryStage.widthProperty());
        // subScene.heightProperty().bind(primaryStage.heightProperty().subtract(tabPane.heightProperty()));
-
+		
+		 
+		
+		
+		//anualCapitalTable.printAll();
+	//	System.out.println(anualCapitalTable);
 		
 		subScene.setCamera(camera);
 		subScene.setFocusTraversable(true);
@@ -109,7 +116,9 @@ public class Main_CraftyFx extends Application { //
 
 
 	public static void main(String[] args) {
-		//System.out.println(new A().a);
+	//	Table anualCapitalTable2 =   Table.read().csv("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv\\csv\\Capitals.csv");
+	//	System.out.println(anualCapitalTable2.printAll());
+		
 
 		launch(args);
 		

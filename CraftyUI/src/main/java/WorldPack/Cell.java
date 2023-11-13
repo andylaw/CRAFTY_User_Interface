@@ -65,7 +65,7 @@ public class Cell extends Rectangle {
 			if (uC > 0)
 				owner = new AFT(competitor,1);
 		} else {
-			if (utility(owner) + Rules.distributionMean.get(owner.label) * owner.giveIn / 100 < uC) {
+			if (utility(owner) + (Rules.distributionMean.size()>0? (Rules.distributionMean.get(owner.label) * owner.giveIn / 100):0) < uC) {
 				owner = new AFT(competitor,1);
 			}
 		}
