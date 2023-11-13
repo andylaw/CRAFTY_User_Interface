@@ -35,7 +35,7 @@ public class Rules {
 		this.M = M;
 //		demandUpdate();
 		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][Agents.aftReSet.size()];
-		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][Lattice.getServicesNames().size() * 2];
+		servicedemand  = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][Lattice.getServicesNames().size() * 2];
 		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
 			servicedemand[0][i] = "ServiceSupply:" + Lattice.getServicesNames().get(i);
 			servicedemand[0][i + Lattice.getServicesNames().size()] = "Demand:" + Lattice.getServicesNames().get(i);
@@ -109,7 +109,7 @@ public class Rules {
 	}
 
 	public void go(int year, String outPutFolderName) {
-		year = year < Paths.getStartYear() ? year : Paths.getEndtYear();
+		year = year < Paths.getEndtYear() ? year : Paths.getEndtYear();
 		M.updateCapitals(year);
 
 		// calcule supply
@@ -161,6 +161,7 @@ public class Rules {
 		writOutPutMap(year, outPutFolderName);
 		AtomicInteger m = new AtomicInteger();
 		int y = year - Paths.getStartYear() + 1;
+		
 		Lattice.getServicesNames().forEach(name -> {
 			servicedemand[y][m.get()] = supply.get(name) + "";
 			servicedemand[y][m.get() + Lattice.getServicesNames().size()] = Lattice.getDemand().get(name)[year-Paths.getStartYear() ] + "";
