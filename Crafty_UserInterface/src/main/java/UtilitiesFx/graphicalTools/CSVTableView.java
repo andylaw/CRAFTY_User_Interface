@@ -17,6 +17,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public final class CSVTableView extends TableView<String> {
 
 	public static TableView<ObservableList<String>> newtable(String[][] data, Consumer<String> action) {

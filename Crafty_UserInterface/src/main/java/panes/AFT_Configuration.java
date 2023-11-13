@@ -14,7 +14,7 @@ import UtilitiesFx.graphicalTools.Histogram;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.Paths;
 import eu.hansolo.fx.charts.Category;
 import eu.hansolo.fx.charts.ChartType;
@@ -52,17 +52,22 @@ import main.OpenTabs;
 import model.AFT;
 import model.Lattice;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class AFT_Configuration {
 
 	VBox vbox = new VBox();
 	public static ChoiceBox<String> choiceAgnet;
 
 	public Tab pane() {
-		choiceAgnet = Tools.choiceBox(new ArrayList<>(Agents.aftReSet.keySet()));
+		choiceAgnet = Tools.choiceBox(new ArrayList<>(AFTsLoader.aftReSet.keySet()));
 		choiceAgnet.setStyle(" -fx-base: #b6e7c9;");
 		RadioButton plotInitialDistrebution = new RadioButton("  Distribution map ");
 		RadioButton plotOptimalLandon = new RadioButton("Cumulative expected service productivity");
-		AFT AFT0 = Agents.aftReSet.get(choiceAgnet.getValue());
+		AFT AFT0 = AFTsLoader.aftReSet.get(choiceAgnet.getValue());
 		Text AFTname = new Text(AFT0.getName());
 		Rectangle rectangleColor = new Rectangle(40, 20, AFT0.getColor());
 		Button save = Tools.button(" Save  modifications to the input data", "b6e7c9");
@@ -119,7 +124,7 @@ public class AFT_Configuration {
 		plotInitialDistrebution.setSelected(true);
 
 		choiceAgnet.setOnAction(e -> {
-			Agents.aftReSet.forEach((label, a) -> {
+			AFTsLoader.aftReSet.forEach((label, a) -> {
 				if (label.equals(choiceAgnet.getValue())) {
 					AFTname.setText(a.getName());
 					rectangleColor.setFill(a.getColor());
@@ -134,36 +139,36 @@ public class AFT_Configuration {
 		});
 
 		sensitivtyFire.setOnAction(e2 -> {
-			updateSensitivty(Agents.aftReSet.get(choiceAgnet.getValue()), gridSensitivityChart, tableSensetivty);
+			updateSensitivty(AFTsLoader.aftReSet.get(choiceAgnet.getValue()), gridSensitivityChart, tableSensetivty);
 		});
 		productionFire.setOnAction(e3 -> {
-			updateProduction(Agents.aftReSet.get(choiceAgnet.getValue()), tableProduction);
+			updateProduction(AFTsLoader.aftReSet.get(choiceAgnet.getValue()), tableProduction);
 			Histogram.histo(vbox, "Productivity levels", histogram,
-					Agents.aftReSet.get(choiceAgnet.getValue()).getProductivityLevel());
+					AFTsLoader.aftReSet.get(choiceAgnet.getValue()).getProductivityLevel());
 		});
 		plotOptimalLandon.setOnAction(e2 -> {
 			plotInitialDistrebution.setSelected(false);
-			colorland(Agents.aftReSet.get(choiceAgnet.getValue()));
+			colorland(AFTsLoader.aftReSet.get(choiceAgnet.getValue()));
 		});
 		deletAFT.setOnAction(e2 -> {
-			Agents.aftReSet.remove(choiceAgnet.getValue());
+			AFTsLoader.aftReSet.remove(choiceAgnet.getValue());
 			choiceAgnet.getItems().remove(choiceAgnet.getValue());
-			choiceAgnet.setValue(Agents.aftReSet.keySet().iterator().next());
+			choiceAgnet.setValue(AFTsLoader.aftReSet.keySet().iterator().next());
 		});
 		save.setOnAction(e4 -> {
-			creatCsvFiles(Agents.aftReSet.get(choiceAgnet.getValue()), "");
+			creatCsvFiles(AFTsLoader.aftReSet.get(choiceAgnet.getValue()), "");
 		});
 		plotInitialDistrebution.setOnAction(e2 -> {
 			plotOptimalLandon.setSelected(false);
-			showOnlyOneAFT(Agents.aftReSet.get(choiceAgnet.getValue()));
+			showOnlyOneAFT(AFTsLoader.aftReSet.get(choiceAgnet.getValue()));
 		});
 		resetAFT.setOnAction(e2 -> {
 			ArrayList<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario(),
 					"\\" + choiceAgnet.getValue() + ".csv");
-			Agents.initializeAFTProduction(pFiles.get(0));
+			AFTsLoader.initializeAFTProduction(pFiles.get(0));
 			ArrayList<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario(),
 					"AftParams_" + choiceAgnet.getValue() + ".csv");
-			Agents.initializeAFTBehevoir(bFiles.get(0));
+			AFTsLoader.initializeAFTBehevoir(bFiles.get(0));
 			choiceAgnet.fireEvent(e2);
 		});
 
@@ -172,7 +177,7 @@ public class AFT_Configuration {
 		Tab tab = new Tab("AFTs Configuration", vbox);
 		tab.setOnSelectionChanged(e -> {
 			// choiceScenario.setValue(Path.getSenario());
-			showOnlyOneAFT(Agents.aftReSet.get(choiceAgnet.getValue()));
+			showOnlyOneAFT(AFTsLoader.aftReSet.get(choiceAgnet.getValue()));
 			OpenTabs.choiceScenario.setDisable(false);
 			OpenTabs.year.setDisable(false);
 		});

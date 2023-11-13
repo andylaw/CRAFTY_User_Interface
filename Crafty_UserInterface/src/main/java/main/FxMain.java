@@ -20,6 +20,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import panes.MenuBAR;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class FxMain extends Application {
 	public static Camera camera = new Camera();

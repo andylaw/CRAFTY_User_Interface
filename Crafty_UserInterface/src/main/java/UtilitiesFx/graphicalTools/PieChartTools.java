@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 //import javafx.collections.FXCollections;
 //import javafx.collections.ObservableList;
@@ -111,7 +111,7 @@ public class PieChartTools {
 						for (Node n : chart.lookupAll(".data" + j)) {
 							n.setStyle("-fx-pie-color: " + ColorsTools.getStringColor(colorPicker.getValue()) + ";");
 						}
-						Agents.aftReSet.get(data.get(j).getName()).setColor(colorPicker.getValue());
+						AFTsLoader.aftReSet.get(data.get(j).getName()).setColor(colorPicker.getValue());
 						Lattice.colorMap("FR");
 //						Agents.aftReSet.forEach((name,agent) -> {
 //							if (dataName.equals(name)) {

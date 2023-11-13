@@ -22,6 +22,11 @@ import javafx.scene.input.KeyCombination;
 import main.FxMain;
 import main.OpenTabs;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class MenuBAR extends MenuBar {
 	public MenuBAR() {
 

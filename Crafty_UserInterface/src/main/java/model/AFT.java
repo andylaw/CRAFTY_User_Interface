@@ -5,6 +5,11 @@ import java.util.Random;
 
 import javafx.scene.paint.Color;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class AFT {
 	private String label;
 	private String name;

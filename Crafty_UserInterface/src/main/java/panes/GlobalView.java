@@ -14,6 +14,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import main.OpenTabs;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class GlobalView {
 
 	public static Tab globaldataview() {

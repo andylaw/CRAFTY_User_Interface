@@ -14,12 +14,16 @@ import java.util.Scanner;
 import UtilitiesFx.graphicalTools.Tools;
 import UtilitiesFx.graphicalTools.WarningWindowes;
 
-import java.io.IOException;
 
 
 import tech.tablesaw.api.Table;
 
 public class CsvTools {
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 	public static String[][] csvReader(String filePath) {
 	//	System.out.println("Read " + filePath);

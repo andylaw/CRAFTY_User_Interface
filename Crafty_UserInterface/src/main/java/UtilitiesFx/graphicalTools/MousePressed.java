@@ -17,6 +17,11 @@ import javafx.stage.Stage;
 public class MousePressed {
 
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 	public static void mouseControle(Pane pane, Node node) {
 		mouseControle(pane, node, null);
 	}

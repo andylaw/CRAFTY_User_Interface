@@ -6,6 +6,11 @@ import java.io.PrintStream;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class GraphicConsol {
 
 

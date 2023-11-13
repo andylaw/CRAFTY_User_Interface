@@ -9,6 +9,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class RunConfiguration {
 
 	public static void runConfiguration(RunPane CA,NewWindow runConfiguration) {

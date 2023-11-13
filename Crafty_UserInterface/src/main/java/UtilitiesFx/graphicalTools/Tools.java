@@ -20,6 +20,11 @@ import javafx.scene.text.Text;
 
 import java.util.stream.Collectors;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class Tools {
 
 	public static VBox vBox(Node... children) { 

@@ -11,13 +11,10 @@ import java.util.function.Consumer;
 
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.Tools;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Separator;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -25,6 +22,11 @@ import javafx.scene.paint.Color;
 import main.FxMain;
 import panes.CellWindow;
 import panes.Region;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class Lattice {
 	private static Canvas canvas;

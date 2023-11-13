@@ -8,12 +8,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 import dataLoader.Paths;
 import model.AFT;
 import model.Lattice;
 import model.Rules;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class MutationExperiences {
 	MapLoader M = new MapLoader();
@@ -41,17 +46,17 @@ public class MutationExperiences {
 	public void creatRandomAFTs(int nbrOfAFTs) {
 		for (int i = 0; i < nbrOfAFTs; i++) {
 			AFT a = new AFT("AFT" + i, 500.);
-			Agents.aftReSet.put(a.getLabel(), a);
+			AFTsLoader.aftReSet.put(a.getLabel(), a);
 		}
 	}
 
 	void selectWinnersAndInitialiseNextRun() {
-		List<String> losers = Tools.getKeysInSortedOrder(Agents.hashAgentNbr());
+		List<String> losers = Tools.getKeysInSortedOrder(AFTsLoader.hashAgentNbr());
 		System.out.println(losers);
 		for (int i = 0; i < losers.size() / 2; i++) {
-			Agents.aftReSet.remove(losers.get(i));
+			AFTsLoader.aftReSet.remove(losers.get(i));
 			AFT a = new AFT(losers.get(i), 500.);
-			Agents.aftReSet.put(losers.get(i), a);
+			AFTsLoader.aftReSet.put(losers.get(i), a);
 		}
 		asosieteRandomAAFTTocells();
 
@@ -59,8 +64,8 @@ public class MutationExperiences {
 
 	public void asosieteRandomAAFTTocells() {
 		Lattice.getCellsSet().forEach(c -> {
-			c.setOwner(Agents.aftReSet
-					.get(Agents.aftReSet.keySet().toArray()[new Random().nextInt(Agents.aftReSet.keySet().size())]));
+			c.setOwner(AFTsLoader.aftReSet
+					.get(AFTsLoader.aftReSet.keySet().toArray()[new Random().nextInt(AFTsLoader.aftReSet.keySet().size())]));
 		});
 	}
 
@@ -98,7 +103,7 @@ public class MutationExperiences {
 		writOutPut(dir);
 		writeProduction(dir);
 		CsvTools.writeCSVfile(servicedemand, dir + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
-		HashMap<String, Double> nbr = Agents.hashAgentNbr();
+		HashMap<String, Double> nbr = AFTsLoader.hashAgentNbr();
 		String[][] NBR = new String[2][nbr.size()];
 		NBR[0] = nbr.keySet().toArray(new String[0]);
 		NBR[2] = nbr.values().stream().map(String::valueOf).toArray(String[]::new);
@@ -107,7 +112,7 @@ public class MutationExperiences {
 	}
 
 	void writeProduction(String dir) {
-		Agents.aftReSet.forEach((name, a) -> {
+		AFTsLoader.aftReSet.forEach((name, a) -> {
 			String[][] tablPruduction = new String[Lattice.getServicesNames().size() + 1][Lattice.getCapitalsName().size() + 2];
 
 			tablPruduction[0][0] = "";

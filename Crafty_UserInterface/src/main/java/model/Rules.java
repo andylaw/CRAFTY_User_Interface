@@ -6,9 +6,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 import dataLoader.Paths;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class Rules {
 
@@ -34,14 +39,14 @@ public class Rules {
 	public Rules(MapLoader M) {
 		this.M = M;
 //		demandUpdate();
-		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][Agents.aftReSet.size()];
+		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][AFTsLoader.aftReSet.size()];
 		servicedemand  = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][Lattice.getServicesNames().size() * 2];
 		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
 			servicedemand[0][i] = "ServiceSupply:" + Lattice.getServicesNames().get(i);
 			servicedemand[0][i + Lattice.getServicesNames().size()] = "Demand:" + Lattice.getServicesNames().get(i);
 		}
 		AtomicInteger s = new AtomicInteger();
-		Agents.aftReSet.keySet().forEach((label) -> {
+		AFTsLoader.aftReSet.keySet().forEach((label) -> {
 			compositionAFT[0][s.getAndIncrement()] = label;
 		});
 	}
@@ -140,7 +145,7 @@ public class Rules {
 			// the
 			// competition
 			if (Math.random() < percentageCells || c.getOwner() == null) {
-				AFT agent = (AFT) Agents.aftReSet.values().toArray()[new Random().nextInt(Agents.aftReSet.size())];
+				AFT agent = (AFT) AFTsLoader.aftReSet.values().toArray()[new Random().nextInt(AFTsLoader.aftReSet.size())];
 				c.Competition(agent, isMutated, mutationIntval);
 			}
 			if (NeighboorEffect) {
@@ -168,7 +173,7 @@ public class Rules {
 			m.getAndIncrement();
 		});
 
-		HashMap<String, Double> AgentNbr = Agents.hashAgentNbr();
+		HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
 		AtomicInteger N = new AtomicInteger();
 		AgentNbr.forEach((name, value) -> {
 			compositionAFT[y][N.getAndIncrement()] = value + "";

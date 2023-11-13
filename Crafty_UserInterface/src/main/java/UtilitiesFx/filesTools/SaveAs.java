@@ -13,6 +13,11 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class SaveAs {
 	
 	

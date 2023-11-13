@@ -6,6 +6,11 @@ import UtilitiesFx.filesTools.PathTools;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public final class Paths {
 	private static String[] foldersNecessary = { "agents", "csv", "production", "worlds", "GIS" };
 	private static int startYear = 2020;

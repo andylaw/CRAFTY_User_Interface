@@ -3,7 +3,6 @@ package UtilitiesFx.graphicalTools;
 import java.util.List;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.function.Consumer;
 
 import javafx.application.Platform;
@@ -21,8 +20,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import main.FxMain;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class WarningWindowes {
 	static String p = "";

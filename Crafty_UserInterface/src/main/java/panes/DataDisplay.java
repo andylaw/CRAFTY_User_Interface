@@ -10,7 +10,7 @@ import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.PieChartTools;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 import dataLoader.Paths;
 import javafx.geometry.Side;
@@ -22,12 +22,16 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.OpenTabs;
 import model.Lattice;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class DataDisplay {
 
@@ -137,9 +141,9 @@ public class DataDisplay {
 	}
 
 	void updatePieChartColorAFts(MapLoader M, PieChart chart) {
-		HashMap<String, Double> hashAgentNbr = Agents.hashAgentNbr();
+		HashMap<String, Double> hashAgentNbr = AFTsLoader.hashAgentNbr();
 		HashMap<String, Color> color = new HashMap<>();
-		Agents.aftReSet.forEach((name, a) -> {
+		AFTsLoader.aftReSet.forEach((name, a) -> {
 			color.put(name, a.getColor());
 		});
 
@@ -148,8 +152,8 @@ public class DataDisplay {
 		// * add menu to PiChart*//
 		HashMap<String, Consumer<String>> newItemMenu = new HashMap<>();
 		Consumer<String> reset = x -> {
-			Agents.agentsColorinitialisation();
-			Agents.aftReSet.forEach((name, a) -> {
+			AFTsLoader.agentsColorinitialisation();
+			AFTsLoader.aftReSet.forEach((name, a) -> {
 				color.put(name, a.getColor());
 			});
 			new PieChartTools().updateChart(M, hashAgentNbr, color, chart);
@@ -157,7 +161,7 @@ public class DataDisplay {
 		};
 
 		Consumer<String> saveInPutData = x -> {
-			Agents.updateColorsInputData();
+			AFTsLoader.updateColorsInputData();
 		};
 
 		newItemMenu.put("Reset Colors", reset);

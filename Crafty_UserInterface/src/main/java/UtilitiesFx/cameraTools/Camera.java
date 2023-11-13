@@ -9,6 +9,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class Camera extends PerspectiveCamera {
 	public CameraTransformer cameraTransform = new CameraTransformer();
 	public double mousePosX;

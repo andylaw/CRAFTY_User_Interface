@@ -9,7 +9,7 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 import dataLoader.Paths;
 import javafx.scene.chart.LineChart;
@@ -25,6 +25,11 @@ import javafx.scene.layout.VBox;
 import main.OpenTabs;
 import model.AFT;
 import model.Lattice;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class OutPutPane {
 
@@ -149,7 +154,7 @@ public class OutPutPane {
 			if (i == has.size() - 1) {
 				Ch.setCreateSymbols(false);
 				for (int k2 = 0; k2 < Ch.getData().size(); k2++) {
-					AFT a = Agents.aftReSet.get(Ch.getData().get(k2).getName());
+					AFT a = AFTsLoader.aftReSet.get(Ch.getData().get(k2).getName());
 					Ch.getData().get(k2).getNode().lookup(".chart-series-line")
 							.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
 				}

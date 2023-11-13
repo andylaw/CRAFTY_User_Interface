@@ -6,7 +6,7 @@ import UtilitiesFx.graphicalTools.CSVTableView;
 import UtilitiesFx.graphicalTools.Histogram;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -23,6 +23,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.AFT;
 import model.Lattice;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class NewAftPane extends AFT_Configuration {
 	static VBox vbox = new VBox();
@@ -100,10 +105,10 @@ public class NewAftPane extends AFT_Configuration {
 			creatCsvFiles(newAFT,textArea.getText());
 		});
 		addToThisSimulation.setOnAction(e -> {
-			Agents.aftReSet.put(newAFT.getLabel(), newAFT);
+			AFTsLoader.aftReSet.put(newAFT.getLabel(), newAFT);
 			AFT_Configuration.choiceAgnet.getItems().clear();
-			AFT_Configuration.choiceAgnet.getItems().addAll(Agents.aftReSet.keySet());
-			AFT_Configuration.choiceAgnet.setValue(Agents.aftReSet.keySet().iterator().next());
+			AFT_Configuration.choiceAgnet.getItems().addAll(AFTsLoader.aftReSet.keySet());
+			AFT_Configuration.choiceAgnet.setValue(AFTsLoader.aftReSet.keySet().iterator().next());
 		 });
 
 		sensitivtyFire.fire();

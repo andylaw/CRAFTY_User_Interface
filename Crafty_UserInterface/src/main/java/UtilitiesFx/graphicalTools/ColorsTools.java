@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import dataLoader.MapLoader;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.RadioButton;
@@ -16,6 +15,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import model.Lattice;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class ColorsTools {
 	public static String colorPaletteType = "Default";

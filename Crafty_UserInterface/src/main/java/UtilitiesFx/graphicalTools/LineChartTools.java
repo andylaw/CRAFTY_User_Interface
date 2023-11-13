@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -15,6 +15,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class LineChartTools extends Node {
 
@@ -126,7 +131,7 @@ public class LineChartTools extends Node {
 		int m = 0;
 		for (Node item : lineChart.lookupAll("Label.chart-legend-item")) {
 			Label label = (Label) item;//
-			Color co = Agents.aftReSet.get(label.getText()) != null ? Agents.aftReSet.get(label.getText()).getColor()
+			Color co = AFTsLoader.aftReSet.get(label.getText()) != null ? AFTsLoader.aftReSet.get(label.getText()).getColor()
 					: ColorsTools.colorlist(m);
 			final Rectangle rectangle = new Rectangle(10, 10, co);
 			label.setGraphic(rectangle);

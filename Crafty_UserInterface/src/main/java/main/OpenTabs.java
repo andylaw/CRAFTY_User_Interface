@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import UtilitiesFx.graphicalTools.WarningWindowes;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 import dataLoader.Paths;
 import javafx.scene.Parent;
@@ -23,6 +23,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import model.Lattice;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class OpenTabs {
 
@@ -45,10 +50,10 @@ public class OpenTabs {
 			tabPane.setStyle(" -fx-base: #ffffff;");
 			tabPane.getTabs().clear();
 			FxMain.root.getChildren().clear();
-			Agents.aftReSet.clear();
+			AFTsLoader.aftReSet.clear();
 			PathTools.writePathRecentProject("RecentProject.txt", "\n" + Paths.getProjectPath());
 			M.loadCapitalsAndServiceList();
-			Agents.initializeAFTs();
+			AFTsLoader.initializeAFTs();
 			M.loadMap();
 			M.loadGisData();
 			Lattice.plotCells();
@@ -99,7 +104,7 @@ public class OpenTabs {
 			DataDisplay.graphDemand = DataDisplay.graphDemand();
 			((Pane)par).getChildren().add(DataDisplay.graphDemand);
 			year.fireEvent(e);
-			Agents.updateAFTs();
+			AFTsLoader.updateAFTs();
 			//AFT_Configuration.choiceAgnet.fireEvent(e);
 			Paths.setScenario(choiceScenario.getValue());
 			

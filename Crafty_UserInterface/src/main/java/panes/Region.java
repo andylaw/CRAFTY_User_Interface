@@ -36,6 +36,11 @@ import model.Cell;
 import model.Lattice;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class Region {
 	
 	static Canvas canvas;

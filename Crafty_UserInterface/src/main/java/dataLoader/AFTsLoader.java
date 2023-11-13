@@ -14,7 +14,11 @@ import model.Lattice;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
 
-public class Agents {
+/**
+ * @author Mohamed Byari
+ *
+ */
+public class AFTsLoader {
 
 	public static HashMap<String, AFT> aftReSet = new HashMap<>();
 

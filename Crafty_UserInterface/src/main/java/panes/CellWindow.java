@@ -22,6 +22,11 @@ import javafx.scene.paint.Color;
 import model.Cell;
 import model.Lattice;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class CellWindow {
 
 	private Cell cell;

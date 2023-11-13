@@ -13,6 +13,11 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class  NewWindow extends Stage {
 
 

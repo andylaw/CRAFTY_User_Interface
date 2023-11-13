@@ -13,6 +13,11 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import UtilitiesFx.graphicalTools.WarningWindowes;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class MapLoader {
 
 	
@@ -28,7 +33,7 @@ public class MapLoader {
 			if (Tools.sToD(X[i]) != 0 && Tools.sToD(Y[i]) != 0) {
 				Cell c = new Cell((int) Tools.sToD(X[i]), (int) Tools.sToD(Y[i]));
 				if (c != null) {
-					c.setOwner(Agents.aftReSet.get(patchData.get("FR")[i]));
+					c.setOwner(AFTsLoader.aftReSet.get(patchData.get("FR")[i]));
 					Lattice.getCellsSet().add(c);
 					Lattice.getHashCell().put(X[i] + "," + Y[i], c);
 					c.setIndex(Lattice.getCellsSet().size());
@@ -52,7 +57,7 @@ public class MapLoader {
 			if (Tools.sToD(X[i]) != 0 && Tools.sToD(Y[i]) != 0) {
 				Cell c = Lattice.getHashCell().get(X[i] + "," + Y[i]);
 				if (c != null) {
-					c.setOwner( Agents.aftReSet.get(patchData.get("FR")[i]));
+					c.setOwner( AFTsLoader.aftReSet.get(patchData.get("FR")[i]));
 				}
 				for (int j = 0; j < Lattice.getCapitalsName().size(); j++) {
 					c.getCapitals().put(Lattice.getCapitalsName().get(j), Tools.sToD(patchData.get(Lattice.getCapitalsName().get(j))[i]));
@@ -162,7 +167,7 @@ public class MapLoader {
 					c.getServices().put(name, Tools.sToD(hash.get("Service:" + name)[ii]));
 			});
 
-			Agents.aftReSet.forEach((name, agent) -> {
+			AFTsLoader.aftReSet.forEach((name, agent) -> {
 				if (name.equals(hash.get("Agent")[ii])) {
 					c.setOwner(agent);
 				}

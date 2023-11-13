@@ -11,7 +11,7 @@ import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Agents;
+import dataLoader.AFTsLoader;
 import dataLoader.MapLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
@@ -40,6 +40,11 @@ import javafx.util.Duration;
 import main.OpenTabs;
 import model.Lattice;
 import model.Rules;
+
+/**
+ * @author Mohamed Byari
+ *
+ */
 
 public class RunPane {
 
@@ -127,7 +132,7 @@ public class RunPane {
 							.add(new XYChart.Data<>(tick.get() - Paths.getStartYear(), R.supply.get(name)));
 					m.getAndIncrement();
 				});
-				HashMap<String, Double> AgentNbr = Agents.hashAgentNbr();
+				HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
 				AtomicInteger N = new AtomicInteger();
 				AgentNbr.forEach((name, value) -> {
 					lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
@@ -194,7 +199,7 @@ public class RunPane {
 		});
 		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(), new NumberAxis());
 		lineChart.add(l);
-		Agents.aftReSet.forEach((name, a) -> {
+		AFTsLoader.aftReSet.forEach((name, a) -> {
 			Series<Number, Number> s = new XYChart.Series<Number, Number>();
 			s.setName(name);
 			l.getData().add(s);

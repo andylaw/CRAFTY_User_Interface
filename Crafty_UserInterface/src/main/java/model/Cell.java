@@ -11,6 +11,11 @@ import java.util.function.Consumer;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 
 public class Cell {
 	private static int size=5;

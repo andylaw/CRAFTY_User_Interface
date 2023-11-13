@@ -10,6 +10,11 @@ import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.Pane;
+/**
+ * @author Mohamed Byari
+ *
+ */
+
 public class Histogram extends Node{
 
 	public static BarChart<String, Number> histo (Pane box,String name,BarChart<String, Number> histogram ,Set<Double> values) {      
