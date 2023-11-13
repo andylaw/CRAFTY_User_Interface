@@ -1,6 +1,0 @@
-<preferenceList class="de.cesr.lara.toolbox.config.xml.LXmlPreferenceLoader">
-		<preference>WAttitude</preference>
-		<preference>WSubjectiveNorm</preference>
-		<preference>WPBC</preference>
-		<preference>THRESHOLD</preference>
-</preferenceList>
