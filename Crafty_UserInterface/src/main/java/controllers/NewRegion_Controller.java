@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import model.Cell;
-import model.Lattice;
+import model.CellsSet;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -41,7 +41,7 @@ import javafx.scene.layout.BorderPane;
  *
  */
 
-public class Region {
+public class NewRegion_Controller {
 	
 	static Canvas canvas;
 
@@ -82,7 +82,7 @@ public class Region {
 			Y.add(p.getY());
 		});
 		
-		canvas = new Canvas(Lattice.getMaxX()*Cell.getSize(), Lattice.getMaxY()*Cell.getSize());
+		canvas = new Canvas(CellsSet.getMaxX()*Cell.getSize(), CellsSet.getMaxY()*Cell.getSize());
         gc = canvas.getGraphicsContext2D();
 		patchsInRergion.forEach(c -> {
 			if(c.getOwner()!=null) {
@@ -125,16 +125,16 @@ public class Region {
 	public static TitledPane colorWorld() {
 		VBox vbox = new VBox();
 
-		int length = Lattice.getCapitalsName().size() + 1;
+		int length = CellsSet.getCapitalsName().size() + 1;
 
 		RadioButton[] radioColor = new RadioButton[length];
 
 	
 
 		for (int i = 0; i < length; i++) {
-			if (i < Lattice.getCapitalsName().size()) {
-				radioColor[i] = new RadioButton(Lattice.getCapitalsName().get(i));
-			} else if (i == Lattice.getCapitalsName().size()) {
+			if (i < CellsSet.getCapitalsName().size()) {
+				radioColor[i] = new RadioButton(CellsSet.getCapitalsName().get(i));
+			} else if (i == CellsSet.getCapitalsName().size()) {
 				radioColor[i] = new RadioButton("FR");
 			} 
 			vbox.getChildren().add(radioColor[i]);
@@ -145,9 +145,9 @@ public class Region {
 						radioColor[j].setSelected(false);
 					}
 				}
-				if (k < Lattice.getCapitalsName().size()) {
-					colorMap(Lattice.getCapitalsName().get(k));
-				} else if (k == Lattice.getCapitalsName().size()) {
+				if (k < CellsSet.getCapitalsName().size()) {
+					colorMap(CellsSet.getCapitalsName().get(k));
+				} else if (k == CellsSet.getCapitalsName().size()) {
 					colorMap("FR");
 				} 
 			});
@@ -229,7 +229,7 @@ public class Region {
 		});
 		menu.put("Deselect regions",x-> {
 			patchsInRergion.clear();
-			Lattice.colorMap();
+			CellsSet.colorMap();
 		});
 		return menu;
 	}

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import dataLoader.CellsLoader;
 //import javafx.collections.FXCollections;
 //import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -17,7 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import model.Lattice;
+import model.CellsSet;
 
 public class PieChartTools {
 	ArrayList<PieChart.Data> data = new ArrayList<>();
@@ -48,7 +48,7 @@ public class PieChartTools {
 			legendColorStatic(color, chart) ;
 	}
 	
-	public void updateChart(MapLoader M,HashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
+	public void updateChart(CellsLoader M,HashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
 		updateChart(hash, chart);
 		for (int i = 0; i < data.size(); i++) {
 			for (Node n : chart.lookupAll(".data" + i)) {
@@ -95,7 +95,7 @@ public class PieChartTools {
 		}
 	}
 
-	void legendColorPicker(MapLoader M, HashMap<String, Color> color, PieChart chart) {
+	void legendColorPicker(CellsLoader M, HashMap<String, Color> color, PieChart chart) {
 		int i = 0;
 		for (Node item : chart.lookupAll("Label.chart-legend-item")) {
 			Label label = (Label) item;
@@ -111,8 +111,8 @@ public class PieChartTools {
 						for (Node n : chart.lookupAll(".data" + j)) {
 							n.setStyle("-fx-pie-color: " + ColorsTools.getStringColor(colorPicker.getValue()) + ";");
 						}
-						AFTsLoader.aftReSet.get(data.get(j).getName()).setColor(colorPicker.getValue());
-						Lattice.colorMap("FR");
+						M.AFtsSet.getAftHash().get(data.get(j).getName()).setColor(colorPicker.getValue());
+						CellsSet.colorMap("FR");
 //						Agents.aftReSet.forEach((name,agent) -> {
 //							if (dataName.equals(name)) {
 //								agent.color = colorPicker.getValue();

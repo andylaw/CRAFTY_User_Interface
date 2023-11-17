@@ -1,18 +1,16 @@
 package main;
 
-import panes.AFT_Configuration;
-import panes.DataDisplay;
-import panes.GlobalView;
-import panes.OutPutPane;
-import panes.RunPane;
-
 import java.util.ArrayList;
 
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import UtilitiesFx.graphicalTools.WarningWindowes;
-import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import controllers.AFTs_Controller;
+import controllers.Map_Controller;
+import controllers.GlobalView;
+import controllers.OutPut_Controller;
+import controllers.ModelRunner_Controller;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
@@ -22,7 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import model.Lattice;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
@@ -31,38 +29,42 @@ import model.Lattice;
 
 public class OpenTabs {
 
-	MapLoader M;
+	CellsLoader M;
 	public static VBox vbox = new VBox();
 	public static ChoiceBox<String> choiceScenario;
 	public static ChoiceBox<String> year;
 
 	public OpenTabs() {
 		FxMain.imageView.setVisible(false);
-		M = new MapLoader();
+		M = new CellsLoader();
 		senarioPane();
 
 	}
 
 	public void senarioPane() {
 		TabPane tabPane = new TabPane();
-
 		WarningWindowes.showWaitingDialog(x -> {
 			tabPane.setStyle(" -fx-base: #ffffff;");
 			tabPane.getTabs().clear();
 			FxMain.root.getChildren().clear();
-			AFTsLoader.aftReSet.clear();
+			
 			PathTools.writePathRecentProject("RecentProject.txt", "\n" + Paths.getProjectPath());
 			M.loadCapitalsAndServiceList();
-			AFTsLoader.initializeAFTs();
 			M.loadMap();
+			
 			M.loadGisData();
-			Lattice.plotCells();
-			tabPane.getTabs().addAll(GlobalView.globaldataview(), new DataDisplay(M).colorWorld(),
-					new AFT_Configuration().pane(), new RunPane(M).pane(), new OutPutPane(M).pane());
+			CellsSet.setCellsSet(M);
+			CellsSet.plotCells();
+			ModelRunner_Controller R = new ModelRunner_Controller(M);
+			
+			
+			tabPane.getTabs().addAll(GlobalView.globaldataview(), new Map_Controller(M).colorWorld(),
+					new AFTs_Controller(M).pane(), R.pane(), new OutPut_Controller(M).pane());
 			for (Tab tab : tabPane.getTabs()) {
 				tab.setClosable(false);
 			}
 		});
+		vbox.getChildren().clear();
 		vbox.getChildren().addAll(globalBox(), tabPane);
 	}
 
@@ -79,15 +81,15 @@ public class OpenTabs {
 			if (year.getValue() != null) {
 				Paths.setCurrentYear((int) Tools.sToD(year.getValue()));
 				M.updateCapitals(Paths.getCurrentYear());
-				if(DataDisplay.tab.isSelected()) {
-				for (int i = 0; i < Lattice.getCapitalsName().size()+1; i++) {
-					if (DataDisplay.radioColor[i].isSelected()) {
-						if (i < Lattice.getCapitalsName().size()) {
-							Lattice.colorMap(Lattice.getCapitalsName().get(i));
-							DataDisplay.histogrameCapitals(DataDisplay.histogrameCapitalFequency, Paths.getCurrentYear() + "",
-									Lattice.getCapitalsName().get(i));
+				if(Map_Controller.tab.isSelected()) {
+				for (int i = 0; i < CellsSet.getCapitalsName().size()+1; i++) {
+					if (Map_Controller.radioColor[i].isSelected()) {
+						if (i < CellsSet.getCapitalsName().size()) {
+							CellsSet.colorMap(CellsSet.getCapitalsName().get(i));
+							Map_Controller.histogrameCapitals(Map_Controller.histogrameCapitalFequency, Paths.getCurrentYear() + "",
+									CellsSet.getCapitalsName().get(i));
 						} else {
-							Lattice.colorMap("FR");
+							CellsSet.colorMap("FR");
 						}
 					}
 				}
@@ -98,14 +100,14 @@ public class OpenTabs {
 		
 		choiceScenario.setOnAction(e -> {
 			Paths.setScenario(choiceScenario.getValue());
-			MapLoader.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
-			Parent par = DataDisplay.graphDemand.getParent();
-			((Pane)par).getChildren().remove(DataDisplay.graphDemand);
-			DataDisplay.graphDemand = DataDisplay.graphDemand();
-			((Pane)par).getChildren().add(DataDisplay.graphDemand);
+			CellsLoader.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
+			Parent par = Map_Controller.graphDemand.getParent();
+			((Pane)par).getChildren().remove(Map_Controller.graphDemand);
+			Map_Controller.graphDemand = new Map_Controller(M).graphDemand();
+			((Pane)par).getChildren().add(Map_Controller.graphDemand);
 			year.fireEvent(e);
-			AFTsLoader.updateAFTs();
-			//AFT_Configuration.choiceAgnet.fireEvent(e);
+			M.AFtsSet.updateAFTs();
+			AFTs_Controller.choiceAgnet.fireEvent(e);
 			Paths.setScenario(choiceScenario.getValue());
 			
 		});

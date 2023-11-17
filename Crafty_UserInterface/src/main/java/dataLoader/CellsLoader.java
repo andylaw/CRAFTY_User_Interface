@@ -3,10 +3,11 @@ package dataLoader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import model.Cell;
-import model.Lattice;
+import model.CellsSet;
 import tech.tablesaw.api.Table;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
@@ -18,12 +19,15 @@ import UtilitiesFx.graphicalTools.WarningWindowes;
  *
  */
 
-public class MapLoader {
+public class CellsLoader  extends HashSet<Cell>{
 
-	
+	private static final long serialVersionUID = 1L;
 	public static List<String> GISNames = new ArrayList<>();//
-
+	public  HashMap<String, Cell> hashCell = new HashMap<>();
+	public AFTsLoader AFtsSet;
 	public void loadMap() {
+		AFtsSet= new AFTsLoader();
+		
 		HashMap<String, String[]> patchData = loadBaselineCapital("\\worlds\\",	"Baseline_map");
 		
 		String[] X = patchData.get(patchData.containsKey("x") ? "x" : "X");
@@ -33,13 +37,13 @@ public class MapLoader {
 			if (Tools.sToD(X[i]) != 0 && Tools.sToD(Y[i]) != 0) {
 				Cell c = new Cell((int) Tools.sToD(X[i]), (int) Tools.sToD(Y[i]));
 				if (c != null) {
-					c.setOwner(AFTsLoader.aftReSet.get(patchData.get("FR")[i]));
-					Lattice.getCellsSet().add(c);
-					Lattice.getHashCell().put(X[i] + "," + Y[i], c);
-					c.setIndex(Lattice.getCellsSet().size());
+					c.setOwner(AFtsSet.getAftHash().get(patchData.get("FR")[i]));
+					add(c);
+					hashCell.put(X[i] + "," + Y[i], c);
+					c.setIndex(size());
 				}
-				for (int j = 0; j < Lattice.getCapitalsName().size(); j++) {
-					c.getCapitals().put(Lattice.getCapitalsName().get(j), Tools.sToD(patchData.get(Lattice.getCapitalsName().get(j))[i]));
+				for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
+					c.getCapitals().put(CellsSet.getCapitalsName().get(j), Tools.sToD(patchData.get(CellsSet.getCapitalsName().get(j))[i]));
 				}
 			}
 		}
@@ -55,12 +59,12 @@ public class MapLoader {
 
 		for (int i = 0; i < X.length; i++) {
 			if (Tools.sToD(X[i]) != 0 && Tools.sToD(Y[i]) != 0) {
-				Cell c = Lattice.getHashCell().get(X[i] + "," + Y[i]);
+				Cell c = hashCell.get(X[i] + "," + Y[i]);
 				if (c != null) {
-					c.setOwner( AFTsLoader.aftReSet.get(patchData.get("FR")[i]));
+					c.setOwner( AFtsSet.getAftHash().get(patchData.get("FR")[i]));
 				}
-				for (int j = 0; j < Lattice.getCapitalsName().size(); j++) {
-					c.getCapitals().put(Lattice.getCapitalsName().get(j), Tools.sToD(patchData.get(Lattice.getCapitalsName().get(j))[i]));
+				for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
+					c.getCapitals().put(CellsSet.getCapitalsName().get(j), Tools.sToD(patchData.get(CellsSet.getCapitalsName().get(j))[i]));
 				}
 			}
 		}
@@ -73,7 +77,7 @@ public class MapLoader {
 			for (int i = 0; i <v.length; i++) {
 				v[i]=Tools.sToD(vect[i]);
 			}
-			Lattice.getDemand().put(name, v);
+			CellsSet.getDemand().put(name, v);
 		});
 	}
 	HashMap<String, String[]> loadBaselineCapital(String... findBaseLine) {
@@ -101,14 +105,14 @@ public class MapLoader {
 
 	public void loadCapitalsAndServiceList() {
 		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Capitals.csv").get(0));
-		Lattice.getCapitalsName().clear();
+		CellsSet.getCapitalsName().clear();
 		for (int n = 1; n < line0.length; n++) {
-			Lattice.getCapitalsName().add(line0[n]);
+			CellsSet.getCapitalsName().add(line0[n]);
 		}
-		Lattice.getServicesNames().clear();
+		CellsSet.getServicesNames().clear();
 		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Services.csv").get(0));
 		for (int n = 1; n < line0s.length; n++) {
-			Lattice.getServicesNames().add(line0s[n]);
+			CellsSet.getServicesNames().add(line0s[n]);
 		}
 	}
 
@@ -121,10 +125,10 @@ public class MapLoader {
 		for (int i = 0; i < T.columns().iterator().next().size(); i++) {
 			String coor = T.column(x).get(i) + "," + T.column(y).get(i);
 			int ii = i;
-			if (Lattice.getHashCell().get(coor) != null) {
+			if (hashCell.get(coor) != null) {
 				GISNames.forEach(name -> {
 					if (T.column(name).get(ii) != null)
-						Lattice.getHashCell().get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
+						hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
 				});
 			}
 		}
@@ -141,9 +145,9 @@ public class MapLoader {
 			for (int i = 0; i < patchData.values().iterator().next().length; i++) {
 				int ii = i;
 				patchData.forEach((name, vect) -> {
-					Cell c = Lattice.getHashCell().get(patchData.get(x)[ii] + "," + patchData.get(y)[ii]);
+					Cell c = hashCell.get(patchData.get(x)[ii] + "," + patchData.get(y)[ii]);
 					if (c != null) {
-						if (Lattice.getCapitalsName().contains(name))
+						if (CellsSet.getCapitalsName().contains(name))
 							c.getCapitals().put(name, Tools.sToD(vect[ii]));
 					}
 				});
@@ -151,28 +155,33 @@ public class MapLoader {
 		}
 	}
 	
-	public static void servicesAndOwner(String year, String outputpath)  {
+	public void servicesAndOwner(String year, String outputpath)  {
 		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
 		HashMap<String, String[]> hash = CsvTools
 				.ReadAsaHash(PathTools.fileFilter(outputpath, "-Cell-" + year + ".csv").get(0));
 		String x = hash.containsKey("x") ? "x" : "X";
 		String y = hash.containsKey("y") ? "y" : "Y";
-		System.out.println(Lattice.getServicesNames());
+		System.out.println(CellsSet.getServicesNames());
 		for (int i = 0; i < hash.values().iterator().next().length; i++) {
 			int ii = i;
-			Cell c = Lattice.getHashCell().get(hash.get(x)[i] + "," + hash.get(y)[i]);
+			Cell c = hashCell.get(hash.get(x)[i] + "," + hash.get(y)[i]);
 			c.getServices().clear();
-			Lattice.getServicesNames().forEach(name -> {
+			CellsSet.getServicesNames().forEach(name -> {
 				if (c != null)
 					c.getServices().put(name, Tools.sToD(hash.get("Service:" + name)[ii]));
 			});
 
-			AFTsLoader.aftReSet.forEach((name, agent) -> {
+			AFtsSet.getAftHash().forEach((name, agent) -> {
 				if (name.equals(hash.get("Agent")[ii])) {
 					c.setOwner(agent);
 				}
 			});
 		}
+	}
+
+
+	public   Cell getCell(int i, int j) {
+		return hashCell.get(i + "," + j);
 	}
 
 }

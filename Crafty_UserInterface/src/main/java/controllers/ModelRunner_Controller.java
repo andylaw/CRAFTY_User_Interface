@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -38,24 +38,24 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import main.OpenTabs;
-import model.Lattice;
-import model.Rules;
+import model.CellsSet;
+import model.ModelRunner;
 
 /**
  * @author Mohamed Byari
  *
  */
 
-public class RunPane {
+public class ModelRunner_Controller {
 
-	Rules R;
+	ModelRunner R;
 	Timeline timeline;
 	String outPutFolderName;
 	VBox vbox = new VBox();
 	public static boolean chartSynchronisation = true;
 
-	public RunPane(MapLoader M) {
-		this.R = new Rules(M);
+	public ModelRunner_Controller(CellsLoader M) {
+		this.R = new ModelRunner(M);
 	}
 
 	public Tab pane() {
@@ -72,8 +72,8 @@ public class RunPane {
 		GridPane gridPane = new GridPane();
 
 		stop.setOnAction(e -> {
-			R.M.ResetMap();
-			Lattice.colorMap();
+			R.cells.ResetMap();
+			CellsSet.colorMap();
 			timeline.stop();
 			run.setDisable(false);
 			tick.set(Paths.getStartYear());
@@ -99,23 +99,24 @@ public class RunPane {
 
 		runConfigurtion.setOnAction(e -> {
 			if (!runConfiguration.isShowing())
-				RunConfiguration.runConfiguration(this, runConfiguration);
+				RunConfiguration_Controller.runConfiguration(this, runConfiguration);
 		});
 
 		run.setOnAction(e -> {
 			run.setDisable(true);
 			RunName();
-			MapLoader.updateDemand();// to resolve (update demand when you change scenarion+ demand shouldn't be a rule variable but lattice )
+			CellsLoader.updateDemand();// to resolve (update demand when you change scenarion+ demand shouldn't be a
+										// rule variable but lattice )
 			timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
 				OneStep.fire();
 			}));
 			timeline.setCycleCount(Paths.getEndtYear() - Paths.getStartYear());
 			timeline.play();
 			timeline.setOnFinished(m -> {
-				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-						+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
-				CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-						+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
+				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
+				CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
 			});
 		});
 
@@ -125,18 +126,18 @@ public class RunPane {
 			Paths.setCurrentYear(tick.get());
 			if (chartSynchronisation) {
 				AtomicInteger m = new AtomicInteger();
-				Lattice.getServicesNames().forEach(name -> {
-					lineChart.get(m.get()).getData().get(0).getData().add(
-							new XYChart.Data<>(tick.get() - Paths.getStartYear(), Lattice.getDemand().get(name)[tick.get()-Paths.getStartYear() ]));
+				CellsSet.getServicesNames().forEach(name -> {
+					lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
+							CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]));
 					lineChart.get(m.get()).getData().get(1).getData()
-							.add(new XYChart.Data<>(tick.get() - Paths.getStartYear(), R.supply.get(name)));
+							.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
 					m.getAndIncrement();
 				});
 				HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
 				AtomicInteger N = new AtomicInteger();
 				AgentNbr.forEach((name, value) -> {
 					lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
-							.add(new XYChart.Data<>(tick.get() - Paths.getStartYear(), value));
+							.add(new XYChart.Data<>(tick.get(), value));
 					N.getAndIncrement();
 				});
 			}
@@ -144,17 +145,17 @@ public class RunPane {
 		});
 
 		HBox colorRadioHbox = new HBox();
-		RadioButton[] radioColor = new RadioButton[Lattice.getServicesNames().size() + 1];
+		RadioButton[] radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
 		radioColor[radioColor.length - 1] = new RadioButton("FR");
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
-			radioColor[i] = new RadioButton(Lattice.getServicesNames().get(i));
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+			radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
 		}
 		colorRadioHbox.getChildren().addAll(radioColor);
 		for (int i = 0; i < radioColor.length; i++) {
 			int m = i;
 			radioColor[i].setOnAction(e -> {
 				R.colorDisplay = radioColor[m].getText();
-				Lattice.colorMap(radioColor[m].getText());
+				CellsSet.colorMap(radioColor[m].getText());
 				for (int I = 0; I < radioColor.length; I++) {
 					if (I != m) {
 						radioColor[I].setSelected(false);
@@ -162,8 +163,8 @@ public class RunPane {
 				}
 			});
 		}
-		
-		vbox.getChildren().addAll(Tools.hBox( new Separator(), tickTxt, colorRadioHbox), new Separator(),
+
+		vbox.getChildren().addAll(Tools.hBox(new Separator(), tickTxt, colorRadioHbox), new Separator(),
 				Tools.hBox(runConfigurtion, OneStep, new Separator(), run, pause, stop));
 
 		int j = 0, k = 0;
@@ -177,29 +178,31 @@ public class RunPane {
 		vbox.getChildren().addAll(gridPane);
 		Tab tab = new Tab("Run ", vbox);
 		tab.setOnSelectionChanged(e -> {
-				Paths.setCurrentYear(Paths.getStartYear());
-				R.M.ResetMap();
-				OpenTabs.choiceScenario.setDisable(false);
-				OpenTabs.year.setDisable(false);
+			Paths.setCurrentYear(Paths.getStartYear());
+			R.cells.ResetMap();
+			OpenTabs.choiceScenario.setDisable(false);
+			OpenTabs.year.setDisable(false);
 		});
 		return tab;
 	}
 
 	void initilaseChart(ArrayList<LineChart<Number, Number>> lineChart) {
-		Lattice.getServicesNames().forEach(name -> {
+		CellsSet.getServicesNames().forEach(name -> {
 			Series<Number, Number> s1 = new XYChart.Series<Number, Number>();
 			Series<Number, Number> s2 = new XYChart.Series<Number, Number>();
 			s1.setName("Demand " + name);
 			s2.setName("Supply " + name);
-			LineChart<Number, Number> l = new LineChart<>(new NumberAxis(), new NumberAxis());
+			LineChart<Number, Number> l = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
+					new NumberAxis());
 			l.getData().add(s1);
 			l.getData().add(s2);
 			lineChart.add(l);
-			MousePressed.mouseControle(vbox,l);
+			MousePressed.mouseControle(vbox, l);
 		});
-		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(), new NumberAxis());
+		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
+				new NumberAxis());
 		lineChart.add(l);
-		AFTsLoader.aftReSet.forEach((name, a) -> {
+		R.cells.AFtsSet.getAftHash().forEach((name, a) -> {
 			Series<Number, Number> s = new XYChart.Series<Number, Number>();
 			s.setName(name);
 			l.getData().add(s);
@@ -207,8 +210,8 @@ public class RunPane {
 					.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
 		});
 		l.setCreateSymbols(false);
-		MousePressed.mouseControle(vbox,l);
-		LineChartTools.labelcolor(l);
+		MousePressed.mouseControle(vbox, l);
+		new LineChartTools().labelcolor(R.cells, l);
 	}
 
 	Alert RunName() {
@@ -233,9 +236,8 @@ public class RunPane {
 			String dir = PathTools.makeDirectory(Paths.getProjectPath() + "\\output\\");
 			dir = PathTools.makeDirectory(dir + Paths.getScenario());
 			dir = PathTools.makeDirectory(dir + "\\" + outPutFolderName);
-			PathTools.writeFile(
-					Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\" + outPutFolderName + "\\readme.txt",
-					textArea.getText(),false);
+			PathTools.writeFile(Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\" + outPutFolderName
+					+ "\\readme.txt", textArea.getText(), false);
 		});
 
 		return alert;

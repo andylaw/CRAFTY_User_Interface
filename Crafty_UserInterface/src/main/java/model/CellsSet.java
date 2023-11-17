@@ -3,14 +3,15 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
+import controllers.CellWindow;
+import controllers.NewRegion_Controller;
+import dataLoader.CellsLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -20,25 +21,24 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.FxMain;
-import panes.CellWindow;
-import panes.Region;
 
 /**
  * @author Mohamed Byari
  *
  */
 
-public class Lattice {
+public class CellsSet {
 	private static Canvas canvas;
 	private static GraphicsContext gc;
 	private static int maxX,maxY;
 	private static String regioneselected = "Regions";
 	private static String colortype = "FR";
-	private static Set<Cell> cellsSet=new HashSet<>();;
-	private static HashMap<String, Cell> hashCell = new HashMap<>();
+	private static CellsLoader cellsSet;
 	private static HashMap<String, double[]> demand = new HashMap<>();
 	private static List<String> capitalsName = new ArrayList<>();
 	private static List<String> servicesNames = new ArrayList<>();
+	
+
 
 	public static void plotCells() {
 		ArrayList<Integer> X = new ArrayList<>();
@@ -146,26 +146,26 @@ public class Lattice {
 				// Convert pixel coordinates to cell coordinates
 				int cx = (int) (pixelX / Cell.getSize() );
 				int cy = (int) (maxY - pixelY / Cell.getSize() );
-				if (hashCell.get(cx + "," + cy) != null) {
+				if (cellsSet.hashCell.get(cx + "," + cy) != null) {
 					gc.setFill(Color.BLACK);
 					gc.fillRect(pixelX, pixelY, Cell.getSize() , Cell.getSize() );
 					HashMap<String, Consumer<String>> menu = new HashMap<>();
-					if (!Region.patchsInRergion.contains(hashCell.get(cx + "," + cy))) {
+					if (!NewRegion_Controller.patchsInRergion.contains(cellsSet.hashCell.get(cx + "," + cy))) {
 
-						CellWindow localData = new CellWindow(hashCell.get(cx + "," + cy));
+						CellWindow localData = new CellWindow(cellsSet.hashCell.get(cx + "," + cy));
 						Consumer<String> creatWindos = (x) -> {
 							localData.windosLocalInfo();
 						};
 						menu.put("Access to Cell (" + cx + "," + cy + ") information", creatWindos);
 
 						menu.put("Print Info", e -> {
-							System.out.println(hashCell.get(cx + "," + cy));
+							System.out.println(cellsSet.hashCell.get(cx + "," + cy));
 						});
 						menu.put("Save Map as PNG", e -> {
 							SaveAs.png(canvas);
 						});
 						menu.put("Select region ", e -> {
-							selectZone(hashCell.get(cx + "," + cy),regioneselected);
+							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy),regioneselected);
 						});
 //						menu.put("Detach", (x) -> {
 //							List<Integer> findpath = Tools.findIndexPath(canvas, canvas.getParent());
@@ -178,7 +178,7 @@ public class Lattice {
 //						});
 						
 					} else {
-						menu = Region.creatMenu();
+						menu = NewRegion_Controller.creatMenu();
 					}
 					ContextMenu cm = new ContextMenu();
 
@@ -198,20 +198,7 @@ public class Lattice {
 			}
 		});
 	}
-	public static void selectZone(Cell patch, String zonetype) {
 
-		cellsSet.forEach(p -> {
-			if (p.getGisNameValue().get(zonetype) != null) {
-				if (p.getGisNameValue().get(zonetype).equals(patch.getGisNameValue().get(zonetype))) {
-					p.ColorP(p.color);
-					Region.patchsInRergion.add(p);
-				}
-			}
-		});
-		Region.patchsInRergion.forEach(p -> {
-			p.ColorP(Color.BLACK);
-		});
-	}
 	
 	public static GraphicsContext getGc() {
 		return gc;
@@ -226,17 +213,18 @@ public class Lattice {
 	}
 
 	
-	public static Set<Cell> getCellsSet() {
+	public static CellsLoader getCellsSet() {
 		return cellsSet;
 	}
 	
 
-	public static HashMap<String, Cell> getHashCell() {
-		return hashCell;
+
+	public static void setCellsSet(CellsLoader cellsSet) {
+		CellsSet.cellsSet = cellsSet;
 	}
 
 	public static void setRegioneselected(String regioneselected) {
-		Lattice.regioneselected = regioneselected;
+		CellsSet.regioneselected = regioneselected;
 	}
 	public static HashMap<String, double[]> getDemand() {
 		return demand;

@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -23,26 +23,26 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import main.OpenTabs;
-import model.AFT;
-import model.Lattice;
+import model.Manager;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
  *
  */
 
-public class OutPutPane {
+public class OutPut_Controller {
 
-	MapLoader M;
+	CellsLoader M;
 	String outputpath = "";
 	RadioButton[] radioColor;
 	VBox vbox = new VBox();
-	public OutPutPane(MapLoader M) {
+	public OutPut_Controller(CellsLoader M) {
 		this.M = M;
 	}
 
 	public Tab pane() {
-		radioColor = new RadioButton[Lattice.getServicesNames().size() + 1];
+		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
 		ChoiceBox<String> choiceYear = new ChoiceBox<>();
 		GridPane gridPane = new GridPane();
 
@@ -73,10 +73,10 @@ public class OutPutPane {
 		hbox.getChildren().add(Tools.hBox(select, choiceYear));
 
 		for (int i = 0; i < radioColor.length; i++) {
-			if (i < Lattice.getServicesNames().size()) {
-				radioColor[i] = new RadioButton(Lattice.getServicesNames().get(i));
+			if (i < CellsSet.getServicesNames().size()) {
+				radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
 				
-			} else if (i == Lattice.getServicesNames().size()) {
+			} else if (i == CellsSet.getServicesNames().size()) {
 				radioColor[i] = new RadioButton("Agent");
 			}
 			hbox.getChildren().add(radioColor[i]);
@@ -87,14 +87,11 @@ public class OutPutPane {
 						radioColor[j].setSelected(false);
 					}
 				}
-				if (k < Lattice.getServicesNames().size()) {
-					Lattice.colorMap(Lattice.getServicesNames().get(k));
-				} else if (k == Lattice.getServicesNames().size()) {
-					Lattice.colorMap("FR");
+				if (k < CellsSet.getServicesNames().size()) {
+					CellsSet.colorMap(CellsSet.getServicesNames().get(k));
+				} else if (k == CellsSet.getServicesNames().size()) {
+					CellsSet.colorMap("FR");
 				}
-//				if (!DataDisplay.winColor.isShowing()) {
-//					ColorsTools.windowzpalette(DataDisplay.winColor);
-//				}
 			});
 		}
 		 
@@ -110,7 +107,7 @@ public class OutPutPane {
 	}
 
 	void newOutPut(String year) {
-			MapLoader.servicesAndOwner(year,outputpath);
+			//CellsLoader.servicesAndOwner(year,outputpath);
 		
 		for (int i = 0; i < radioColor.length; i++) {
 			if (radioColor[i].isSelected()) {
@@ -129,7 +126,7 @@ public class OutPutPane {
 				.ReadAsaHash(PathTools.fileFilter(outputpath, "-AggregateServiceDemand.csv").get(0));
 
 		ArrayList<HashMap<String, double[]>> has = new ArrayList<>();
-		Lattice.getServicesNames().forEach(servicename -> {
+		CellsSet.getServicesNames().forEach(servicename -> {
 			HashMap<String, double[]> ha = new HashMap<>();
 			reder.forEach((name, value) -> {
 				double[] tmp = new double[value.length];
@@ -141,25 +138,25 @@ public class OutPutPane {
 				}
 			});
 			has.add(ha);
-			lineChart.add(new LineChart<>(new NumberAxis(), new NumberAxis()));
+			lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
 		});
 		has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
-		lineChart.add(new LineChart<>(new NumberAxis(), new NumberAxis()));
+		lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
 
 			HashMap<String, double[]> data = has.get(i);
 			LineChart<Number, Number> Ch = lineChart.get(i);
-			LineChartTools.lineChart(vbox,Ch, data);
+			new LineChartTools().lineChart(M,vbox,Ch, data);
 			if (i == has.size() - 1) {
 				Ch.setCreateSymbols(false);
 				for (int k2 = 0; k2 < Ch.getData().size(); k2++) {
-					AFT a = AFTsLoader.aftReSet.get(Ch.getData().get(k2).getName());
+					Manager a = M.AFtsSet.getAftHash().get(Ch.getData().get(k2).getName());
 					Ch.getData().get(k2).getNode().lookup(".chart-series-line")
 							.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
 				}
 
-				LineChartTools.labelcolor(Ch);
+				new LineChartTools().labelcolor(M,Ch);
 			}
 			gridPane.add(Tools.vBox(Ch), j++, k);
 			if (j % 3 == 0) {

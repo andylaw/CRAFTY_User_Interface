@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.Cell;
-import model.Lattice;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
@@ -140,7 +140,7 @@ public class CellWindow {
 			for (int n = 0; n < temp.length; n++) {
 				nbr[colunNumber][n] = temp[n][colunNumber];
 			}
-			hash.put(Lattice.getCapitalsName().get(colunNumber), nbr[colunNumber]);
+			hash.put(CellsSet.getCapitalsName().get(colunNumber), nbr[colunNumber]);
 		}
 		return hash;
 	}
@@ -175,7 +175,7 @@ public class CellWindow {
 
 		});
 
-		Number[][] nbr = new Number[Lattice.getCapitalsName().size()][listOfcapihash.size()];
+		Number[][] nbr = new Number[CellsSet.getCapitalsName().size()][listOfcapihash.size()];
 		AtomicInteger i = new AtomicInteger();
 
 		listOfcapihash.forEach(has -> {
@@ -186,10 +186,10 @@ public class CellWindow {
 			i.getAndIncrement();
 		});
 		for (int j = 0; j < nbr.length; j++) {
-			hash[0].put(Lattice.getCapitalsName().get(j), nbr[j]);
+			hash[0].put(CellsSet.getCapitalsName().get(j), nbr[j]);
 		}
 
-		Number[][] nbrS = new Number[Lattice.getServicesNames().size()][listOfserviceHash.size()];
+		Number[][] nbrS = new Number[CellsSet.getServicesNames().size()][listOfserviceHash.size()];
 		AtomicInteger iS = new AtomicInteger();
 
 		listOfserviceHash.forEach(has -> {
@@ -200,7 +200,7 @@ public class CellWindow {
 			iS.getAndIncrement();
 		});
 		for (int j = 0; j < nbrS.length; j++) {
-			hash[1].put(Lattice.getServicesNames().get(j), nbrS[j]);
+			hash[1].put(CellsSet.getServicesNames().get(j), nbrS[j]);
 		}
 
 		Number[] com = new Number[competitiveness.size()];
@@ -222,7 +222,7 @@ public class CellWindow {
 		HashMap<String, String> celldata = CsvTools.lineFromscsvHash(cell.getIndex(), Path);
 		HashMap<String, Double> capitalsV = new HashMap<>();
 		celldata.forEach((key, val) -> {
-			if (Lattice.getCapitalsName().contains(key.replace("\"", ""))) {
+			if (CellsSet.getCapitalsName().contains(key.replace("\"", ""))) {
 				capitalsV.put(key, Tools.sToD(val));
 			}
 		});
@@ -235,7 +235,7 @@ public class CellWindow {
 		HashMap<String, String> celldata = CsvTools.lineFromscsvHash(cell.getIndex(), Path);
 		HashMap<String, Double> serviceV = new HashMap<>();
 		celldata.forEach((key, val) -> {
-			if (Lattice.getServicesNames().contains(key.replace("\"", "").replace(" ", ""))) {
+			if (CellsSet.getServicesNames().contains(key.replace("\"", "").replace(" ", ""))) {
 				serviceV.put(key, Tools.sToD(val));
 			}
 		});

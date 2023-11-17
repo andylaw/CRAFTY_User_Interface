@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.util.function.Consumer;
 
@@ -7,6 +7,7 @@ import UtilitiesFx.graphicalTools.Histogram;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
+import dataLoader.CellsLoader;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -21,17 +22,22 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import model.AFT;
-import model.Lattice;
+import model.Manager;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
  *
  */
 
-public class NewAftPane extends AFT_Configuration {
+public class NewAFT_Controller extends AFTs_Controller {
+	
+	public NewAFT_Controller(CellsLoader M) {
+		super(M);
+		
+	}
 	static VBox vbox = new VBox();
-	public static void addaft() {
+	public  void addaft() {
 		TextField fieldText = new TextField( "AFT_Name");
 		NewWindow windowAddAFT = new NewWindow();
 		BorderPane rootPane = new BorderPane();
@@ -42,14 +48,14 @@ public class NewAftPane extends AFT_Configuration {
 		
 		
 		windowAddAFT.creatwindows("Add New Agent Functional Type", 0.7, 0.9, rootPane);
-		AFT newAFT = new AFT();
+		Manager newAFT = new Manager();
 		newAFT.setLabel("newAFT");
 		
 		colorPicker.setOnAction(e -> {
 			newAFT.setColor(colorPicker.getValue());
 		});
 		
-		String[][] production = new String[2][Lattice.getServicesNames().size()];
+		String[][] production = new String[2][CellsSet.getServicesNames().size()];
 	
 		for (int j = 0; j < newAFT.getProductivityLevel().keySet().toArray().length; j++) {
 			production[0][j] = (String) newAFT.getProductivityLevel().keySet().toArray()[j];
@@ -68,11 +74,11 @@ public class NewAftPane extends AFT_Configuration {
 			Histogram.histo(vbox, "Productivity levels", histogram, newAFT.getProductivityLevel());
 		});
 
-		String[][] sensetivtyTable = new String[Lattice.getServicesNames().size() + 1][Lattice.getCapitalsName().size() + 1];
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
-			sensetivtyTable[i + 1][0] = Lattice.getServicesNames().get(i);
-			for (int j = 0; j < Lattice.getCapitalsName().size(); j++) {
-				sensetivtyTable[0][j + 1] = Lattice.getCapitalsName().get(j);
+		String[][] sensetivtyTable = new String[CellsSet.getServicesNames().size() + 1][CellsSet.getCapitalsName().size() + 1];
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+			sensetivtyTable[i + 1][0] = CellsSet.getServicesNames().get(i);
+			for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
+				sensetivtyTable[0][j + 1] = CellsSet.getCapitalsName().get(j);
 				sensetivtyTable[i + 1][j + 1] = "0.0";
 			}
 		}
@@ -96,7 +102,7 @@ public class NewAftPane extends AFT_Configuration {
 		fieldText.setOnAction(e -> {
 			String n = fieldText.getText();
 			name.setText(n);
-			newAFT.setName(n);
+			newAFT.setCompleteName(n);
 			newAFT.setLabel(n) ;
 
 		});
@@ -104,11 +110,12 @@ public class NewAftPane extends AFT_Configuration {
 			addToThisSimulation.fire();
 			creatCsvFiles(newAFT,textArea.getText());
 		});
+		
 		addToThisSimulation.setOnAction(e -> {
-			AFTsLoader.aftReSet.put(newAFT.getLabel(), newAFT);
-			AFT_Configuration.choiceAgnet.getItems().clear();
-			AFT_Configuration.choiceAgnet.getItems().addAll(AFTsLoader.aftReSet.keySet());
-			AFT_Configuration.choiceAgnet.setValue(AFTsLoader.aftReSet.keySet().iterator().next());
+			M.AFtsSet.getAftHash().put(newAFT.getLabel(), newAFT);
+			AFTs_Controller.choiceAgnet.getItems().clear();
+			AFTs_Controller.choiceAgnet.getItems().addAll(M.AFtsSet.getAftHash().keySet());
+			AFTs_Controller.choiceAgnet.setValue(M.AFtsSet.getAftHash().keySet().iterator().next());
 		 });
 
 		sensitivtyFire.fire();

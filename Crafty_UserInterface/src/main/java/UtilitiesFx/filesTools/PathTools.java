@@ -22,8 +22,6 @@ import javafx.stage.FileChooser;
 
 public class PathTools {
 
-
-
 	public static ArrayList<String> findFolder(final File folder, String condition, boolean onlyFolder) {
 		ArrayList<String> stringList = new ArrayList<>();
 		for (final File fileEntry : folder.listFiles()) {

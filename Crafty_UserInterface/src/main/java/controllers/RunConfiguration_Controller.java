@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
@@ -14,9 +14,9 @@ import javafx.scene.text.Text;
  *
  */
 
-public class RunConfiguration {
+public class RunConfiguration_Controller {
 
-	public static void runConfiguration(RunPane CA,NewWindow runConfiguration) {
+	public static void runConfiguration(ModelRunner_Controller CA,NewWindow runConfiguration) {
 		RadioButton removeNegative = new RadioButton("Remove negative Marginal utility");
 		RadioButton mapSynchronisation = new RadioButton("Map Synchronisation");
 		RadioButton writeCSV = new RadioButton("Creat .csv output files");
@@ -51,9 +51,9 @@ public class RunConfiguration {
 		NeighboorEffect.setOnAction(s -> {
 			CA.R.NeighboorEffect = NeighboorEffect.isSelected();
 		});
-		chartSynchronisation.setSelected(RunPane.chartSynchronisation);
+		chartSynchronisation.setSelected(ModelRunner_Controller.chartSynchronisation);
 		chartSynchronisation.setOnAction(s -> {
-			RunPane.chartSynchronisation = chartSynchronisation.isSelected();
+			ModelRunner_Controller.chartSynchronisation = chartSynchronisation.isSelected();
 		});
 		mutationInterval.setValue(CA.R.mutationIntval );
 		mutationInterval.valueProperty().addListener((ov, oldval, newval) -> {

@@ -14,7 +14,7 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
-import model.Lattice;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
@@ -182,7 +182,7 @@ public class ColorsTools {
 		Pane legendPane = new Pane();
 		ArrayList<RadioButton> paletteList = RadioList(e -> {
 			colorPaletteType = e.getText();
-			Lattice.colorMap();
+			CellsSet.colorMap();
 			drawLegend(legendPane);
 		}, "Default", "YellowToGreen", "Rainbow", "RedToYellow", "GreenToBrown", "Viridis", "Plasma");
 		VBox v = Tools.vBox(Tools.text("  Color Palette:  ", Color.BLUE));

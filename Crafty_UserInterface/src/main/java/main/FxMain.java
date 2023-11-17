@@ -4,6 +4,7 @@ package main;
 import UtilitiesFx.cameraTools.Camera;
 import UtilitiesFx.graphicalTools.GraphicConsol;
 import UtilitiesFx.graphicalTools.Tools;
+import controllers.MenuBAR;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -18,7 +19,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import panes.MenuBAR;
 
 /**
  * @author Mohamed Byari

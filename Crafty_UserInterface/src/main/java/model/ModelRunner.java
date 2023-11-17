@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
 
 /**
@@ -15,9 +15,9 @@ import dataLoader.Paths;
  *
  */
 
-public class Rules {
+public class ModelRunner {
 
-	public MapLoader M = new MapLoader();
+	public CellsLoader cells ;
 	public String colorDisplay = "FR";
 	public boolean mapSynchronisation = true;
 	public boolean writeCsvFiles = false;
@@ -26,9 +26,8 @@ public class Rules {
 	public boolean isMutated = false;
 	public boolean NeighboorEffect = false;
 	public double percentageCells = 0.05;
-
 	public double mutationIntval = 0.1;
-//	public HashMap<String,double[]> demand = new HashMap<>();
+	
 	public HashMap<String, Double> supply;
 	static HashMap<String, Double> marginal = new HashMap<>();
 	public static HashMap<String, Double> distributionMean;
@@ -36,38 +35,29 @@ public class Rules {
 	public String[][] compositionAFT;
 	public String[][] servicedemand;
 
-	public Rules(MapLoader M) {
-		this.M = M;
+	public ModelRunner(CellsLoader cells) {
+		this.cells = cells;
 //		demandUpdate();
-		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][AFTsLoader.aftReSet.size()];
-		servicedemand  = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][Lattice.getServicesNames().size() * 2];
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
-			servicedemand[0][i] = "ServiceSupply:" + Lattice.getServicesNames().get(i);
-			servicedemand[0][i + Lattice.getServicesNames().size()] = "Demand:" + Lattice.getServicesNames().get(i);
+		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][cells.AFtsSet.size()];
+		servicedemand  = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][CellsSet.getServicesNames().size() * 2];
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+			servicedemand[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
+			servicedemand[0][i + CellsSet.getServicesNames().size()] = "Demand:" + CellsSet.getServicesNames().get(i);
 		}
 		AtomicInteger s = new AtomicInteger();
-		AFTsLoader.aftReSet.keySet().forEach((label) -> {
+		cells.AFtsSet.getAftHash().keySet().forEach((label) -> {
 			compositionAFT[0][s.getAndIncrement()] = label;
 		});
 	}
 
-//	public void demandUpdate() {
-//		HashMap<String, String[]> data = CsvTools.ReadAsaHash(Path.fileFilter(Path.scenario, "demands").get(0));
-//		data.forEach((name, vect) -> {
-//			if (!name.equals("year")) {
-//				double[] v = new double[vect.length];
-//				for (int i = 0; i < vect.length; i++) {
-//					demand.put((name + "_" + data.get("Year")[i]).replace(" ", ""), Tools.sToD(vect[i]));
-//				}}
-//		});
-//	}
+
 
 	void calculeSystemSupply() {
 		supply = new HashMap<>();
-		Lattice.getCellsSet().forEach(c -> {
+		CellsSet.getCellsSet().forEach(c -> {
 			if (c.getOwner() != null) {
 
-				Lattice.getServicesNames().forEach(s -> {
+				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
 					if (supply.containsKey(s)) {
 						supply.put(s, supply.get(s) + sup);
@@ -83,9 +73,9 @@ public class Rules {
 	void calculeDistributionMean() {
 		distributionMean = new HashMap<>();
 		HashMap<String, Integer> AFTnbr = new HashMap<>();
-		Lattice.getCellsSet().forEach(c -> {
+		CellsSet.getCellsSet().forEach(c -> {
 			if (c.getOwner() != null) {
-				Lattice.getServicesNames().forEach(s -> {
+				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
 					if (distributionMean.containsKey(c.getOwner().getLabel())) {
 						distributionMean.put(c.getOwner().getLabel(), distributionMean.get(c.getOwner().getLabel()) + sup);
@@ -107,15 +97,15 @@ public class Rules {
 	void calculeMarginalUtility(int year, boolean removeNegative) {
 
 		supply.forEach((name, val) -> {
-			double marg = removeNegative ? Math.max(Lattice.getDemand().get(name)[year-Paths.getStartYear() ] - val, 0)
-					: Lattice.getDemand().get(name)[year-Paths.getStartYear() ] - val;
+			double marg = removeNegative ? Math.max(CellsSet.getDemand().get(name)[year-Paths.getStartYear() ] - val, 0)
+					: CellsSet.getDemand().get(name)[year-Paths.getStartYear() ] - val;
 			marginal.put(name, marg);
 		});
 	}
 
 	public void go(int year, String outPutFolderName) {
 		year = year < Paths.getEndtYear() ? year : Paths.getEndtYear();
-		M.updateCapitals(year);
+		cells.updateCapitals(year);
 
 		// calcule supply
 		calculeSystemSupply();
@@ -125,7 +115,7 @@ public class Rules {
 		// update demande & calcule marginal
 		calculeMarginalUtility(year, removeNegative);
 
-		Lattice.getCellsSet().forEach(c -> {
+		CellsSet.getCellsSet().forEach(c -> {
 			c.putservices();
 			// Abandonment of lands
 			if (c.getOwner() != null) {
@@ -145,16 +135,16 @@ public class Rules {
 			// the
 			// competition
 			if (Math.random() < percentageCells || c.getOwner() == null) {
-				AFT agent = (AFT) AFTsLoader.aftReSet.values().toArray()[new Random().nextInt(AFTsLoader.aftReSet.size())];
+				Manager agent = (Manager) cells.AFtsSet.getAftHash().values().toArray()[new Random().nextInt(cells.AFtsSet.size())];
 				c.Competition(agent, isMutated, mutationIntval);
 			}
 			if (NeighboorEffect) {
-				c.checkNeighboorSameLabel();
+				CellsSubSets.actionInNeighboorSameLabel(c);
 			}
 		});
 		// display Map
 		if (mapSynchronisation) {
-			Lattice.colorMap(colorDisplay);
+			CellsSet.colorMap(colorDisplay);
 		}
 		// creat .csv output files: servises and AFT for each land
 		if (writeCsvFiles) {
@@ -167,9 +157,9 @@ public class Rules {
 		AtomicInteger m = new AtomicInteger();
 		int y = year - Paths.getStartYear() + 1;
 		
-		Lattice.getServicesNames().forEach(name -> {
+		CellsSet.getServicesNames().forEach(name -> {
 			servicedemand[y][m.get()] = supply.get(name) + "";
-			servicedemand[y][m.get() + Lattice.getServicesNames().size()] = Lattice.getDemand().get(name)[year-Paths.getStartYear() ] + "";
+			servicedemand[y][m.get() + CellsSet.getServicesNames().size()] = CellsSet.getDemand().get(name)[year-Paths.getStartYear() ] + "";
 			m.getAndIncrement();
 		});
 
@@ -181,20 +171,20 @@ public class Rules {
 	}
 
 	void writOutPutMap(int year, String folderName) {
-		String[][] output = new String[Lattice.getHashCell().size() + 1][Lattice.getServicesNames().size() + 3];
+		String[][] output = new String[CellsSet.getCellsSet().size() + 1][CellsSet.getServicesNames().size() + 3];
 		output[0][0] = "X";
 		output[0][1] = "Y";
 		output[0][2] = "Agent";
-		for (int j = 0; j < Lattice.getServicesNames().size(); j++) {
-			output[0][j + 3] = "Service:" + Lattice.getServicesNames().get(j);
+		for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
+			output[0][j + 3] = "Service:" + CellsSet.getServicesNames().get(j);
 		}
 		AtomicInteger i = new AtomicInteger(1);
-		Lattice.getHashCell().forEach((coor, c) -> {
+		CellsSet.getCellsSet().forEach(c -> {
 			output[i.get()][0] = c.getX() + "";
 			output[i.get()][1] = c.getY() + "";
 			output[i.get()][2] = c.getOwner() != null ? c.getOwner().getLabel() : "lazy";
-			for (int j = 0; j < Lattice.getServicesNames().size(); j++) {
-				output[i.get()][j + 3] = c.getServices().get(Lattice.getServicesNames().get(j)) + "";
+			for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
+				output[i.get()][j + 3] = c.getServices().get(CellsSet.getServicesNames().get(j)) + "";
 			}
 			i.getAndIncrement();
 		});

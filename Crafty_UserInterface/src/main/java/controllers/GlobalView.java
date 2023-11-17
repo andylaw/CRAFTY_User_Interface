@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.CSVTableView;
@@ -44,11 +44,11 @@ public class GlobalView {
 				.newtable(PathTools.fileFilter("\\AFTsMetaData.csv").get(0));
 
 		vbox.getChildren().addAll(Tools.hBox(new Text(" Start Year = "), startTick, new Text(" End Year = "), endTick),
-				new Separator(), Tools.T("Capitals, Services and Scenarios", true,Tools.hBox(txtC, tabC, txtS, tabS, txtSc, tabSc)), new Separator(),
-				Tools.T("Agent Functional Types (AFTs): ", true, tabAFts));
+				new Separator(),
+				Tools.T("Capitals, Services and Scenarios", true, Tools.hBox(txtC, tabC, txtS, tabS, txtSc, tabSc)),
+				new Separator(), Tools.T("Agent Functional Types (AFTs): ", true, tabAFts));
 
 		Tab tab = new Tab("Global View", vbox);
-		// Tools.initialisPane(tab, null, .3); 7
 		tab.setOnSelectionChanged(e -> {
 			OpenTabs.choiceScenario.setDisable(true);
 			OpenTabs.year.setDisable(true);

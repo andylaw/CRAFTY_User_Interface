@@ -9,11 +9,11 @@ import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
-import model.AFT;
-import model.Lattice;
-import model.Rules;
+import model.Manager;
+import model.CellsSet;
+import model.ModelRunner;
 
 /**
  * @author Mohamed Byari
@@ -21,7 +21,7 @@ import model.Rules;
  */
 
 public class MutationExperiences {
-	MapLoader M = new MapLoader();
+	CellsLoader M = new CellsLoader();
 
 	public void importSpace() {
 		Paths.initialisation("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv");
@@ -29,11 +29,11 @@ public class MutationExperiences {
 		M.loadCapitalsAndServiceList();
 		// M.agents.initialseAFT();
 		creatRandomAFTs(17);
-		M.loadMap();
+		
 		asosieteRandomAAFTTocells();
 		// M.creatMapGIS();
-		Lattice.plotCells();
-		Lattice.colorMap("FR");
+		CellsSet.plotCells();
+		CellsSet.colorMap("FR");
 		System.out.println("cells number " + FxMain.root.getChildren().size());
 		run(1);
 //		for (int i = 2; i < 10; i++) {
@@ -45,8 +45,8 @@ public class MutationExperiences {
 
 	public void creatRandomAFTs(int nbrOfAFTs) {
 		for (int i = 0; i < nbrOfAFTs; i++) {
-			AFT a = new AFT("AFT" + i, 500.);
-			AFTsLoader.aftReSet.put(a.getLabel(), a);
+			Manager a = new Manager("AFT" + i, 500.);
+			M.AFtsSet.getAftHash().put(a.getLabel(), a);
 		}
 	}
 
@@ -54,29 +54,29 @@ public class MutationExperiences {
 		List<String> losers = Tools.getKeysInSortedOrder(AFTsLoader.hashAgentNbr());
 		System.out.println(losers);
 		for (int i = 0; i < losers.size() / 2; i++) {
-			AFTsLoader.aftReSet.remove(losers.get(i));
-			AFT a = new AFT(losers.get(i), 500.);
-			AFTsLoader.aftReSet.put(losers.get(i), a);
+			M.AFtsSet.getAftHash().remove(losers.get(i));
+			Manager a = new Manager(losers.get(i), 500.);
+			M.AFtsSet.getAftHash().put(losers.get(i), a);
 		}
 		asosieteRandomAAFTTocells();
 
 	}
 
 	public void asosieteRandomAAFTTocells() {
-		Lattice.getCellsSet().forEach(c -> {
-			c.setOwner(AFTsLoader.aftReSet
-					.get(AFTsLoader.aftReSet.keySet().toArray()[new Random().nextInt(AFTsLoader.aftReSet.keySet().size())]));
+		CellsSet.getCellsSet().forEach(c -> {
+			c.setOwner(M.AFtsSet.getAftHash()
+					.get(M.AFtsSet.getAftHash().keySet().toArray()[new Random().nextInt(M.AFtsSet.getAftHash().keySet().size())]));
 		});
 	}
 
 	void run(int simNBR) {
 		int endStat = 70;
-		String[][] servicedemand = new String[endStat + 2][Lattice.getServicesNames().size() * 2];
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
-			servicedemand[0][i] = "ServiceSupply:" + Lattice.getServicesNames().get(i);
-			servicedemand[0][i + Lattice.getServicesNames().size()] = "Demand:" + Lattice.getServicesNames().get(i);
+		String[][] servicedemand = new String[endStat + 2][CellsSet.getServicesNames().size() * 2];
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+			servicedemand[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
+			servicedemand[0][i + CellsSet.getServicesNames().size()] = "Demand:" + CellsSet.getServicesNames().get(i);
 		}
-		Rules R = new Rules(M);
+		ModelRunner R = new ModelRunner(M);
 		R.removeNegative = false;
 		R.mapSynchronisation = true;
 		R.usegiveUp = true;
@@ -89,10 +89,10 @@ public class MutationExperiences {
 			tick.getAndIncrement();
 
 			AtomicInteger m = new AtomicInteger();
-			Lattice.getServicesNames().forEach(name -> {
-				servicedemand[tick.get() - 2015][m.get()] = R.supply.get(name) + "";
-				servicedemand[tick.get() - 2015][m.get()
-						+ Lattice.getServicesNames().size()] = Lattice.getDemand().get(name)[tick.get() - Paths.getStartYear()]
+			CellsSet.getServicesNames().forEach(name -> {
+				servicedemand[tick.get() - 2015][m.get()] = R.supply.get(name) + "";//----------------------- 2015??
+				servicedemand[tick.get() - 2015][m.get()//----------------------- 2015??
+						+ CellsSet.getServicesNames().size()] = CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]
 								+ "";
 				m.getAndIncrement();
 			});
@@ -112,50 +112,50 @@ public class MutationExperiences {
 	}
 
 	void writeProduction(String dir) {
-		AFTsLoader.aftReSet.forEach((name, a) -> {
-			String[][] tablPruduction = new String[Lattice.getServicesNames().size() + 1][Lattice.getCapitalsName().size() + 2];
+		M.AFtsSet.forEach(( a) -> {
+			String[][] tablPruduction = new String[CellsSet.getServicesNames().size() + 1][CellsSet.getCapitalsName().size() + 2];
 
 			tablPruduction[0][0] = "";
 			for (int i = 1; i < tablPruduction.length; i++) {
-				tablPruduction[i][0] = Lattice.getServicesNames().get(i - 1);
+				tablPruduction[i][0] = CellsSet.getServicesNames().get(i - 1);
 			}
 
 			for (int i = 1; i < tablPruduction[0].length - 1; i++) {
-				tablPruduction[0][i] = Lattice.getCapitalsName().get(i - 1);
+				tablPruduction[0][i] = CellsSet.getCapitalsName().get(i - 1);
 			}
 			tablPruduction[0][tablPruduction[0].length - 1] = "Production";
 			for (int i = 1; i < tablPruduction.length; i++) {
 				tablPruduction[i][tablPruduction[0].length - 1] = a.getProductivityLevel()
-						.get(Lattice.getServicesNames().get(i - 1)) + "";
+						.get(CellsSet.getServicesNames().get(i - 1)) + "";
 			}
 
 			for (int i = 1; i < tablPruduction[0].length - 1; i++) {
 				for (int j = 1; j < tablPruduction.length; j++) {
 					tablPruduction[j][i] = "" + a.getSensitivty()
-							.get(Lattice.getCapitalsName().get(i - 1) + "_" + Lattice.getServicesNames().get(j - 1));
+							.get(CellsSet.getCapitalsName().get(i - 1) + "_" + CellsSet.getServicesNames().get(j - 1));
 				}
 			}
 
-			CsvTools.writeCSVfile(tablPruduction, dir + "\\" + name + ".csv");
+			CsvTools.writeCSVfile(tablPruduction, dir + "\\" + a.getLabel() + ".csv");
 
 		});
 	}
 
 	void writOutPut(String dir) {
-		String[][] output = new String[Lattice.getHashCell().size() + 1][Lattice.getServicesNames().size() + 3];
+		String[][] output = new String[CellsSet.getCellsSet().size() + 1][CellsSet.getServicesNames().size() + 3];
 		output[0][0] = "X";
 		output[0][1] = "Y";
 		output[0][2] = "Agent";
-		for (int j = 0; j < Lattice.getServicesNames().size(); j++) {
-			output[0][j + 3] = "Service:" + Lattice.getServicesNames().get(j);
+		for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
+			output[0][j + 3] = "Service:" + CellsSet.getServicesNames().get(j);
 		}
 		AtomicInteger i = new AtomicInteger(1);
-		Lattice.getCellsSet().forEach((c) -> {
+		CellsSet.getCellsSet().forEach((c) -> {
 			output[i.get()][0] = c.getX() + "";
 			output[i.get()][1] = c.getY() + "";
 			output[i.get()][2] = c.getOwner() != null ? c.getOwner().getLabel() : "lazy";
-			for (int j = 0; j < Lattice.getServicesNames().size(); j++) {
-				output[i.get()][j + 3] = c.getServices().get(Lattice.getServicesNames().get(j)) + "";
+			for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
+				output[i.get()][j + 3] = c.getServices().get(CellsSet.getServicesNames().get(j)) + "";
 			}
 			i.getAndIncrement();
 		});

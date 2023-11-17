@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import UtilitiesFx.graphicalTools.Histogram;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.AFTsLoader;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import eu.hansolo.fx.charts.Category;
 import eu.hansolo.fx.charts.ChartType;
@@ -49,26 +49,31 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import main.OpenTabs;
-import model.AFT;
-import model.Lattice;
+import model.Manager;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
  *
  */
 
-public class AFT_Configuration {
+public class AFTs_Controller {
+	CellsLoader M;
+
+	public AFTs_Controller(CellsLoader M) {
+		this.M = M;
+	}
 
 	VBox vbox = new VBox();
 	public static ChoiceBox<String> choiceAgnet;
 
 	public Tab pane() {
-		choiceAgnet = Tools.choiceBox(new ArrayList<>(AFTsLoader.aftReSet.keySet()));
+		choiceAgnet = Tools.choiceBox(new ArrayList<>(M.AFtsSet.getAftHash().keySet()));
 		choiceAgnet.setStyle(" -fx-base: #b6e7c9;");
 		RadioButton plotInitialDistrebution = new RadioButton("  Distribution map ");
 		RadioButton plotOptimalLandon = new RadioButton("Cumulative expected service productivity");
-		AFT AFT0 = AFTsLoader.aftReSet.get(choiceAgnet.getValue());
-		Text AFTname = new Text(AFT0.getName());
+		Manager AFT0 = M.AFtsSet.getAftHash().get(choiceAgnet.getValue());
+		Text AFTname = new Text(AFT0.getCompleteName());
 		Rectangle rectangleColor = new Rectangle(40, 20, AFT0.getColor());
 		Button save = Tools.button(" Save  modifications to the input data", "b6e7c9");
 		Button AftAnalyse = Tools.button(" AFT analysis", "b6e7c9");
@@ -77,12 +82,12 @@ public class AFT_Configuration {
 		Button sensitivtyFire = new Button();
 		Button deletAFT = new Button("Removing the AFT");
 		Button resetAFT = new Button("Reset the AFT");
-
+		NewAFT_Controller newAftPane = new NewAFT_Controller(M);
 		NewWindow Analysewin = new NewWindow();
 
 		Button addAFT = Tools.button("Add new AFT", "b6e7c9");
 		addAFT.setOnAction(e -> {
-			NewAftPane.addaft();
+			newAftPane.addaft();
 		});
 		AftAnalyse.setOnAction(e -> {
 			VBox v = Tools.vBox(plotInitialDistrebution, plotOptimalLandon);
@@ -124,9 +129,9 @@ public class AFT_Configuration {
 		plotInitialDistrebution.setSelected(true);
 
 		choiceAgnet.setOnAction(e -> {
-			AFTsLoader.aftReSet.forEach((label, a) -> {
-				if (label.equals(choiceAgnet.getValue())) {
-					AFTname.setText(a.getName());
+			M.AFtsSet.forEach(a -> {
+				if (a.getLabel().equals(choiceAgnet.getValue())) {
+					AFTname.setText(a.getCompleteName());
 					rectangleColor.setFill(a.getColor());
 					showOnlyOneAFT(a);
 					Histogram.histo(vbox, "Productivity levels", histogram, a.getProductivityLevel());
@@ -139,36 +144,36 @@ public class AFT_Configuration {
 		});
 
 		sensitivtyFire.setOnAction(e2 -> {
-			updateSensitivty(AFTsLoader.aftReSet.get(choiceAgnet.getValue()), gridSensitivityChart, tableSensetivty);
+			updateSensitivty(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()), gridSensitivityChart, tableSensetivty);
 		});
 		productionFire.setOnAction(e3 -> {
-			updateProduction(AFTsLoader.aftReSet.get(choiceAgnet.getValue()), tableProduction);
+			updateProduction(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()), tableProduction);
 			Histogram.histo(vbox, "Productivity levels", histogram,
-					AFTsLoader.aftReSet.get(choiceAgnet.getValue()).getProductivityLevel());
+					M.AFtsSet.getAftHash().get(choiceAgnet.getValue()).getProductivityLevel());
 		});
 		plotOptimalLandon.setOnAction(e2 -> {
 			plotInitialDistrebution.setSelected(false);
-			colorland(AFTsLoader.aftReSet.get(choiceAgnet.getValue()));
+			colorland(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()));
 		});
 		deletAFT.setOnAction(e2 -> {
-			AFTsLoader.aftReSet.remove(choiceAgnet.getValue());
+			M.AFtsSet.getAftHash().remove(choiceAgnet.getValue());
 			choiceAgnet.getItems().remove(choiceAgnet.getValue());
-			choiceAgnet.setValue(AFTsLoader.aftReSet.keySet().iterator().next());
+			choiceAgnet.setValue(M.AFtsSet.getAftHash().keySet().iterator().next());
 		});
 		save.setOnAction(e4 -> {
-			creatCsvFiles(AFTsLoader.aftReSet.get(choiceAgnet.getValue()), "");
+			creatCsvFiles(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()), "");
 		});
 		plotInitialDistrebution.setOnAction(e2 -> {
 			plotOptimalLandon.setSelected(false);
-			showOnlyOneAFT(AFTsLoader.aftReSet.get(choiceAgnet.getValue()));
+			showOnlyOneAFT(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()));
 		});
 		resetAFT.setOnAction(e2 -> {
 			ArrayList<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario(),
 					"\\" + choiceAgnet.getValue() + ".csv");
-			AFTsLoader.initializeAFTProduction(pFiles.get(0));
+			M.AFtsSet.initializeAFTProduction(pFiles.get(0));
 			ArrayList<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario(),
 					"AftParams_" + choiceAgnet.getValue() + ".csv");
-			AFTsLoader.initializeAFTBehevoir(bFiles.get(0));
+			M.AFtsSet.initializeAFTBehevoir(bFiles.get(0));
 			choiceAgnet.fireEvent(e2);
 		});
 
@@ -176,23 +181,25 @@ public class AFT_Configuration {
 		titel.setStyle(" -fx-base: #d6d9df;");
 		Tab tab = new Tab("AFTs Configuration", vbox);
 		tab.setOnSelectionChanged(e -> {
-			// choiceScenario.setValue(Path.getSenario());
-			showOnlyOneAFT(AFTsLoader.aftReSet.get(choiceAgnet.getValue()));
+			showOnlyOneAFT(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()));
+			Histogram.histo(vbox, "Productivity levels", histogram,
+					M.AFtsSet.getAftHash().get(choiceAgnet.getValue()).getProductivityLevel());
+			ubdateRadarchart(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()), gridSensitivityChart);
 			OpenTabs.choiceScenario.setDisable(false);
 			OpenTabs.year.setDisable(false);
 		});
 		return tab;
 	}
 
-	void colorland(AFT a) {
-		Lattice.getCellsSet().forEach(C -> {
-			a.landStored(C);
+	void colorland(Manager a) {
+		CellsSet.getCellsSet().forEach(C -> {
+			C.landStored(a);
 		});
-		Lattice.colorMap("tmp");
+		CellsSet.colorMap("tmp");
 	}
 
-	void showOnlyOneAFT(AFT a) {
-		Lattice.getCellsSet().forEach((cell) -> {
+	void showOnlyOneAFT(Manager a) {
+		CellsSet.getCellsSet().forEach((cell) -> {
 			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
 				cell.ColorP(Color.gray(0.65));
 			} else {
@@ -201,43 +208,43 @@ public class AFT_Configuration {
 		});
 	}
 
-	String[][] sensitivityTable(AFT a) {
-		String[][] sensetivtyTable = new String[Lattice.getServicesNames().size() + 1][Lattice.getCapitalsName().size()
+	String[][] sensitivityTable(Manager a) {
+		String[][] sensetivtyTable = new String[CellsSet.getServicesNames().size() + 1][CellsSet.getCapitalsName().size()
 				+ 1];
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
-			sensetivtyTable[i + 1][0] = Lattice.getServicesNames().get(i);
-			for (int j = 0; j < Lattice.getCapitalsName().size(); j++) {
-				sensetivtyTable[0][j + 1] = Lattice.getCapitalsName().get(j);
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+			sensetivtyTable[i + 1][0] = CellsSet.getServicesNames().get(i);
+			for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
+				sensetivtyTable[0][j + 1] = CellsSet.getCapitalsName().get(j);
 				sensetivtyTable[i + 1][j + 1] = a.getSensitivty()
-						.get(Lattice.getCapitalsName().get(j) + "_" + Lattice.getServicesNames().get(i)) + "";
+						.get(CellsSet.getCapitalsName().get(j) + "_" + CellsSet.getServicesNames().get(i)) + "";
 			}
 
 		}
 		return sensetivtyTable;
 	}
 
-	String[][] productionTable(AFT a) {
-		String[][] production = new String[2][Lattice.getServicesNames().size()];
+	String[][] productionTable(Manager a) {
+		String[][] production = new String[2][CellsSet.getServicesNames().size()];
 
-		for (int j = 0; j < Lattice.getServicesNames().size(); j++) {
-			production[0][j] = (String) Lattice.getServicesNames().toArray()[j];
-			production[1][j] = a.getProductivityLevel().get(Lattice.getServicesNames().get(j)) + "";
+		for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
+			production[0][j] = (String) CellsSet.getServicesNames().toArray()[j];
+			production[1][j] = a.getProductivityLevel().get(CellsSet.getServicesNames().get(j)) + "";
 		}
 		return production;
 	}
 
-	Pane agentPane(AFT agent) {
+	Pane agentPane(Manager agent) {
 		VBox vbox = new VBox();
 
-		String[][] sensitivityMatrix = new String[Lattice.getServicesNames().size()
-				+ 1][Lattice.getCapitalsName().size() + 1];
+		String[][] sensitivityMatrix = new String[CellsSet.getServicesNames().size()
+				+ 1][CellsSet.getCapitalsName().size() + 1];
 		sensitivityMatrix[0][0] = " ";
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
-			sensitivityMatrix[i + 1][0] = Lattice.getServicesNames().get(i);
-			for (int j = 0; j < Lattice.getCapitalsName().size(); j++) {
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+			sensitivityMatrix[i + 1][0] = CellsSet.getServicesNames().get(i);
+			for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
 				sensitivityMatrix[i + 1][j + 1] = agent.getSensitivty()
-						.get(Lattice.getCapitalsName().get(j) + "_" + Lattice.getServicesNames().get(i)) + "";
-				sensitivityMatrix[0][j + 1] = Lattice.getCapitalsName().get(j);
+						.get(CellsSet.getCapitalsName().get(j) + "_" + CellsSet.getServicesNames().get(i)) + "";
+				sensitivityMatrix[0][j + 1] = CellsSet.getCapitalsName().get(j);
 			}
 		}
 
@@ -247,20 +254,20 @@ public class AFT_Configuration {
 		return vbox;
 	}
 
-	ScrollPane chartBox(AFT agent, int nbrColumn) {
+	ScrollPane chartBox(Manager agent, int nbrColumn) {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(15);
 		ScrollPane sp = new ScrollPane();
 		int j = 0, k = 0;
-		for (int i = 1; i < Lattice.getServicesNames().size(); i++) {
+		for (int i = 1; i < CellsSet.getServicesNames().size(); i++) {
 			VBox vbox = new VBox();
 			vbox.setAlignment(Pos.CENTER);
-			Text text = new Text(Lattice.getServicesNames().get(i));
+			Text text = new Text(CellsSet.getServicesNames().get(i));
 			text.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
 			text.setFill(Color.BLUE);
 			vbox.getChildren().addAll(
-					ychart(vbox, agent, Lattice.getServicesNames().get(i)/* , (paneSize - 100) / nbrColumn */), text);
+					ychart(vbox, agent, CellsSet.getServicesNames().get(i)/* , (paneSize - 100) / nbrColumn */), text);
 			grid.add(vbox, j++, k);
 			if (j % nbrColumn == 0) {
 				k++;
@@ -274,7 +281,7 @@ public class AFT_Configuration {
 		return sp;
 	}
 
-	static void AgentParametre(AFT agent, GridPane grid) {
+	static void AgentParametre(Manager agent, GridPane grid) {
 
 		grid.getChildren().clear();
 
@@ -338,7 +345,7 @@ public class AFT_Configuration {
 		}
 	}
 
-	static void updateSensitivty(AFT newAFT, GridPane grid, TableView<ObservableList<String>> tabV) {
+	static void updateSensitivty(Manager newAFT, GridPane grid, TableView<ObservableList<String>> tabV) {
 		String[][] tab = CSVTableView.tableViewToArray(tabV);
 		for (int i = 1; i < tab.length; i++) {
 			for (int j = 1; j < tab[0].length; j++) {
@@ -348,18 +355,18 @@ public class AFT_Configuration {
 		ubdateRadarchart(newAFT, grid);
 	}
 
-	static void ubdateRadarchart(AFT newAFT, GridPane grid) {
+	static void ubdateRadarchart(Manager newAFT, GridPane grid) {
 		grid.getChildren().clear();
 		int j = 0, k = 0, nbrColumn = 4;
-		for (int i = 0; i < Lattice.getServicesNames().size(); i++) {
+		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			VBox vbox = new VBox();
 			vbox.setAlignment(Pos.CENTER);
-			Text text = new Text(Lattice.getServicesNames().get(i));
+			Text text = new Text(CellsSet.getServicesNames().get(i));
 			text.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
 			text.setFill(Color.BLUE);
 			vbox.getChildren()
 					.addAll(ychart(vbox, newAFT,
-							Lattice.getServicesNames().get(i)/* , (FxMain.sceneWidth * 1.3 - 100) / nbrColumn */),
+							CellsSet.getServicesNames().get(i)/* , (FxMain.sceneWidth * 1.3 - 100) / nbrColumn */),
 							text);
 			grid.add(vbox, j++, k);
 			if (j % nbrColumn == 0) {
@@ -370,26 +377,26 @@ public class AFT_Configuration {
 
 	}
 
-	static void updateProduction(AFT newAFT, TableView<ObservableList<String>> tabV) {
+	static void updateProduction(Manager newAFT, TableView<ObservableList<String>> tabV) {
 		String[][] tab = CSVTableView.tableViewToArray(tabV);
 		for (int i = 0; i < tab[0].length; i++) {
 			newAFT.getProductivityLevel().put(tab[0][i], Tools.sToD(tab[1][i]));
 		}
 	}
 
-	static void creatCsvFiles(AFT a, String descreption) {
-		String[][] tab = new String[Lattice.getServicesNames().size() + 1][Lattice.getCapitalsName().size() + 2];
+	static void creatCsvFiles(Manager a, String descreption) {
+		String[][] tab = new String[CellsSet.getServicesNames().size() + 1][CellsSet.getCapitalsName().size() + 2];
 		tab[0][0] = "";
-		tab[0][Lattice.getCapitalsName().size() + 1] = "Production";
-		for (int i = 0; i < Lattice.getCapitalsName().size(); i++) {
-			tab[0][i + 1] = Lattice.getCapitalsName().get(i);
+		tab[0][CellsSet.getCapitalsName().size() + 1] = "Production";
+		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
+			tab[0][i + 1] = CellsSet.getCapitalsName().get(i);
 
-			for (int j = 0; j < Lattice.getServicesNames().size(); j++) {
-				tab[j + 1][0] = Lattice.getServicesNames().get(j);
+			for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
+				tab[j + 1][0] = CellsSet.getServicesNames().get(j);
 				tab[j + 1][i + 1] = a.getSensitivty()
-						.get(Lattice.getCapitalsName().get(i) + "_" + Lattice.getServicesNames().get(j)) + "";
-				tab[j + 1][Lattice.getCapitalsName().size() + 1] = a.getProductivityLevel()
-						.get(Lattice.getServicesNames().get(j)) + "";
+						.get(CellsSet.getCapitalsName().get(i) + "_" + CellsSet.getServicesNames().get(j)) + "";
+				tab[j + 1][CellsSet.getCapitalsName().size() + 1] = a.getProductivityLevel()
+						.get(CellsSet.getServicesNames().get(j)) + "";
 			}
 		}
 
@@ -425,7 +432,7 @@ public class AFT_Configuration {
 				}
 			}
 			tmp2[tmp.length][Tools.indexof("Label", tmp[0])] = a.getLabel();
-			tmp2[tmp.length][Tools.indexof("name", tmp[0])] = a.getName();
+			tmp2[tmp.length][Tools.indexof("name", tmp[0])] = a.getCompleteName();
 			tmp2[tmp.length][Tools.indexof("Color", tmp[0])] = ColorsTools.toHex(a.getColor());
 			tmp2[tmp.length][Tools.indexof("Description", tmp[0])] = descreption.replace(",", ".").replace("\"", "")
 					.replace("\n", " ");
@@ -433,9 +440,9 @@ public class AFT_Configuration {
 		}
 	}
 
-	public static YChart<ValueChartItem> ychart(Pane box, AFT agent, String servicesName) {
+	public static YChart<ValueChartItem> ychart(Pane box, Manager agent, String servicesName) {
 		List<ValueChartItem> listvalues = new ArrayList<>();
-		Lattice.getCapitalsName().forEach(cname -> {
+		CellsSet.getCapitalsName().forEach(cname -> {
 			double y = Math.min(100, agent.getSensitivty().get(cname + "_" + servicesName) * 100);
 			listvalues.add(new ValueChartItem(y, ""));
 		});
@@ -445,8 +452,8 @@ public class AFT_Configuration {
 						ColorsTools.color(new Random().nextInt(4))),
 				Color.GRAY);
 		List<Category> categories = new ArrayList<>();
-		for (int i = 0; i < Lattice.getCapitalsName().size(); i++) {
-			categories.add(new Category(Lattice.getCapitalsName().get(i)));
+		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
+			categories.add(new Category(CellsSet.getCapitalsName().get(i)));
 		}
 		YChart<ValueChartItem> chart = new YChart(new YPane(categories, series));
 		// chart.setPrefSize(scale, scale);

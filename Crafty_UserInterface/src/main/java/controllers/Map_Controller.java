@@ -1,4 +1,4 @@
-package panes;
+package controllers;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +11,7 @@ import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.PieChartTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.MapLoader;
+import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.geometry.Side;
 import javafx.scene.chart.BarChart;
@@ -26,43 +26,44 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.OpenTabs;
-import model.Lattice;
+import model.CellsSet;
 
 /**
  * @author Mohamed Byari
  *
  */
 
-public class DataDisplay {
+public class Map_Controller {
 
 	PieChart pieChartColorAFts;
 
-	MapLoader M;
+	CellsLoader M;
 	public static Tab tab;
-	public static VBox vbox = new VBox();
+	public static VBox vbox;
 	public static Pane graphDemand;
 	public static RadioButton[] radioColor;
 	public static BarChart<String, Number> histogrameCapitalFequency;
 
-	public DataDisplay(MapLoader M) {
+	public Map_Controller(CellsLoader M) {
 		this.M = M;
 	}
 
 	public Tab colorWorld() {
+		vbox = new VBox();
 		CategoryAxis xAxis = new CategoryAxis();
 		NumberAxis yAxis = new NumberAxis();
 		histogrameCapitalFequency = new BarChart<String, Number>(xAxis, yAxis);
 		histogrameCapitalFequency.setTitle("Frequency of appearance of capital values (%)");
-		int length = Lattice.getCapitalsName().size() + 1;
-		radioColor = new RadioButton[length + MapLoader.GISNames.size()];
+		int length = CellsSet.getCapitalsName().size() + 1;
+		radioColor = new RadioButton[length + CellsLoader.GISNames.size()];
 		VBox colorBox = new VBox();
-		for (int i = 0; i < Lattice.getCapitalsName().size(); i++) {
-			radioColor[i] = new RadioButton(Lattice.getCapitalsName().get(i));
+		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
+			radioColor[i] = new RadioButton(CellsSet.getCapitalsName().get(i));
 			colorBox.getChildren().add(radioColor[i]);
 
 			int k = i;
 			radioColor[k].setOnAction(e -> {
-				for (int j = 0; j < Lattice.getCapitalsName().size() + MapLoader.GISNames.size() + 1; j++) {
+				for (int j = 0; j < CellsSet.getCapitalsName().size() + CellsLoader.GISNames.size() + 1; j++) {
 					if (j != k) {
 						if (radioColor[j] != null) {
 							radioColor[j].setSelected(false);
@@ -74,17 +75,17 @@ public class DataDisplay {
 				histogrameCapitalFequency.getData().clear();
 				if (!Paths.getScenario().equalsIgnoreCase("Baseline")) {
 					histogrameCapitals(histogrameCapitalFequency, Paths.getCurrentYear() + "",
-							Lattice.getCapitalsName().get(k));
+							CellsSet.getCapitalsName().get(k));
 				}
-				Lattice.colorMap(Lattice.getCapitalsName().get(k));
+				CellsSet.colorMap(CellsSet.getCapitalsName().get(k));
 			});
 		}
-		radioColor[Lattice.getCapitalsName().size()] = new RadioButton("AFTs Distribution");
-		radioColor[Lattice.getCapitalsName().size()].setSelected(true);
-		colorBox.getChildren().add(radioColor[Lattice.getCapitalsName().size()]);
-		radioColor[Lattice.getCapitalsName().size()].setOnAction(e -> {
-			for (int j = 0; j < Lattice.getCapitalsName().size() + MapLoader.GISNames.size() + 1; j++) {
-				if (j != Lattice.getCapitalsName().size()) {
+		radioColor[CellsSet.getCapitalsName().size()] = new RadioButton("AFTs Distribution");
+		radioColor[CellsSet.getCapitalsName().size()].setSelected(true);
+		colorBox.getChildren().add(radioColor[CellsSet.getCapitalsName().size()]);
+		radioColor[CellsSet.getCapitalsName().size()].setOnAction(e -> {
+			for (int j = 0; j < CellsSet.getCapitalsName().size() + CellsLoader.GISNames.size() + 1; j++) {
+				if (j != CellsSet.getCapitalsName().size()) {
 					if (radioColor[j] != null) {
 						radioColor[j].setSelected(false);
 						OpenTabs.choiceScenario.setDisable(true);
@@ -93,17 +94,17 @@ public class DataDisplay {
 				}
 			}
 			histogrameCapitalFequency.getData().clear();
-			Lattice.colorMap("FR");
+			CellsSet.colorMap("FR");
 		});
 
-		for (int i = 0; i < MapLoader.GISNames.size(); i++) {
-			if (MapLoader.GISNames.get(i).equalsIgnoreCase("lad19nm")
-					|| MapLoader.GISNames.get(i).equalsIgnoreCase("nuts318nm")
-					|| MapLoader.GISNames.get(i).equalsIgnoreCase("regions")) {
-				radioColor[Lattice.getCapitalsName().size() + 1 + i] = new RadioButton(MapLoader.GISNames.get(i));
-				int k = i + Lattice.getCapitalsName().size() + 1;
+		for (int i = 0; i < CellsLoader.GISNames.size(); i++) {
+			if (CellsLoader.GISNames.get(i).equalsIgnoreCase("lad19nm")
+					|| CellsLoader.GISNames.get(i).equalsIgnoreCase("nuts318nm")
+					|| CellsLoader.GISNames.get(i).equalsIgnoreCase("regions")) {
+				radioColor[CellsSet.getCapitalsName().size() + 1 + i] = new RadioButton(CellsLoader.GISNames.get(i));
+				int k = i + CellsSet.getCapitalsName().size() + 1;
 				radioColor[k].setOnAction(e -> {
-					for (int j = 0; j < Lattice.getCapitalsName().size() + 1 + MapLoader.GISNames.size(); j++) {
+					for (int j = 0; j < CellsSet.getCapitalsName().size() + 1 + CellsLoader.GISNames.size(); j++) {
 						if (k != j) {
 							if (radioColor[j] != null) {
 								radioColor[j].setSelected(false);
@@ -111,8 +112,8 @@ public class DataDisplay {
 						}
 					}
 					histogrameCapitalFequency.getData().clear();
-					Lattice.colorMap(MapLoader.GISNames.get(k - Lattice.getCapitalsName().size() - 1));
-					Lattice.setRegioneselected(MapLoader.GISNames.get(k - Lattice.getCapitalsName().size() - 1));
+					CellsSet.colorMap(CellsLoader.GISNames.get(k - CellsSet.getCapitalsName().size() - 1));
+					CellsSet.setRegioneselected(CellsLoader.GISNames.get(k - CellsSet.getCapitalsName().size() - 1));
 				});
 				colorBox.getChildren().add(radioColor[k]);
 			}
@@ -133,17 +134,17 @@ public class DataDisplay {
 
 	public static void histogrameCapitals(BarChart<String, Number> histograme, String year, String capitalName) {
 		Set<Double> dset = new HashSet<>();
-		Lattice.getCellsSet().forEach(c -> {
+		CellsSet.getCellsSet().forEach(c -> {
 			dset.add(c.getCapitals().get(capitalName));
 		});
 
 		Histogram.histo(vbox, capitalName + "_" + year + "_" + Paths.getScenario(), histograme, dset);
 	}
 
-	void updatePieChartColorAFts(MapLoader M, PieChart chart) {
+	void updatePieChartColorAFts(CellsLoader M, PieChart chart) {
 		HashMap<String, Double> hashAgentNbr = AFTsLoader.hashAgentNbr();
 		HashMap<String, Color> color = new HashMap<>();
-		AFTsLoader.aftReSet.forEach((name, a) -> {
+		M.AFtsSet.getAftHash().forEach((name, a) -> {
 			color.put(name, a.getColor());
 		});
 
@@ -152,16 +153,16 @@ public class DataDisplay {
 		// * add menu to PiChart*//
 		HashMap<String, Consumer<String>> newItemMenu = new HashMap<>();
 		Consumer<String> reset = x -> {
-			AFTsLoader.agentsColorinitialisation();
-			AFTsLoader.aftReSet.forEach((name, a) -> {
-				color.put(name, a.getColor());
+			M.AFtsSet.agentsColorinitialisation();
+			M.AFtsSet.forEach(( a) -> {
+				color.put(a.getLabel(), a.getColor());
 			});
 			new PieChartTools().updateChart(M, hashAgentNbr, color, chart);
-			Lattice.colorMap("FR");
+			CellsSet.colorMap("FR");
 		};
 
 		Consumer<String> saveInPutData = x -> {
-			AFTsLoader.updateColorsInputData();
+			M.AFtsSet.updateColorsInputData();
 		};
 
 		newItemMenu.put("Reset Colors", reset);
@@ -178,11 +179,9 @@ public class DataDisplay {
 		MousePressed.mouseControle(vbox, chart, hashm);
 	}
 
-	public static Pane graphDemand() {
-
-		LineChart<Number, Number> Ch = new LineChart<>(new NumberAxis(), new NumberAxis());
-		LineChartTools.lineChart(vbox, Ch, Lattice.getDemand());
-
+	public Pane graphDemand() {
+		LineChart<Number, Number> Ch = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis());
+		new LineChartTools().lineChart(M,vbox, Ch, CellsSet.getDemand());
 		return new VBox(Ch);
 
 	}
