@@ -57,13 +57,16 @@ public class Tools {
 
 
 	public static ChoiceBox<String> choiceBox(ArrayList<String> list) {
+		ChoiceBox<String> choice = new ChoiceBox<>();
+		 choiceBox( choice, list) ;
+		return choice;
+	}
+	public static void choiceBox(ChoiceBox<String> choice,ArrayList<String> list) {
 		if (list.size() == 0) {
 			list.add("Empty");
 		}
-		ChoiceBox<String> choice = new ChoiceBox<>();
 		choice.getItems().addAll(list);
 		choice.setValue(list.get(0));
-		return choice;
 
 	}
 	

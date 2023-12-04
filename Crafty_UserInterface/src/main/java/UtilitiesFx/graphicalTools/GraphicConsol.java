@@ -14,8 +14,7 @@ import javafx.scene.control.TextArea;
 public class GraphicConsol {
 
 
-	public static TextArea start() {
-		TextArea console = new TextArea();
+	public static void start(TextArea console) {
 		console.setEditable(false);
 		// Set an uncaught exception handler for the JavaFX Application Thread
 		Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
@@ -25,7 +24,6 @@ public class GraphicConsol {
 
 		// Redirect output streams to the console
 		ConsoleOutputCapturer.captureOutput(console);
-		return console;
 
 
 	}

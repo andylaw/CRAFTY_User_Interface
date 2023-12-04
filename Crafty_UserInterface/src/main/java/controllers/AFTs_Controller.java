@@ -48,7 +48,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import main.OpenTabs;
 import model.Manager;
 import model.CellsSet;
 
@@ -185,8 +184,8 @@ public class AFTs_Controller {
 			Histogram.histo(vbox, "Productivity levels", histogram,
 					M.AFtsSet.getAftHash().get(choiceAgnet.getValue()).getProductivityLevel());
 			ubdateRadarchart(M.AFtsSet.getAftHash().get(choiceAgnet.getValue()), gridSensitivityChart);
-			OpenTabs.choiceScenario.setDisable(false);
-			OpenTabs.year.setDisable(false);
+//			OpenTabs.choiceScenario.setDisable(false);
+//			OpenTabs.year.setDisable(false);
 		});
 		return tab;
 	}

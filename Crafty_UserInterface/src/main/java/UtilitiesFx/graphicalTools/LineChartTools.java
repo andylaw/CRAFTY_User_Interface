@@ -23,10 +23,10 @@ import javafx.scene.shape.Rectangle;
  *
  */
 
-public class LineChartTools extends Node {
+public class LineChartTools {
 
 	public void lineChart(CellsLoader M,Pane box, LineChart<Number, Number> lineChart, HashMap<String, double[]> hash) {
-
+		lineChart.getData().clear(); 
 		Series<Number, Number>[] series = new XYChart.Series[hash.size()];
 
 		AtomicInteger i = new AtomicInteger();
@@ -60,12 +60,16 @@ public class LineChartTools extends Node {
 					K.getAndIncrement();
 				}
 			});
+			if(M!=null)
 			labelcolor(M,lineChart);
 			lineChart.setCreateSymbols(false);
 		}
-
+		if(box!=null)
 		MousePressed.mouseControle(box, lineChart);
 	}
+	
+
+	
 
 	public  void labelcolor(CellsLoader M, LineChart<Number, Number> lineChart) {
 		int m = 0;

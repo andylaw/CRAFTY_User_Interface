@@ -17,7 +17,7 @@ import javafx.scene.layout.Pane;
 
 public class Histogram extends Node{
 
-	public static BarChart<String, Number> histo (Pane box,String name,BarChart<String, Number> histogram ,Set<Double> values) {      
+	public static void histo (Pane box,String name,BarChart<String, Number> histogram ,Set<Double> values) {      
     XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();
 
     List<Integer> numbersInInterval = countNumbersInIntervals(values,100) ;
@@ -32,7 +32,7 @@ public class Histogram extends Node{
     HashMap<String, Consumer<String>> othersMenuItems=new HashMap<>();
     othersMenuItems.put(ItemName, action);
     MousePressed.mouseControle(box,histogram,othersMenuItems);
-	return histogram;
+
     }
 	
 	public static void histo (Pane box,String name,BarChart<String, Number> histogram ,HashMap<String,Double> hash) {      

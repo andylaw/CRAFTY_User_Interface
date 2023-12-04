@@ -14,13 +14,17 @@ import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.Paths;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.SubScene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Screen;
 import main.FxMain;
-import main.OpenTabs;
 
 /**
  * @author Mohamed Byari
@@ -56,8 +60,10 @@ public class MenuBAR extends MenuBar {
 
 		openProject.setOnAction(e -> {
 			openProject();
+			
 			if (!Paths.getProjectPath().equals("")) {
-				new OpenTabs();
+				initialsePAnes();
+				
 			}
 		});
 
@@ -74,6 +80,18 @@ public class MenuBAR extends MenuBar {
 		updateRecentFilesMenu( recent);
 
 		getMenus().addAll(fileMenu, view, Help);
+	}
+	
+	void initialsePAnes() {
+		WarningWindowes.showWaitingDialog(x -> {
+			try {
+				FxMain.B.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/TabPaneFXML.fxml")));
+				
+			} catch (IOException en) {
+				// TODO Auto-generated catch block
+				en.printStackTrace();
+			}});
+		
 	}
 
 	@SuppressWarnings("deprecation")
@@ -117,7 +135,7 @@ public class MenuBAR extends MenuBar {
 			int j=i;
 			item.setOnAction(event -> {
 				Paths.initialisation(paths[j]);
-				new OpenTabs();
+				initialsePAnes();
 			});
 			recentMenu.getItems().add(item);}
 		}

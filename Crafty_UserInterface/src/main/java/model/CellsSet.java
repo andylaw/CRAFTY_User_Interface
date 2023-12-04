@@ -51,11 +51,7 @@ public class CellsSet {
 		maxY = Collections.max(Y);
 		canvas = new Canvas(maxX * Cell.getSize(), maxY * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
-		cellsSet.forEach(c -> {
-			if (c.getOwner() != null) {
-				c.ColorP(c.getOwner().getColor());
-			}
-		});
+		colorMap("FR");
 		FxMain.root.getChildren().clear();
 		
 		FxMain.root.getChildren().add(new VBox(canvas));
@@ -72,6 +68,7 @@ public class CellsSet {
 	}
 
 	static public void colorMap() {
+		System.out.println("Color Map");
 		List<Double> values = new ArrayList<>();
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 			

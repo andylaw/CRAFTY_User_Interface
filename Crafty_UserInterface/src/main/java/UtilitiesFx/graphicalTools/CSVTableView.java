@@ -41,6 +41,7 @@ public final class CSVTableView extends TableView<String> {
 		return tableView;
 	}
 
+	
 	public static TableView<ObservableList<String>> newtable(String[][] data) {
 		return newtable(data, null);
 	}
@@ -51,7 +52,7 @@ public final class CSVTableView extends TableView<String> {
 
 	public static void updateTableView(String[][] data, Consumer<String> action,
 			TableView<ObservableList<String>> tableView) {
-
+		
 		if (data == null || data.length == 0 || data[0].length == 0) {
 			return;
 		}
@@ -63,7 +64,6 @@ public final class CSVTableView extends TableView<String> {
 		tableView.setItems(dataObservable);
 		tableView.getColumns().clear();
 		editable(data, action, tableView);
-
 	}
 
 	static void editable(String[][] data, Consumer<String> action, TableView<ObservableList<String>> tableView) {
@@ -76,7 +76,7 @@ public final class CSVTableView extends TableView<String> {
 			}
 			TableColumn<ObservableList<String>, String> column = new TableColumn<>(data[0][i]);
 			column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(colIndex)));
-			if (action!=null) {
+			if (action != null) {
 				column.setCellFactory(TextFieldTableCell.forTableColumn());
 			}
 			column.setOnEditCommit(event -> {
@@ -91,17 +91,13 @@ public final class CSVTableView extends TableView<String> {
 	}
 
 	public static String[][] tableViewToArray(TableView<ObservableList<String>> tableView) {
-		List<ObservableList<String>> data = tableView.getItems();
-		int numRows = data.size() + 1;
+		int numRows = tableView.getItems().size() + 1;
 		int numCols = tableView.getColumns().size();
-
 		String[][] array = new String[numRows][numCols];
 		array[0] = tableView.getColumns().stream().map(TableColumn::getText).toArray(String[]::new);
 		for (int i = 1; i < numRows; i++) {
-			List<String> row = data.get(i - 1).stream().collect(Collectors.toList());
-			array[i] = row.toArray(new String[0]);
+			array[i] = tableView.getItems().get(i - 1).stream().collect(Collectors.toList()).toArray(new String[0]);
 		}
-
 		return array;
 	}
 

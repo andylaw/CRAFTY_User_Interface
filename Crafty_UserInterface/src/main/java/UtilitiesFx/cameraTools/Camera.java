@@ -109,7 +109,7 @@ public class Camera extends PerspectiveCamera {
 	    Bounds bounds = canvasGroup.getBoundsInLocal();
 
 	    // Find out the ratio of the canvas size to subscene size
-	    double widthScale = bounds.getWidth() / subScene.getWidth();
+	    double widthScale = bounds.getWidth()   / subScene.getWidth();
 	    double heightScale = bounds.getHeight() / subScene.getHeight();
 	    // Use the larger scale factor to ensure the entire canvas is visible
 	    double scale = Math.max(widthScale, heightScale);
@@ -119,19 +119,18 @@ public class Camera extends PerspectiveCamera {
 
 	    // If the canvas is smaller than the subscene, we need to move the camera closer, and vice versa
 	    if (scale < 1.5) {
-	        cameraDistance -= 100*scale; // Move camera closer for small canvas
+	        cameraDistance /= scale; // Move camera closer for small canvas
 	    } else {
-	        cameraDistance += 100*scale; // Move camera further for large canvas
+	        cameraDistance *= scale; // Move camera further for large canvas
 	    }
-
 	    // Position the camera to look at the center of the canvas
-	    setTranslateX(bounds.getMinX() + bounds.getWidth() / 2);
-	    setTranslateY(bounds.getMinY() + bounds.getHeight() / 2);
-	    setTranslateZ(-cameraDistance); // Negative because we are moving the camera away from the scene
+	 //   setTranslateX(bounds.getMinX() + bounds.getWidth() / 2);
+	   // setTranslateY(bounds.getMinY() + bounds.getHeight() / 2);
+	    setTranslateZ(-cameraDistance/5); // Negative because we are moving the camera away from the scene
 
 	    // Listen for changes in subscene size to adjust the camera accordingly
-	    subScene.widthProperty().addListener((observable, oldValue, newValue) -> adjustCamera( canvasGroup, subScene));
-	    subScene.heightProperty().addListener((observable, oldValue, newValue) -> adjustCamera( canvasGroup, subScene));
+	   // subScene.widthProperty().addListener((observable, oldValue, newValue) -> adjustCamera( canvasGroup, subScene));
+	 //   subScene.heightProperty().addListener((observable, oldValue, newValue) -> adjustCamera( canvasGroup, subScene));
 	}
 
 
@@ -201,7 +200,7 @@ public class Camera extends PerspectiveCamera {
 		cameraTransform.reset();
 		setTranslateX(0);
 		setTranslateY(0);
-		setTranslateZ(0);
+		setTranslateZ(-100);
 		
 	}
 }
