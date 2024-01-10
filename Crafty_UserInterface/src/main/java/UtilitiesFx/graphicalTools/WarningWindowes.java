@@ -36,6 +36,7 @@ public class WarningWindowes {
 		ButtonType selectfile = new ButtonType("Select a new file", ButtonBar.ButtonData.OK_DONE);
 		alert.setTitle("Error Dialog");
 		alert.setHeaderText("The file path could not be found: \n"+path);
+		System.out.println("The file path could not be found: \n"+path);
 		alert.getButtonTypes().setAll(selectfile,  ButtonType.NO);
 		alert.showAndWait().ifPresent(response -> {
 			if (response == selectfile) {

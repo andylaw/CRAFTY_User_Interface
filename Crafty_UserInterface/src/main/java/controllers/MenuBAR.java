@@ -15,15 +15,11 @@ import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.Paths;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
-import javafx.scene.SubScene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Screen;
 import main.FxMain;
 
 /**

@@ -49,11 +49,19 @@ public class CellsSet {
 		});
 		maxX = Collections.max(X);
 		maxY = Collections.max(Y);
-		canvas = new Canvas(maxX * Cell.getSize(), maxY * Cell.getSize());
+		int minX = Collections.min(X);
+		int minY = Collections.min(Y);
+		
+		canvas = new Canvas((maxX-minX)* Cell.getSize(), (maxY-minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
+		
+	/*
+		gc.setFill(Color.RED);
+	    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+	*/
+	        
 		colorMap("FR");
 		FxMain.root.getChildren().clear();
-		
 		FxMain.root.getChildren().add(new VBox(canvas));
 		FxMain.subScene.setCamera(FxMain.camera);
 		
@@ -68,7 +76,6 @@ public class CellsSet {
 	}
 
 	static public void colorMap() {
-		System.out.println("Color Map");
 		List<Double> values = new ArrayList<>();
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 			
@@ -164,6 +171,13 @@ public class CellsSet {
 						menu.put("Select region ", e -> {
 							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy),regioneselected);
 						});
+						menu.put("Save camera view ", e -> {
+							System.out.println(
+									FxMain.camera.getTranslateX()+","+
+									FxMain.camera.getTranslateY()+","+
+									FxMain.camera.getTranslateZ()+","
+									);
+						});
 //						menu.put("Detach", (x) -> {
 //							List<Integer> findpath = Tools.findIndexPath(canvas, canvas.getParent());
 //							Tools.reinsertChildAtIndexPath(new Separator(), canvas.getParent(), findpath);
@@ -205,9 +219,11 @@ public class CellsSet {
 		return maxX;
 	}
 
+
 	public static int getMaxY() {
 		return maxY;
 	}
+
 
 	
 	public static CellsLoader getCellsSet() {

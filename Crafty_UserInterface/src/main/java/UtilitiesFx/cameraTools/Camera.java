@@ -1,5 +1,6 @@
 package UtilitiesFx.cameraTools;
 
+import dataLoader.CellsLoader;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
@@ -88,7 +89,7 @@ public class Camera extends PerspectiveCamera {
 			double maxDimension = Math.max(newBounds.getWidth(), Math.max(newBounds.getHeight(), newBounds.getDepth()));
 
 			// Adjust the camera position based on the bounding box
-			double distance = maxDimension * 1.1; // Adjust the factor as needed
+			double distance = maxDimension * 5; // Adjust the factor as needed
 			setTranslateX(centerX);
 			setTranslateY(centerY);
 			setTranslateZ(centerZ-distance);
@@ -118,20 +119,24 @@ public class Camera extends PerspectiveCamera {
 	    double cameraDistance = (Math.max(bounds.getWidth(), bounds.getHeight()) / 2) / Math.tan(Math.toRadians(getFieldOfView() / 2));
 
 	    // If the canvas is smaller than the subscene, we need to move the camera closer, and vice versa
-	    if (scale < 1.5) {
+	   
+	    if (scale < 3) {
 	        cameraDistance /= scale; // Move camera closer for small canvas
+	    }  else if(scale < 10){
+	        cameraDistance /= scale/4; // Move camera further for large canvas
 	    } else {
-	        cameraDistance *= scale; // Move camera further for large canvas
+	        cameraDistance *= scale/8; // Move camera further for large canvas
 	    }
 	    // Position the camera to look at the center of the canvas
-	 //   setTranslateX(bounds.getMinX() + bounds.getWidth() / 2);
-	   // setTranslateY(bounds.getMinY() + bounds.getHeight() / 2);
-	    setTranslateZ(-cameraDistance/5); // Negative because we are moving the camera away from the scene
+	    setTranslateX(bounds.getMinX() + bounds.getWidth() / 3);
+	    setTranslateY(bounds.getMinY() + bounds.getHeight() / 3);
+	    setTranslateZ(-cameraDistance); // Negative because we are moving the camera away from the scene
 
 	    // Listen for changes in subscene size to adjust the camera accordingly
 	   // subScene.widthProperty().addListener((observable, oldValue, newValue) -> adjustCamera( canvasGroup, subScene));
 	 //   subScene.heightProperty().addListener((observable, oldValue, newValue) -> adjustCamera( canvasGroup, subScene));
 	}
+	
 
 
 	public void cameraMousControl(SubScene scene) {

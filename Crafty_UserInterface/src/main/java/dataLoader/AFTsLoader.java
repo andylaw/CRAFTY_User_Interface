@@ -36,6 +36,7 @@ public class AFTsLoader extends HashSet<Manager>{
 		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "Colors");
 		if (colorFiles.size() > 0) {
 			HashMap<String, String[]> T = CsvTools.ReadAsaHash(colorFiles.iterator().next());
+			
 			forEach(a -> {
 				for (int i = 0; i < T.get("Color").length; i++) {
 					if (T.get("Label")[i].equalsIgnoreCase(a.getLabel())) {
@@ -59,7 +60,8 @@ public class AFTsLoader extends HashSet<Manager>{
 			String[] tmp = new String[size()];
 			forEach( a -> {
 				for (int i = 0; i < T.get("Color").length; i++) {
-					if (T.get("Label")[i].equalsIgnoreCase(a.getLabel())) {
+					System.out.println(T.get("Label")[i]+" ?-> "+ a.getLabel());
+					if (T.get("Label")[i].replace("	", "").equalsIgnoreCase(a.getLabel())) {
 						tmp[i] = ColorsTools.toHex(a.getColor());
 					}
 				}
