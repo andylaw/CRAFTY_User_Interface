@@ -1,4 +1,4 @@
-package controllers;
+package fxmlControllers;
 
 import java.util.function.Consumer;
 
@@ -13,6 +13,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -30,10 +31,10 @@ import model.CellsSet;
  *
  */
 
-public class NewAFT_Controller extends AFTs_Controller {
-	
-	public NewAFT_Controller(CellsLoader M) {
-		super(M);
+public class NewAFT_Controller extends AFTsConfigurationController {
+	AFTsConfigurationController parent;
+	public NewAFT_Controller(AFTsConfigurationController parent) {
+		this.parent= parent;
 		
 	}
 	static VBox vbox = new VBox();
@@ -45,7 +46,6 @@ public class NewAFT_Controller extends AFTs_Controller {
 		Button addToDATA = Tools.button("ADD To Input Data", "b6e7c9");
 		ColorPicker colorPicker = new ColorPicker();
 		TextArea textArea = new TextArea();
-		
 		
 		windowAddAFT.creatwindows("Add New Agent Functional Type", 0.7, 0.9, rootPane);
 		Manager newAFT = new Manager();
@@ -112,10 +112,9 @@ public class NewAFT_Controller extends AFTs_Controller {
 		});
 		
 		addToThisSimulation.setOnAction(e -> {
-			M.AFtsSet.getAftHash().put(newAFT.getLabel(), newAFT);
-			AFTs_Controller.choiceAgnet.getItems().clear();
-			AFTs_Controller.choiceAgnet.getItems().addAll(M.AFtsSet.getAftHash().keySet());
-			AFTs_Controller.choiceAgnet.setValue(M.AFtsSet.getAftHash().keySet().iterator().next());
+			System.out.println(newAFT);
+			parent.M.AFtsSet.getAftHash().put(newAFT.getLabel(), newAFT);
+			parent.updaChoisButton();
 		 });
 
 		sensitivtyFire.fire();

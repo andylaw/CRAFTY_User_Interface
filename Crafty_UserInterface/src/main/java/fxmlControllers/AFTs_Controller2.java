@@ -1,4 +1,4 @@
-package controllers;
+package fxmlControllers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,10 +56,10 @@ import model.CellsSet;
  *
  */
 
-public class AFTs_Controller {
+public class AFTs_Controller2 {
 	CellsLoader M;
 
-	public AFTs_Controller(CellsLoader M) {
+	public AFTs_Controller2(CellsLoader M) {
 		this.M = M;
 	}
 
@@ -81,7 +81,7 @@ public class AFTs_Controller {
 		Button sensitivtyFire = new Button();
 		Button deletAFT = new Button("Removing the AFT");
 		Button resetAFT = new Button("Reset the AFT");
-		NewAFT_Controller newAftPane = new NewAFT_Controller(M);
+		NewAFT_Controller newAftPane =null;//= new NewAFT_Controller(M);
 		NewWindow Analysewin = new NewWindow();
 
 		Button addAFT = Tools.button("Add new AFT", "b6e7c9");

@@ -33,7 +33,7 @@ public class AFTsLoader extends HashSet<Manager>{
 		agentsColorinitialisation();
 	}
 	public  void agentsColorinitialisation(){
-		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "Colors");
+		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, String[]> T = CsvTools.ReadAsaHash(colorFiles.iterator().next());
 			
@@ -54,7 +54,7 @@ public class AFTsLoader extends HashSet<Manager>{
 	}
 
 	public  void updateColorsInputData(){
-		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "Colors");
+		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, String[]> T = CsvTools.ReadAsaHash(colorFiles.iterator().next());
 			String[] tmp = new String[size()];
