@@ -26,13 +26,14 @@ public class CellsLoader  extends HashSet<Cell>{
 	public  HashMap<String, Cell> hashCell = new HashMap<>();
 	public AFTsLoader AFtsSet;
 	public void loadMap() {
-		AFtsSet= new AFTsLoader();
 		
+		AFtsSet= new AFTsLoader();
 		HashMap<String, String[]> patchData = loadBaselineCapital("\\worlds\\",	"Baseline_map");
 		
 		String[] X = patchData.get(patchData.containsKey("x") ? "x" : "X");
 		String[] Y = patchData.get(patchData.containsKey("y") ? "y" : "Y");
-
+		hashCell.clear();
+		this.clear();
 		for (int i = 0; i < X.length; i++) {
 			if (Tools.sToD(X[i]) != 0 && Tools.sToD(Y[i]) != 0) {
 				Cell c = new Cell((int) Tools.sToD(X[i]), (int) Tools.sToD(Y[i]));

@@ -42,7 +42,7 @@ public class ColorsTools {
     }
 
 
-	public static Color getColorForValue(double MAX, double value) {
+	public static Color getColorForValue2(double MAX, double value) {
 		double BLUE_HUE = Color.BLUE.getHue();
 		double RED_HUE = Color.RED.getHue();
 		if (value > MAX) {
@@ -245,5 +245,41 @@ public class ColorsTools {
 		legendPane.getChildren().add(midLabel);
 
 	}
+	
+	public static Color getColorForValue(double MAX, double value) {
+        // Normalizes the value within the range [0, 1]
+        double normalizedValue = Math.min(Math.max(value/MAX , 0), 1);
+
+        // Define color stops for the gradient
+        Color[] colors = new Color[] {
+            Color.rgb(0, 0, 128),   // dark blue
+            Color.rgb(100, 149, 237), // cornflower blue
+            Color.rgb(60, 179, 113),  // medium sea green
+            Color.rgb(255, 255, 0),   // yellow
+            Color.rgb(255, 0, 0)      // red
+        };
+        
+        // Define the relative positions for the color stops
+        double[] stops = new double[] {0, 0.25, 0.5, 0.75, 1};
+
+        // Find the two closest stops
+        int index1 = 0;
+        int index2 = stops.length - 1;
+        for (int i = 0; i < stops.length - 1; i++) {
+            if (normalizedValue >= stops[i] && normalizedValue < stops[i + 1]) {
+                index1 = i;
+                index2 = i + 1;
+                break;
+            }
+        }
+
+        // Calculate the relative position between the two closest stops
+        double range = stops[index2] - stops[index1];
+        double rangeValue = (normalizedValue - stops[index1]) / range;
+
+        // Interpolate the color between the two stops
+        return colors[index1].interpolate(colors[index2],rangeValue);
+	}
+	   
 
 }

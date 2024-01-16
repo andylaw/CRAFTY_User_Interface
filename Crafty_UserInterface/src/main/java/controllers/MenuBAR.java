@@ -59,7 +59,6 @@ public class MenuBAR extends MenuBar {
 			
 			if (!Paths.getProjectPath().equals("")) {
 				initialsePAnes();
-				
 			}
 		});
 
@@ -81,7 +80,7 @@ public class MenuBAR extends MenuBar {
 	void initialsePAnes() {
 		WarningWindowes.showWaitingDialog(x -> {
 			try {
-				FxMain.B.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/TabPaneFXML.fxml")));
+				FxMain.anchor.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/TabPaneFXML.fxml")));
 				
 			} catch (IOException en) {
 				// TODO Auto-generated catch block
@@ -138,8 +137,21 @@ public class MenuBAR extends MenuBar {
 	}
 	
 	static void openProject() {
-		File selectedDirectory = PathTools.selecFolder("C:\\Users\\byari-m\\Documents\\Data");
+		File selectedDirectory ;
 
+		String userDocumentsPath = System.getProperty("user.home") + "\\Documents";
+		File documentsDir = new File(userDocumentsPath);
+
+		// Check if the Data directory exists within Documents
+		File dataDir = new File(documentsDir, "Data");
+		if (!dataDir.exists() || !dataDir.isDirectory()) {
+		    // If the Data directory does not exist, fall back to the Documents directory
+		    selectedDirectory = PathTools.selectFolder(userDocumentsPath);
+		} else {
+		    // If the Data directory exists, use it as the starting path
+		    selectedDirectory = PathTools.selectFolder(dataDir.getAbsolutePath());
+		}
+	
 		if (selectedDirectory != null) {
 			if (selectedDirectory != null) {
 				List<String> folderMissig = Paths.checkfolders(selectedDirectory.getAbsolutePath());

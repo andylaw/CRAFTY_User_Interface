@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxmlControllers.TabPaneController">
+	<children>
+      <SplitPane dividerPositions="0.42">
+         <items>
+         <VBox>
+	<children>
+      <HBox spacing="15.0">
+         <children>
+            <Label text="Scenario" />
+            <ChoiceBox fx:id="scenarioschoice" onAction="#scenarioschoice" />
+            <Label text=" Current Year" />
+            <ChoiceBox fx:id="yearchoice" onAction="#yearchoice" />
+         </children>
+      </HBox>
+		<TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE">
+			<tabs>
+				<Tab text="Global View">
+					<content >
+						<fx:include source="/fxmlControllers/GlobalView.fxml" /> <!---->
+					</content>
+				</Tab>
+				<Tab fx:id="dataPane" text="Spatial Data">
+					<content>
+					 	<fx:include source="/fxmlControllers/SpatialData.fxml" /> <!---->
+					</content>
+				</Tab>
+				<Tab text="AFTs Configuration">
+					<content>
+						<fx:include source="/fxmlControllers/AFTsConfiguration.fxml" /> <!---->
+					</content>
+				</Tab>
+				<Tab text="Run">
+					<content>
+						<fx:include source="/fxmlControllers/ModelRunner.fxml" /> <!---->
+					</content>
+				</Tab>
+				<Tab text="OutPut">
+					<content>
+						<fx:include source="/fxmlControllers/OutPuter.fxml" /> <!---->
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
+		</children>
+		</VBox>
+		<VBox>
+		<HBox spacing="15.0">
+         <children>
+            <TitledPane fx:id="mapTitelPane" animated="true" text="Map">
+              <content>
+              </content>
+            </TitledPane>
+            </children>
+            </HBox>
+         
+               <TextArea fx:id="consoleArea" />
+         </VBox>
+         </items>
+      </SplitPane>
+	</children>
+</HBox>

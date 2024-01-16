@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxmlControllers.RunCofigController">
+   <children>
+      <VBox>
+         <children>
+            <TitledPane animated="true" text="Mechanismes">
+              <content>
+                        <VBox spacing="2.0">
+                           <children>
+                              <CheckBox fx:id="removeNegative" mnemonicParsing="false" onAction="#removeNegativeMarginal" text="Remove negative Marginal utility" />
+                              <CheckBox fx:id="gUP" mnemonicParsing="false" onAction="#giveUpMechanisme" text="Give Up mechanism" />
+                            <!--    <CheckBox fx:id="neighboursCollaboration" mnemonicParsing="false" onAction="#NeighboursCollaboration" text="Neighbours collaboration" /> -->
+                              <CheckBox fx:id="mutationM" mnemonicParsing="false" onAction="#MutationMechanism" text="Mutation mechanism" />
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <Label text="Percentage Cells  " />
+                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="15.0" max="30.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                                    <TextField fx:id="CellPersT" onAction="#cellspersT" prefHeight="25.0" prefWidth="58.0" />
+                              <Label text="\%" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+
+              </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Synchronisation">
+              <content>
+                        <VBox>
+                           <children>
+                              <CheckBox fx:id="MapSync" mnemonicParsing="false" onAction="#mapSyn" text="Map Synchronisation" />
+                              <CheckBox fx:id="chartSync" mnemonicParsing="false" onAction="#chartSyn" text="Chart Synchronisation" />
+                           </children>
+                        </VBox>
+              </content>
+            </TitledPane>
+         </children>
+      </VBox>
+      <TitledPane animated="false" text="OutPut files">
+        <content>
+                  <VBox>
+                     <children>
+                        <CheckBox fx:id="creatCSV" mnemonicParsing="false" onAction="#creatCSV" text="Create .csv output files" />
+                     </children>
+                  </VBox>
+        </content>
+      </TitledPane>
+   </children>
+</VBox>

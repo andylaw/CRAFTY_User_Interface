@@ -53,14 +53,17 @@ public class CellsSet {
 		int minY = Collections.min(Y);
 		
 		canvas = new Canvas((maxX-minX)* Cell.getSize(), (maxY-minY) * Cell.getSize());
+		
 		gc = canvas.getGraphicsContext2D();
 		
 	/*
-		gc.setFill(Color.RED);
+		gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
 	    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 	*/
 	        
 		colorMap("FR");
+	
+		
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(new VBox(canvas));
 		FxMain.subScene.setCamera(FxMain.camera);

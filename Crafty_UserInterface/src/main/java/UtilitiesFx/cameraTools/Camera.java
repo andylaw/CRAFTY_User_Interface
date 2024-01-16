@@ -205,7 +205,7 @@ public class Camera extends PerspectiveCamera {
 		cameraTransform.reset();
 		setTranslateX(0);
 		setTranslateY(0);
-		setTranslateZ(-100);
+		setTranslateZ(-3000);
 		
 	}
 }

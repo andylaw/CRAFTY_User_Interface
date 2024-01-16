@@ -27,7 +27,7 @@ public class FxMain extends Application {
 	public static Group root = new Group();
 	public static ImageView imageView = new ImageView();
 	public static Stage primaryStage;
-	public static AnchorPane B = new AnchorPane();
+	public static AnchorPane anchor = new AnchorPane();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -45,7 +45,7 @@ public class FxMain extends Application {
 		MenuBar menuBar = new MenuBAR();
 
 		imageView.setImage(new Image("file:///C:/Users/byari-m/Desktop/Inkscap-Project/craftylogo.png"));
-		B.getChildren().add(imageView);
+		anchor.getChildren().add(imageView);
 		imageView.setTranslateX(w / 4);
 		imageView.setTranslateY(h / 4);
 		imageView.setScaleX(.75);
@@ -53,7 +53,7 @@ public class FxMain extends Application {
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 
-		VBox vbox = new VBox(menuBar, B);
+		VBox vbox = new VBox(menuBar, anchor);
 		Scene scene = new Scene(vbox, w * .8, h * .8);
 		primaryStage.setScene(scene);
 

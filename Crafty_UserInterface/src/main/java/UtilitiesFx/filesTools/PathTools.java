@@ -97,7 +97,7 @@ public class PathTools {
 		return line;
 	}
 
-	public static File selecFolder(String projectPath) {
+	public static File selectFolder(String projectPath) {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Select Project");
 		File initialDirectory = new File(projectPath);
