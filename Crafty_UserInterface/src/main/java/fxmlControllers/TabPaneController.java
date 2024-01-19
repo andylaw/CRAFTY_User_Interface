@@ -34,8 +34,8 @@ public class TabPaneController {
 	private TitledPane mapTitelPane;
 	@FXML
 	private Tab dataPane;
-	@FXML
-	private TextArea consoleArea;
+//	@FXML
+//	private TextArea consoleArea;
 
 	public static CellsLoader M = new CellsLoader();
 	private boolean isNotInitialsation = false;

@@ -30,13 +30,13 @@ import main.FxMain;
 public class WarningWindowes {
 	static String p = "";
 
-	public static String alterErrorNotFileFound(String path) {
+	public static String alterErrorNotFileFound(String message, String path) {
 		p = path;
 		Alert alert = new Alert(AlertType.ERROR);
 		ButtonType selectfile = new ButtonType("Select a new file", ButtonBar.ButtonData.OK_DONE);
 		alert.setTitle("Error Dialog");
-		alert.setHeaderText("The file path could not be found: \n"+path);
-		System.out.println("The file path could not be found: \n"+path);
+		alert.setHeaderText(message+" \n"+path);
+		System.out.println(message+" \n"+path);
 		alert.getButtonTypes().setAll(selectfile,  ButtonType.NO);
 		alert.showAndWait().ifPresent(response -> {
 			if (response == selectfile) {

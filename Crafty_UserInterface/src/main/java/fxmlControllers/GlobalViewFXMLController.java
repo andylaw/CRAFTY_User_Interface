@@ -30,7 +30,7 @@ public class GlobalViewFXMLController {
     	System.out.println("initialize "+getClass().getSimpleName());
     	
     	CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\Capitals.csv").get(0)), null, TablCapitals);
-    	CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\Capitals.csv").get(0)), null, TablServices);
+    	CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\Services.csv").get(0)), null, TablServices);
     	CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\scenarios.csv").get(0)), null, TabScenarios);
     	CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\AFTsMetaData.csv").get(0)), null, TablAFTs);
     	

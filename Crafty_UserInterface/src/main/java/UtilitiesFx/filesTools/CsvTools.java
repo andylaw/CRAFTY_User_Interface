@@ -13,20 +13,20 @@ import java.util.Scanner;
 
 import UtilitiesFx.graphicalTools.Tools;
 import UtilitiesFx.graphicalTools.WarningWindowes;
-
-
-
+import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.AddCellToColumnException;
+import tech.tablesaw.io.csv.CsvReadOptions;
 
 public class CsvTools {
 
-/**
- * @author Mohamed Byari
- *
- */
+	/**
+	 * @author Mohamed Byari
+	 *
+	 */
 
 	public static String[][] csvReader(String filePath) {
-	//	System.out.println("Read " + filePath);
+		// System.out.println("Read " + filePath);
 		String[][] csv = null;
 		try {
 			int X = 0, Y = 0;
@@ -83,46 +83,45 @@ public class CsvTools {
 		return ret;
 	}
 
-//	public static HashMap<String, String[]> ReadAsaHash2(String filePath) {
-//		String[][] M = csvReader(filePath);
-//		HashMap<String, String[]> hash = new HashMap<>();
-//		String[] line0 = lineFromscsv(0, filePath);
-//		for (int i = 0; i < line0.length; i++) {
-//			hash.put(line0[i].replace("\"", ""), columnFromsMatrix(i, M));
-//		}
-//		return hash;
-//	}
-//	
-	public static HashMap<String, String[]> ReadAsaHash(String filePath) {
-		System.out.print("Read: "+filePath+"...");
-		HashMap<String, String[]> hash = new HashMap<>();
-		Table T =null;
+	private static void correctAddCellToColumnException(Table T,String filePath,AddCellToColumnException e) {
+		writeValueCSVfile(filePath, (int) e.getRowNumber(), (int) e.getColumnIndex(), "0");
 		try {
-		 T = Table.read().csv(filePath);
-		} catch (Exception e) {
-			filePath = WarningWindowes.alterErrorNotFileFound(filePath);
 			T = Table.read().csv(filePath);
-	        }
-		
-		List<String> columnNames = T.columnNames();
-		
-		for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
-			String name = (String) iterator.next();
-		
-			String[] tmp=new String[T.column(name).size()];
-			for (int i = 0; i < tmp.length; i++) {
-				tmp[i]=T.column(name).getString(i);
-			}
-			hash.put(name, tmp);
+		} catch (AddCellToColumnException s) {
+			System.out.println("\n"+s.getLocalizedMessage());
+			correctAddCellToColumnException(T,filePath,s);
 		}
-	        
+	}
+	
+	public static HashMap<String, String[]> ReadAsaHash(String filePath) {
+		System.out.print("Read: " + filePath + "...");
+		HashMap<String, String[]> hash = new HashMap<>();
+		Table T = null;
+		try {
+			T = Table.read().csv(filePath);
+		} catch (AddCellToColumnException s) {
+			correctAddCellToColumnException(T,filePath,s);
+		} catch (Exception e) {
+			filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
+			T = Table.read().csv(filePath);
+		}
+			List<String> columnNames = T.columnNames();
+
+			for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
+				String name = (String) iterator.next();
+
+				String[] tmp = new String[T.column(name).size()];
+				for (int i = 0; i < tmp.length; i++) {
+					tmp[i] = T.column(name).getString(i);
+				}
+				hash.put(name, tmp);
+			}
+
 		
 		System.out.println(" Done");
 		return hash;
 	}
 
-
-	
 	public static void tmp() {
 		String[][] T = csvReader("C:\\Users\\byari-m\\Downloads\\anpp.csv");
 		String[] line0 = CsvTools.lineFromscsv(0, "C:\\Users\\byari-m\\Downloads\\anpp.csv");
@@ -136,18 +135,19 @@ public class CsvTools {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile(), false);
 			BufferedWriter bw = new BufferedWriter(fw);
 			for (int j = 0; j < line0.length; j++) {
-				if(j!=2)
-				bw.write(line0[j] + ",");
+				if (j != 2)
+					bw.write(line0[j] + ",");
 			}
 			bw.newLine();
 			for (int i = 0; i < T.length; i++) {
-				if(T[i][2].equals("2000")) {
-				for (int j = 0; j < T[0].length - 1; j++) {
-					if(j!=2)
-					bw.write(T[i][j] + ",");
+				if (T[i][2].equals("2000")) {
+					for (int j = 0; j < T[0].length - 1; j++) {
+						if (j != 2)
+							bw.write(T[i][j] + ",");
+					}
+					bw.write(T[i][T[0].length - 1]);
+					bw.newLine();
 				}
-				bw.write(T[i][T[0].length - 1]);
-				bw.newLine();}
 			}
 			bw.close();
 
@@ -192,7 +192,7 @@ public class CsvTools {
 	}
 
 	public static void writeCSVfile(String[][] tabl, String filePath) {
-		System.out.println("write: "+filePath);
+		System.out.println("write: " + filePath);
 		File file = new File(filePath);
 		try {
 			if (!file.exists()) {
@@ -205,7 +205,7 @@ public class CsvTools {
 				for (int j = 0; j < tabl[0].length - 1; j++) {
 					bw.write(tabl[i][j] + ",");
 				}
-				bw.write(tabl[i][tabl[0].length - 1]!=null? tabl[i][tabl[0].length - 1]:0+"");
+				bw.write(tabl[i][tabl[0].length - 1] != null ? tabl[i][tabl[0].length - 1] : 0 + "");
 				bw.newLine();
 			}
 			bw.close();
@@ -243,6 +243,12 @@ public class CsvTools {
 	public static void writeNewLineCSVfile(String filePath, int lineNumber, String... content) {
 		String[][] M = csvReader(filePath);
 		M[lineNumber] = content;
+		writeCSVfile(M, filePath);
+	}
+
+	public static void writeValueCSVfile(String filePath, int lineNumber, int columnNbr, String content) {
+		String[][] M = csvReader(filePath);
+		M[lineNumber][columnNbr] = content;
 		writeCSVfile(M, filePath);
 	}
 
@@ -286,6 +292,5 @@ public class CsvTools {
 
 		return filePaths;
 	}
-
 
 }

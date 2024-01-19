@@ -33,12 +33,18 @@
 					<mainClass>main.FxMain</mainClass>
 				</configuration>
 			</plugin>
-
-
 		</plugins>
+
 	</build>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/net.mahdilamb/colormap -->
+		<dependency>
+			<groupId>net.mahdilamb</groupId>
+			<artifactId>colormap</artifactId>
+			<version>0.9.511</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>
@@ -117,8 +123,8 @@
 			<version>0.10.9.7</version>
 		</dependency>
 		<!-- - -->
-		
-		
+
+
 	</dependencies>
 
 

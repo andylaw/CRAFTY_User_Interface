@@ -9,8 +9,7 @@ public class ConvertScotlanddata {
 	static List<String> set = new ArrayList<>();
 
 	public static void initilasiation() {
-		String p = "C:\\Users\\byari-m\\Documents\\Data" + "\\Scotland\\worlds\\"
-				+ "Baseline_map_Scotland.csv";
+		String p = "C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\Wales\\Base_line_map_Wales.csv";
 		HashMap<String, String[]> baseline = CsvTools.ReadAsaHash(p);
 		for (int i = 0; i < baseline.values().iterator().next().length; i++) {
 			set.add(baseline.get("X")[i] + "," + baseline.get("Y")[i]);
@@ -33,7 +32,7 @@ public class ConvertScotlanddata {
 				newCapi[i] = lines.get(i);
 			}
 
-			String newPath = file.getParent() + "\\" + file.getName().replace("UK", "Scotland");
+			String newPath = file.getParent() + "\\" + file.getName().replace("UK", "Wales");
 			CsvTools.writeCSVfile(newCapi, newPath);
 			System.out.println(file.getName());
 		});

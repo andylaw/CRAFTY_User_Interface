@@ -17,6 +17,7 @@ import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -67,7 +68,7 @@ public class ModelRunnerController {
 	@FXML
 	private ScrollPane scroll;
 	CellsLoader M;
-	String outPutFolderName;
+	public static String outPutFolderName;
 	public ModelRunner R;
 	Timeline timeline;
 	AtomicInteger tick;
@@ -81,17 +82,19 @@ public class ModelRunnerController {
 		M = TabPaneController.M;
 		R = new ModelRunner(M);
 		tick = new AtomicInteger(Paths.getStartYear());
+		tickTxt.setText(tick.toString());
+
 		lineChart = new ArrayList<>();
 		outPutFolderName = Paths.getScenario();
 		runConfiguration = new NewWindow();
 		initilaseChart(lineChart);
 		initialzeRadioColorBox();
-		
-		//gridPaneLinnChart.setMinWidth(Screen.getPrimary().getBounds().getWidth()/3);
-		//gridPaneLinnChart.setPrefWidth(scroll.getWidth()/3);
-		
-		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight()*0.8);
-		
+
+		// gridPaneLinnChart.setMinWidth(Screen.getPrimary().getBounds().getWidth()/3);
+		// gridPaneLinnChart.setPrefWidth(scroll.getWidth()/3);
+
+		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
+
 		initializeGridpane(3);
 		gridPaneLinnChart.prefWidthProperty().bind(scroll.widthProperty());
 	}
@@ -147,33 +150,38 @@ public class ModelRunnerController {
 
 	@FXML
 	public void oneStep() {
-		R.go(tick.get(), outPutFolderName);
-		tickTxt.setText(tick.toString());
 		Paths.setCurrentYear(tick.get());
-		if (chartSynchronisation) {
-			AtomicInteger m = new AtomicInteger();
-			CellsSet.getServicesNames().forEach(name -> {
-				lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
-						CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]));
-				lineChart.get(m.get()).getData().get(1).getData()
-						.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
-				m.getAndIncrement();
-			});
-			HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
-			AtomicInteger N = new AtomicInteger();
-			AgentNbr.forEach((name, value) -> {
-				lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
-						.add(new XYChart.Data<>(tick.get(), value));
-				N.getAndIncrement();
-			});
-		}
-		tick.getAndIncrement();
+		R.run();
+		//Thread simulationThread = new Thread(R);
+		//simulationThread.start();
+	//	Platform.runLater(() -> {});
+			tickTxt.setText(tick.toString());
+
+			if (chartSynchronisation) {
+				AtomicInteger m = new AtomicInteger();
+				CellsSet.getServicesNames().forEach(name -> {
+					lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
+							CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]));
+					lineChart.get(m.get()).getData().get(1).getData()
+							.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
+					m.getAndIncrement();
+				});
+				HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
+				AtomicInteger N = new AtomicInteger();
+				AgentNbr.forEach((name, value) -> {
+					lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
+							.add(new XYChart.Data<>(tick.get(), value));
+					N.getAndIncrement();
+				});
+			}
+			tick.getAndIncrement();
+		
 	}
 
 	@FXML
 	public void run() {
 		run.setDisable(true);
-		RunName();
+		simulationFolderName();
 		CellsLoader.updateDemand();
 		KeyFramelag = CellsSet.getCellsSet().size() / 20000;
 		System.out.println("KeyFramelag= " + KeyFramelag);
@@ -249,7 +257,7 @@ public class ModelRunnerController {
 		new LineChartTools().labelcolor(R.cells, l);
 	}
 
-	Alert RunName() {
+	Alert simulationFolderName() {
 		if (!R.writeCsvFiles) {
 			return null;
 		}

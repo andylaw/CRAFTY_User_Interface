@@ -12,9 +12,6 @@
 	fx:controller="fxmlControllers.ModelRunnerController">
 	<children>
 		<HBox fx:id="hboxServiceColor" spacing="15.0">
-			<children>
-				<Label fx:id="tickTxt" text="Label" />
-			</children>
 		</HBox>
 		<HBox spacing="15.0">
 			<children>
@@ -28,6 +25,7 @@
 					onAction="#pause" text="Pause" />
 				<Button fx:id="stop" mnemonicParsing="false" onAction="#stop"
 					text="Stop &amp; Reset" />
+					<Label fx:id="tickTxt" text="year" />
 			</children>
 		</HBox>
 		<ScrollPane fx:id="scroll" prefHeight="700.0"

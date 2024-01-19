@@ -102,7 +102,7 @@ public class CellsSet {
 			cellsSet.forEach(c -> {
 				if (c.getCapitals().get(colortype) != null)
 					// patch.ColorP(ColorsTools.getColorForValue(max, patch.capitals.get(name)));
-					c.ColorP(ColorsTools.colorPalette(max, c.getCapitals().get(colortype)));
+					c.ColorP(ColorsTools.getColorForValue(max, c.getCapitals().get(colortype)));
 			});
 		} else if (servicesNames.contains(colortype)) {
 
@@ -115,7 +115,7 @@ public class CellsSet {
 
 			cellsSet.forEach(c -> {
 				if (c.getServices().get(colortype) != null)
-					c.ColorP(ColorsTools.colorPalette(max, c.getServices().get(colortype)));
+					c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
 			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
@@ -125,7 +125,7 @@ public class CellsSet {
 
 			double max = Collections.max(values);
 			cellsSet.forEach(c -> {
-				c.ColorP(ColorsTools.colorPalette(max, c.getTmpValueCell()));
+				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
 
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {

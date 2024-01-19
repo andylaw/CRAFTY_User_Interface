@@ -1,6 +1,10 @@
 package main;
 
+import java.io.File;
+import java.io.InputStream;
+
 import UtilitiesFx.cameraTools.Camera;
+import UtilitiesFx.filesTools.ConvertScotlanddata;
 import controllers.MenuBAR;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -14,6 +18,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import model.MaskRestrictions;
+
 
 /**
  * @author Mohamed Byari
@@ -34,22 +40,28 @@ public class FxMain extends Application {
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 
-//		ConvertScotlanddata.initilasiation();
+//	ConvertScotlanddata.initilasiation();
 //		ConvertScotlanddata.scotlandcells(
-//				"C:\\Users\\byari-m\\Documents\\Data\\Scotland\\GIS"
+//				"C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\UK\\LandUseControl\\UrbanMask\\SSP5"
 //				); 
 		
+
+		//new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
+	       
+
 		FxMain.primaryStage = primaryStage;
-		subScene = new SubScene(root, w * .45, h * 0.8);
+		subScene = new SubScene(root, w * .45, h *.95);
 
 		MenuBar menuBar = new MenuBAR();
 
-		imageView.setImage(new Image("file:///C:/Users/byari-m/Desktop/Inkscap-Project/craftylogo.png"));
+		
+		File imageFile = new File("src/main/resources/craftylogo.png");
+		imageView.setImage(new Image(imageFile.getAbsolutePath()));
 		anchor.getChildren().add(imageView);
-		imageView.setTranslateX(w / 4);
-		imageView.setTranslateY(h / 4);
-		imageView.setScaleX(.75);
-		imageView.setScaleY(.75);
+		imageView.setTranslateX(w / 3);
+		imageView.setTranslateY(h / 3);
+	//	imageView.setScaleX(.75);
+	//	imageView.setScaleY(.75);
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 

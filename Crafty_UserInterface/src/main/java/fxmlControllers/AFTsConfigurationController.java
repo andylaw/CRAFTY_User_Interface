@@ -255,7 +255,7 @@ public class AFTsConfigurationController {
 
 		YSeries<ValueChartItem> series = new YSeries<ValueChartItem>(listvalues, ChartType.RADAR_SECTOR// SMOOTH_RADAR_POLYGON//
 				, new RadialGradient(0, 0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-						ColorsTools.color(new Random().nextInt(4))),
+						ColorsTools.colorYchart(new Random().nextInt(4))),
 				Color.GRAY);
 		List<Category> categories = new ArrayList<>();
 		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {

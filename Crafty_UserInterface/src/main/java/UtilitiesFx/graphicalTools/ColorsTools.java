@@ -15,23 +15,33 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import model.CellsSet;
-
+import net.mahdilamb.colormap.Colormap;
+import net.mahdilamb.colormap.Colormaps;
 /**
  * @author Mohamed Byari
  *
  */
 
 public class ColorsTools {
-	public static String colorPaletteType = "Default";
+	public static String colorPaletteType = "Viridis";
+	
+	
+  static Color getColorForValue(String colortyp,double MAX, double value) {
+	  		Colormap colormap= Colormaps.get(colortyp);
+	  		if(colormap==null) {colormap= Colormaps.get("Viridis");}
+		   
+		     int red = colormap.get(value/MAX).getRed();
+			 int green = colormap.get(value/MAX).getGreen();
+			 int blue = colormap.get(value/MAX).getBlue();
+			 return Color.rgb(red, green, blue);
+	   }
+	public static Color getColorForValue(double MAX, double value) {
+		return getColorForValue(colorPaletteType, MAX,  value);
+	}
 
 	public static Color colorlist(int nbr) {
-		Color[] colors = { Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PURPLE, Color.PINK,
-				Color.BROWN, Color.MAGENTA, Color.INDIGO, Color.LIME, Color.TEAL, Color.VIOLET, Color.OLIVE,
-				Color.MAROON, Color.GREY, Color.BLACK };
-		if(nbr<colors.length) 
-			return colors[nbr];
-		else
-			return new Color(Math.random(), Math.random(),Math.random(), 1.0);
+
+			return  getColorForValue( "Alphabet", 24,  nbr);//;new Color(Math.random(), Math.random(),Math.random(), 1.0);
 
 	}
     public static String toHex(Color color) {
@@ -42,21 +52,9 @@ public class ColorsTools {
     }
 
 
-	public static Color getColorForValue2(double MAX, double value) {
-		double BLUE_HUE = Color.BLUE.getHue();
-		double RED_HUE = Color.RED.getHue();
-		if (value > MAX) {
-			return Color.WHITE;
-		}
-		if (value == -1) {
-			return Color.WHITE;
-		}
 
-		double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value) / (MAX);
-		return Color.hsb(hue, 1.0, 1.0);
-	}
 
-	public static Stop[] color(int nbr) {
+	public static Stop[] colorYchart(int nbr) {
 		if (nbr % 4 == 0)
 			return new Stop[] { new Stop(0.0, Color.rgb(0, 0, 255, 0.25)), new Stop(0.5, Color.rgb(255, 0, 0, 0.5)),
 					new Stop(1.0, Color.rgb(50, 0, 255, 0.75)) };
@@ -76,86 +74,18 @@ public class ColorsTools {
 	}
 
 	public static Color RandomColor() {
-		return Color.rgb(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255));
+		//return Color.color(Math.random(), Math.random(),Math.random());
+		return  getColorForValue( "Alphabet", 24,  new Random().nextInt(24));
 	}
 
 	public static String getStringColor(Color color) {
 		if (color == null)
 			return String.format("#%02x%02x%02x", 255, 255, 255);
-		;
 		int r = (int) (255 * color.getRed());
 		int g = (int) (255 * color.getGreen());
 		int b = (int) (255 * color.getBlue());
 
 		return String.format("#%02x%02x%02x", r, g, b);
-	}
-
-	static Color YellowToGreen(double MAX,double value) {
-		// Ensure value is between 0 and 1
-		value = value/ MAX;
-		return new Color(1-value, 1 ,  0,1.);
-	}
-
-	static Color Grayscale(double MAX,double value) {
-		value =  value/ MAX;
-		return new Color(value, value, value, 1.0); // R, G, and B are all set to 'value', creating a grayscale
-	}
-
-	static Color Rainbow(double MAX,double value) {
-		return Color.hsb(value / MAX * 360, 1.0, 1.0); // The hue (the first parameter) is varied from 0 to 360 degrees
-	}
-
-	static Color RedToYellow(double MAX,double value) {
-		value =  value/ MAX;
-		return new Color(1, value, 0, 1.0); // R is constant, G is varied, and B is always 0
-	}
-
-	static Color GreenToBrown(double MAX,double value) {
-		value = value/ MAX;
-		return new Color(value, 0.5, 0, 1.0); // A simplified version, you should adjust the values to your liking
-	}
-
-	static Color Viridis(double MAX,double value) {
-		value = value/ MAX;
-		double r = 0.267 + 0.680 * value;
-		double g = 0.233 + 0.516 * value;
-		double b = 0.577 + 0.420 * value;
-		return new Color(r, g, b, 1.0);
-	}
-
-	static Color Plasma(double MAX,double value) {
-		value = value/ MAX;
-		double r = 0.050 + 0.950 * value;
-		double g = 0.029 + 0.961 * value;
-		double b = 0.853 - 0.853 * value;
-		return new Color(r, g, b, 1.0);
-	}
-
-	public static Color colorPalette(double value) {
-		return colorPalette(1, value);
-	}
-
-	public static Color colorPalette(double MAX, double value) {
-		switch (colorPaletteType) {
-		case "Default":
-			return getColorForValue(MAX, value);
-		case "YellowToGreen":
-			return YellowToGreen(MAX,value);
-		case "Grayscale":
-			return Grayscale(MAX,value);
-		case "Rainbow":
-			return Rainbow(MAX,value);
-		case "RedToYellow":
-			return RedToYellow(MAX,value);
-		case "GreenToBrown":
-			return GreenToBrown(MAX,value);
-		case "Viridis":
-			return Viridis(MAX,value);
-		case "Plasma":
-			return Plasma(MAX,value);
-		default:
-			return getColorForValue(MAX, value);
-		}
 	}
 
 	public static ArrayList<RadioButton> RadioList(Consumer<RadioButton> action, String... r) {
@@ -184,7 +114,8 @@ public class ColorsTools {
 			colorPaletteType = e.getText();
 			CellsSet.colorMap();
 			drawLegend(legendPane);
-		}, "Default", "YellowToGreen", "Rainbow", "RedToYellow", "GreenToBrown", "Viridis", "Plasma");
+		},"Viridis", "BrBG", "Spectral", "AgSunset", "Turbo", "BlackbodyAlt", "Jet"
+				,"Portland","MYGBM", "Geyser","Geyser","SmoothCoolWarm","BlackBodyExtended");
 		VBox v = Tools.vBox(Tools.text("  Color Palette:  ", Color.BLUE));
 		drawLegend(legendPane);
 		paletteList.forEach(r -> {
@@ -223,7 +154,7 @@ public class ColorsTools {
 		// Creating a group of rectangles to form the gradient of colors
 		for (int i = 0; i < legendWidth; i++) {
 			double value = i / (double) legendWidth;
-			Color color = colorPalette(value);
+			Color color = getColorForValue(1,value);
 
 			Rectangle rect = new Rectangle(i, startY, 1, height);
 			rect.setFill(color);
@@ -246,40 +177,6 @@ public class ColorsTools {
 
 	}
 	
-	public static Color getColorForValue(double MAX, double value) {
-        // Normalizes the value within the range [0, 1]
-        double normalizedValue = Math.min(Math.max(value/MAX , 0), 1);
 
-        // Define color stops for the gradient
-        Color[] colors = new Color[] {
-            Color.rgb(0, 0, 128),   // dark blue
-            Color.rgb(100, 149, 237), // cornflower blue
-            Color.rgb(60, 179, 113),  // medium sea green
-            Color.rgb(255, 255, 0),   // yellow
-            Color.rgb(255, 0, 0)      // red
-        };
-        
-        // Define the relative positions for the color stops
-        double[] stops = new double[] {0, 0.25, 0.5, 0.75, 1};
-
-        // Find the two closest stops
-        int index1 = 0;
-        int index2 = stops.length - 1;
-        for (int i = 0; i < stops.length - 1; i++) {
-            if (normalizedValue >= stops[i] && normalizedValue < stops[i + 1]) {
-                index1 = i;
-                index2 = i + 1;
-                break;
-            }
-        }
-
-        // Calculate the relative position between the two closest stops
-        double range = stops[index2] - stops[index1];
-        double rangeValue = (normalizedValue - stops[index1]) / range;
-
-        // Interpolate the color between the two stops
-        return colors[index1].interpolate(colors[index2],rangeValue);
-	}
-	   
 
 }

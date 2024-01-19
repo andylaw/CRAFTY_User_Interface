@@ -65,7 +65,7 @@
             </children>
             </HBox>
          
-               <TextArea fx:id="consoleArea" />
+               <!--  <TextArea fx:id="consoleArea" />-->
          </VBox>
          </items>
       </SplitPane>

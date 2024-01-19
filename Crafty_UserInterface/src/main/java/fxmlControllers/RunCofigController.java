@@ -9,7 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
 
 import javafx.scene.input.MouseEvent;
-
+import model.MaskRestrictions;
 import javafx.scene.control.CheckBox;
 
 public class RunCofigController {
@@ -72,6 +72,7 @@ public class RunCofigController {
 	@FXML
 	public void giveUpMechanisme(ActionEvent event) {
 		CA.R.usegiveUp = gUP.isSelected();
+		new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
 	}
 	// Event Listener on CheckBox.onAction
 //	@FXML
@@ -100,5 +101,6 @@ public class RunCofigController {
 	@FXML
 	public void creatCSV(ActionEvent event) {
 		CA.R.writeCsvFiles = creatCSV.isSelected();
+		
 	}
 }

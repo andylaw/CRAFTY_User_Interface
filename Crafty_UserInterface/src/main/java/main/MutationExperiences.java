@@ -11,6 +11,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.Paths;
+import fxmlControllers.ModelRunnerController;
 import model.Manager;
 import model.CellsSet;
 import model.ModelRunner;
@@ -85,7 +86,9 @@ public class MutationExperiences {
 
 		AtomicInteger tick = new AtomicInteger(2016);
 		for (int i = 0; i < endStat; i++) {
-			R.go(tick.get(), "path");
+			Paths.setCurrentYear(tick.get());
+			ModelRunnerController.outPutFolderName="path";
+			R.go();
 			tick.getAndIncrement();
 
 			AtomicInteger m = new AtomicInteger();
