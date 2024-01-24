@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
  *
  */
 public class AbstractCell {
-	 static int size=5;
+	 static int size=1;
 	 int index;
 	 int x, y;
 	 HashMap<String, Double> capitals = new HashMap<>();

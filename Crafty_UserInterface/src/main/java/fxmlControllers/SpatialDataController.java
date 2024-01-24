@@ -117,9 +117,9 @@ public class SpatialDataController {
 			CellsSet.colorMap("FR");
 		});
 		for (int i = 0; i < CellsLoader.GISNames.size(); i++) {
-			if (CellsLoader.GISNames.get(i).equalsIgnoreCase("lad19nm")
-					|| CellsLoader.GISNames.get(i).equalsIgnoreCase("nuts318nm")
-					|| CellsLoader.GISNames.get(i).equalsIgnoreCase("regions")) {
+			if (CellsLoader.GISNames.get(i).contains("Region_Code")
+					|| CellsLoader.GISNames.get(i).contains("nuts")
+					|| CellsLoader.GISNames.get(i).contains("regions")) {
 				radioColor[CellsSet.getCapitalsName().size() + 1 + i] = new RadioButton(CellsLoader.GISNames.get(i));
 				int k = i + CellsSet.getCapitalsName().size() + 1;
 				radioColor[k].setOnAction(e -> {

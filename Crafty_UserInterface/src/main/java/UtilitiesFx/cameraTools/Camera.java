@@ -6,6 +6,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SubScene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -75,35 +76,52 @@ public class Camera extends PerspectiveCamera {
 	 * setTranslateY(Y); setTranslateZ(Z); }
 	 */
 
-	public void defaultcamera(Group root,SubScene subScene) { 
+	public void defaultcamera(Canvas canvas,SubScene subScene) { 
 		cameraMousControl(subScene);
 		cameraKeyCodeControl(subScene);
 		newzoom(subScene);
-		root.boundsInParentProperty().addListener((obs, oldBounds, newBounds) -> {
+		subScene.boundsInParentProperty().addListener((obs, oldBounds, newBounds) -> {
 			// Calculate the center point of the bounding box
-			double centerX = newBounds.getMinX() + newBounds.getWidth() /2;
-			double centerY = newBounds.getMinY() + newBounds.getHeight() / 2;
-			double centerZ = newBounds.getMinZ() + newBounds.getDepth()/2 ;
-
-			// Calculate the maximum dimension of the bounding box
-			double maxDimension = Math.max(newBounds.getWidth(), Math.max(newBounds.getHeight(), newBounds.getDepth()));
-
-			// Adjust the camera position based on the bounding box
-			double distance = maxDimension * 5; // Adjust the factor as needed
-			setTranslateX(centerX);
-			setTranslateY(centerY);
-			setTranslateZ(centerZ-distance);
-
-			// Adjust the camera's field of view to fit the bounding box
-			double fov = Math.toDegrees(2 * Math.atan(maxDimension / (2 * distance))); // Implement this method
-			setFieldOfView(fov);
+			double centerX = (newBounds.getMinX() + newBounds.getWidth())/3;
+			double centerY = (newBounds.getMinY() + newBounds.getHeight())/4;
+			setTranslateX(-centerX);
+			setTranslateY(-centerY);
+			setTranslateZ(2000-(canvas.getHeight()+canvas.getWidth()));
 		});
 	}
 	
 	
 	
 	
-	public void adjustCamera( Group canvasGroup, SubScene subScene) {
+	public void adjustCamera(Group canvasGroup, SubScene subScene) {
+		cameraMousControl(subScene);
+		cameraKeyCodeControl(subScene);
+		newzoom(subScene);
+	    // Retrieve the bounds of the canvas group
+	    Bounds canvasBounds = canvasGroup.getBoundsInLocal();
+
+	    // Calculate the center of the canvas
+	    double centerX = (canvasBounds.getMinX() + canvasBounds.getWidth()) / 2;
+	    double centerY = (canvasBounds.getMinY() + canvasBounds.getHeight()) / 2;
+
+	    // Assuming the subScene height is representative of the distance needed
+	    // to view the entire canvas (this formula might need adjustment)
+	    double distance = subScene.getHeight() / 2 / Math.tan(Math.PI / 8);
+
+	    // Create and position the camera
+	   
+	    setTranslateX(centerX);
+	    setTranslateY(centerY);
+	    setTranslateZ(-0);
+	   // System.out.println(distance);
+
+	    // Setting the near and far clips
+	    setNearClip(1);
+	    setFarClip(10000);
+
+	}
+	
+	public void adjustCamera2( Group canvasGroup, SubScene subScene) {
 		cameraMousControl(subScene);
 		cameraKeyCodeControl(subScene);
 		newzoom(subScene);

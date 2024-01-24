@@ -53,6 +53,7 @@ public class TabPaneController {
 		yearchoice.getItems().addAll(listYears);
 		yearchoice.setValue(listYears.get(0));
 		isNotInitialsation = true;
+		tabpane.setPrefWidth(Screen.getPrimary().getBounds().getWidth()/2);
 //	    FxMain.subScene.setWidth(Screen.getPrimary().getBounds().getWidth()-tabpane.getWidth());
 //		mapTitelPane.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
 //          if (isNowExpanded) {

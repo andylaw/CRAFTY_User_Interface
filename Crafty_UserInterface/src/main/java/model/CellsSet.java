@@ -31,7 +31,7 @@ public class CellsSet {
 	private static Canvas canvas;
 	private static GraphicsContext gc;
 	private static int maxX,maxY;
-	private static String regioneselected = "Regions";
+	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
 	private static HashMap<String, double[]> demand = new HashMap<>();
@@ -68,8 +68,8 @@ public class CellsSet {
 		FxMain.root.getChildren().add(new VBox(canvas));
 		FxMain.subScene.setCamera(FxMain.camera);
 		
-		FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
-		//FxMain.camera.defaultcamera(FxMain.root,FxMain.subScene);
+		//FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
+		FxMain.camera.defaultcamera(canvas,FxMain.subScene);
 		MapControlerBymouse();
 	}
 	

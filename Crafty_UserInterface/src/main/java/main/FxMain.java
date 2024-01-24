@@ -55,13 +55,17 @@ public class FxMain extends Application {
 		MenuBar menuBar = new MenuBAR();
 
 		
-		File imageFile = new File("src/main/resources/craftylogo.png");
-		imageView.setImage(new Image(imageFile.getAbsolutePath()));
+
+
+		InputStream imageStream = getClass().getResourceAsStream("/craftylogo.png");
+		Image image = new Image(imageStream);
+		imageView.setImage(image);
+		
 		anchor.getChildren().add(imageView);
 		imageView.setTranslateX(w / 3);
 		imageView.setTranslateY(h / 3);
-	//	imageView.setScaleX(.75);
-	//	imageView.setScaleY(.75);
+		imageView.setScaleX(.75);
+		imageView.setScaleY(.75);
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 

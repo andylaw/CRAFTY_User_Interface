@@ -133,6 +133,7 @@ public class CellsLoader  extends HashSet<Cell>{
 				});
 			}
 		}
+		System.out.println("GISNames= "+GISNames);
 	}
 
 

@@ -115,7 +115,7 @@ public class ColorsTools {
 			CellsSet.colorMap();
 			drawLegend(legendPane);
 		},"Viridis", "BrBG", "Spectral", "AgSunset", "Turbo", "BlackbodyAlt", "Jet"
-				,"Portland","MYGBM", "Geyser","Geyser","SmoothCoolWarm","BlackBodyExtended");
+				,"Portland","MYGBM", "Geyser","Temps","SmoothCoolWarm","BlackBodyExtended");
 		VBox v = Tools.vBox(Tools.text("  Color Palette:  ", Color.BLUE));
 		drawLegend(legendPane);
 		paletteList.forEach(r -> {
