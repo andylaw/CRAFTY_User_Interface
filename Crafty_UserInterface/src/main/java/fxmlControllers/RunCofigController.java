@@ -4,11 +4,15 @@ import javafx.fxml.FXML;
 
 import javafx.scene.control.TextField;
 import UtilitiesFx.graphicalTools.Tools;
+import dataLoader.AFTsLoader;
 import javafx.event.ActionEvent;
 
 import javafx.scene.control.Slider;
 
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import main.CorrelationChiSquare;
+import model.CellsSet;
 import model.MaskRestrictions;
 import javafx.scene.control.CheckBox;
 
@@ -72,7 +76,23 @@ public class RunCofigController {
 	@FXML
 	public void giveUpMechanisme(ActionEvent event) {
 		CA.R.usegiveUp = gUP.isSelected();
-		new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
+	//	new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
+	/***/
+	//CorrelationChiSquare.ceartCorelationMatrix(CA.M);
+		/***/
+//		for (int i = 0; i < 100; i++) {
+//		long start=System.nanoTime();
+//		CA.M .parallelStream() .forEach(c -> {
+//	    	c.setIndex(c.getIndex()+1);
+//	        c.setOwner(null);
+//	    });	
+//		long end=System.nanoTime()-start;
+//		System.out.println("Time in miliscond->  "+end/1_000+"mics");
+//		}
+//		CA.M.forEach(c->{
+//			if(c.getOwner()==null) {c.ColorP(Color.RED);}
+//		});
+		
 	}
 	// Event Listener on CheckBox.onAction
 //	@FXML

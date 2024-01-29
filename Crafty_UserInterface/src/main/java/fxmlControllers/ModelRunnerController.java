@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
@@ -70,12 +71,13 @@ public class ModelRunnerController {
 	CellsLoader M;
 	public static String outPutFolderName;
 	public ModelRunner R;
-	Timeline timeline;
+	Timeline timeline = new Timeline();
 	AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
 	NewWindow runConfiguration;
 	public static boolean chartSynchronisation = true;
 	double KeyFramelag = 1;
+//	private final long desiredTickMillis = 1000;
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
@@ -152,30 +154,27 @@ public class ModelRunnerController {
 	public void oneStep() {
 		Paths.setCurrentYear(tick.get());
 		R.run();
-		//Thread simulationThread = new Thread(R);
-		//simulationThread.start();
-	//	Platform.runLater(() -> {});
-			tickTxt.setText(tick.toString());
+		tickTxt.setText(tick.toString());
 
-			if (chartSynchronisation) {
-				AtomicInteger m = new AtomicInteger();
-				CellsSet.getServicesNames().forEach(name -> {
-					lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
-							CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]));
-					lineChart.get(m.get()).getData().get(1).getData()
-							.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
-					m.getAndIncrement();
-				});
-				HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
-				AtomicInteger N = new AtomicInteger();
-				AgentNbr.forEach((name, value) -> {
-					lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
-							.add(new XYChart.Data<>(tick.get(), value));
-					N.getAndIncrement();
-				});
-			}
-			tick.getAndIncrement();
-		
+		if (chartSynchronisation) {
+			AtomicInteger m = new AtomicInteger();
+			CellsSet.getServicesNames().forEach(name -> {
+				lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
+						CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]));
+				lineChart.get(m.get()).getData().get(1).getData()
+						.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
+				m.getAndIncrement();
+			});
+			HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
+			AtomicInteger N = new AtomicInteger();
+			AgentNbr.forEach((name, value) -> {
+				lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
+						.add(new XYChart.Data<>(tick.get(), value));
+				N.getAndIncrement();
+			});
+		}
+		tick.getAndIncrement();
+
 	}
 
 	@FXML
@@ -183,19 +182,41 @@ public class ModelRunnerController {
 		run.setDisable(true);
 		simulationFolderName();
 		CellsLoader.updateDemand();
-		KeyFramelag = CellsSet.getCellsSet().size() / 20000;
-		System.out.println("KeyFramelag= " + KeyFramelag);
-		timeline = new Timeline(new KeyFrame(Duration.seconds(KeyFramelag), event -> {
+		scheduleIteravitveTicks(Duration.millis(1000));
+
+	}
+
+	private void scheduleIteravitveTicks(Duration delay) {
+
+		if (Paths.getCurrentYear() >= Paths.getEndtYear()) {
+			// Stop if max iterations reached
+			if (R.writeCsvFiles) {
+				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
+				CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
+			}
+			return;
+		}
+		// Stop the old timeline if it's running
+		if (timeline != null) {
+			timeline.stop();
+		}
+		// Create a new timeline for the next tick
+		timeline = new Timeline(new KeyFrame(delay, event -> {
+			long startTime = System.currentTimeMillis();
+			// Perform the simulation update
 			oneStep();
+			long endTime = System.currentTimeMillis();
+			// Calculate the delay for the next tick to maintain the rhythm
+			long delayForNextTick = Math.max(300, endTime - startTime);
+
+			// Schedule the next tick
+			scheduleIteravitveTicks(Duration.millis(delayForNextTick/2));
+			System.out.println("Delay For Last Tick=  " + delay + " Delay For Next Tick " + delayForNextTick+" ms");
+
 		}));
-		timeline.setCycleCount(Paths.getEndtYear() - Paths.getStartYear());
 		timeline.play();
-		timeline.setOnFinished(m -> {
-			CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-					+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-					+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
-		});
 	}
 
 	@FXML

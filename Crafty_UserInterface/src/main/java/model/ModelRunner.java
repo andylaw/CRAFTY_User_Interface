@@ -1,6 +1,8 @@
 package model;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,9 +31,9 @@ public class ModelRunner implements Runnable{
 	public double percentageCells = 0.05;
 	public double mutationIntval = 0.1;
 
-	public HashMap<String, Double> supply;
+	public Map<String, Double> supply;
 	static HashMap<String, Double> marginal = new HashMap<>();
-	public static HashMap<String, Double> distributionMean;
+	public static Map<String, Double> distributionMean;
 
 	public String[][] compositionAFT;
 	public String[][] servicedemand;
@@ -39,8 +41,8 @@ public class ModelRunner implements Runnable{
 	public ModelRunner(CellsLoader cells) {
 		this.cells = cells;
 //		demandUpdate();
-		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][cells.AFtsSet.size()];
-		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 1][CellsSet.getServicesNames().size()
+		compositionAFT =new String[Paths.getEndtYear() - Paths.getStartYear() + 2][cells.AFtsSet.size()];
+		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][CellsSet.getServicesNames().size()
 				* 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			servicedemand[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
@@ -53,10 +55,9 @@ public class ModelRunner implements Runnable{
 	}
 
 	void calculeSystemSupply() {
-		supply = new HashMap<>();
-		CellsSet.getCellsSet().forEach(c -> {
+		supply = Collections.synchronizedMap(new HashMap<>());
+		CellsSet.getCellsSet() .parallelStream() /**/.forEach(c -> {
 			if (c.getOwner() != null) {
-
 				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
 					if (supply.containsKey(s)) {
@@ -71,9 +72,9 @@ public class ModelRunner implements Runnable{
 	}
 
 	void calculeDistributionMean() {
-		distributionMean = new HashMap<>();
+		distributionMean = Collections.synchronizedMap(new HashMap<>());
 		HashMap<String, Integer> AFTnbr = new HashMap<>();
-		CellsSet.getCellsSet().forEach(c -> {
+		CellsSet.getCellsSet() .parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
@@ -96,6 +97,7 @@ public class ModelRunner implements Runnable{
 	}
 
 	void calculeMarginalUtility(int year, boolean removeNegative) {
+		
 
 		supply.forEach((name, val) -> {
 			double marg = removeNegative
@@ -107,17 +109,24 @@ public class ModelRunner implements Runnable{
 
 	public void go() {
 		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
+		System.out.println("cells.updateCapitals...");
 		cells.updateCapitals(year);
 
 		// calcule supply
+		System.out.print("calculeSystemSupply...");
 		calculeSystemSupply();
+		System.out.println("Done");
 		if (usegiveUp) {
+			System.out.print("calculeDistributionMean...");
 			calculeDistributionMean();
+			System.out.println("Done");
 		}
 		// update demande & calcule marginal
+		System.out.print("calculeMarginalUtility...");
 		calculeMarginalUtility(year, removeNegative);
-
-		CellsSet.getCellsSet().forEach(c -> {
+		System.out.println("Done");
+		
+		CellsSet.getCellsSet().parallelStream().forEach(c -> {
 			c.putservices();
 			// Abandonment of lands
 			if (c.getOwner() != null) {

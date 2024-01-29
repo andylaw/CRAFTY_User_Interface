@@ -192,7 +192,7 @@ public class CsvTools {
 	}
 
 	public static void writeCSVfile(String[][] tabl, String filePath) {
-		System.out.println("write: " + filePath);
+		System.out.print("write: " + filePath);
 		File file = new File(filePath);
 		try {
 			if (!file.exists()) {
@@ -212,6 +212,7 @@ public class CsvTools {
 
 		} catch (IOException e) {
 		}
+		System.out.println("Done");
 	}
 
 //	public static void writeCSVfileFromHash(HashMap<String, String[]> hash, String filePath) {

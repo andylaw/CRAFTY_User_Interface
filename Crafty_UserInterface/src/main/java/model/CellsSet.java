@@ -3,7 +3,9 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -30,15 +32,13 @@ import main.FxMain;
 public class CellsSet {
 	private static Canvas canvas;
 	private static GraphicsContext gc;
-	private static int maxX,maxY;
+	private static int maxX, maxY;
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
 	private static HashMap<String, double[]> demand = new HashMap<>();
 	private static List<String> capitalsName = new ArrayList<>();
 	private static List<String> servicesNames = new ArrayList<>();
-	
-
 
 	public static void plotCells() {
 		ArrayList<Integer> X = new ArrayList<>();
@@ -51,42 +51,40 @@ public class CellsSet {
 		maxY = Collections.max(Y);
 		int minX = Collections.min(X);
 		int minY = Collections.min(Y);
-		
-		canvas = new Canvas((maxX-minX)* Cell.getSize(), (maxY-minY) * Cell.getSize());
-		
+
+		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
+
 		gc = canvas.getGraphicsContext2D();
-		
-	/*
-		gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-	    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-	*/
-	        
+
+		/*
+		 * gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+		 * gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		 */
+
 		colorMap("FR");
-	
-		
+
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(new VBox(canvas));
 		FxMain.subScene.setCamera(FxMain.camera);
-		
-		//FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
-		FxMain.camera.defaultcamera(canvas,FxMain.subScene);
+
+		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
+		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		MapControlerBymouse();
 	}
-	
+
 	static public void colorMap(String str) {
 		colortype = str;
 		colorMap();
 	}
 
 	static public void colorMap() {
-		List<Double> values = new ArrayList<>();
+		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
-			
+
 			cellsSet.forEach(c -> {
 				if (c.getOwner() != null) {
 					c.ColorP(c.getOwner().getColor());
-					}
-				else {
+				} else {
 					c.ColorP(Color.WHITE);
 				}
 			});
@@ -94,19 +92,11 @@ public class CellsSet {
 
 			cellsSet.forEach(c -> {
 				if (c.getCapitals().get(colortype) != null)
-					values.add(c.getCapitals().get(colortype));
-			});
-
-			double max = Collections.max(values);
-
-			cellsSet.forEach(c -> {
-				if (c.getCapitals().get(colortype) != null)
-					// patch.ColorP(ColorsTools.getColorForValue(max, patch.capitals.get(name)));
-					c.ColorP(ColorsTools.getColorForValue(max, c.getCapitals().get(colortype)));
+					c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
 			});
 		} else if (servicesNames.contains(colortype)) {
 
-			cellsSet.forEach(c -> {
+			cellsSet.parallelStream().forEach(c -> {
 				if (c.getServices().get(colortype) != null)
 					values.add(c.getServices().get(colortype));
 			});
@@ -119,7 +109,7 @@ public class CellsSet {
 			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
-			cellsSet.forEach(c -> {
+			cellsSet.parallelStream().forEach(c -> {
 				values.add(c.getTmpValueCell());
 			});
 
@@ -131,7 +121,7 @@ public class CellsSet {
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
-			cellsSet.forEach(c -> {
+			cellsSet.parallelStream().forEach(c -> {
 
 				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
 			});
@@ -142,20 +132,19 @@ public class CellsSet {
 
 		}
 	}
-	
-	
+
 	public static void MapControlerBymouse() {
 		canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton() == MouseButton.SECONDARY) {
 				// Convert mouse coordinates to "pixel" coordinates
-				int pixelX = (int) (event.getX() - (event.getX() % Cell.getSize() ));
-				int pixelY = (int) (event.getY() - (event.getY() % Cell.getSize() ));
+				int pixelX = (int) (event.getX() - (event.getX() % Cell.getSize()));
+				int pixelY = (int) (event.getY() - (event.getY() % Cell.getSize()));
 				// Convert pixel coordinates to cell coordinates
-				int cx = (int) (pixelX / Cell.getSize() );
-				int cy = (int) (maxY - pixelY / Cell.getSize() );
+				int cx = (int) (pixelX / Cell.getSize());
+				int cy = (int) (maxY - pixelY / Cell.getSize());
 				if (cellsSet.hashCell.get(cx + "," + cy) != null) {
 					gc.setFill(Color.BLACK);
-					gc.fillRect(pixelX, pixelY, Cell.getSize() , Cell.getSize() );
+					gc.fillRect(pixelX, pixelY, Cell.getSize(), Cell.getSize());
 					HashMap<String, Consumer<String>> menu = new HashMap<>();
 					if (!NewRegion_Controller.patchsInRergion.contains(cellsSet.hashCell.get(cx + "," + cy))) {
 
@@ -172,14 +161,11 @@ public class CellsSet {
 							SaveAs.png(canvas);
 						});
 						menu.put("Select region ", e -> {
-							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy),regioneselected);
+							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy), regioneselected);
 						});
 						menu.put("Save camera view ", e -> {
-							System.out.println(
-									FxMain.camera.getTranslateX()+","+
-									FxMain.camera.getTranslateY()+","+
-									FxMain.camera.getTranslateZ()+","
-									);
+							System.out.println(FxMain.camera.getTranslateX() + "," + FxMain.camera.getTranslateY() + ","
+									+ FxMain.camera.getTranslateZ() + ",");
 						});
 //						menu.put("Detach", (x) -> {
 //							List<Integer> findpath = Tools.findIndexPath(canvas, canvas.getParent());
@@ -190,7 +176,7 @@ public class CellsSet {
 //								Tools.reinsertChildAtIndexPath(canvas, canvas.getParent(), findpath);
 //							});
 //						});
-						
+
 					} else {
 						menu = NewRegion_Controller.creatMenu();
 					}
@@ -213,7 +199,6 @@ public class CellsSet {
 		});
 	}
 
-	
 	public static GraphicsContext getGc() {
 		return gc;
 	}
@@ -222,18 +207,13 @@ public class CellsSet {
 		return maxX;
 	}
 
-
 	public static int getMaxY() {
 		return maxY;
 	}
 
-
-	
 	public static CellsLoader getCellsSet() {
 		return cellsSet;
 	}
-	
-
 
 	public static void setCellsSet(CellsLoader cellsSet) {
 		CellsSet.cellsSet = cellsSet;
@@ -242,9 +222,11 @@ public class CellsSet {
 	public static void setRegioneselected(String regioneselected) {
 		CellsSet.regioneselected = regioneselected;
 	}
+
 	public static HashMap<String, double[]> getDemand() {
 		return demand;
 	}
+
 	public static List<String> getCapitalsName() {
 		return capitalsName;
 	}

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public final class Paths {
 	private static String[] foldersNecessary = { "agents", "csv", "production", "worlds", "GIS" };
 	private static int startYear = 2020;
-	private static int endtYear = 2080;
+	private static int endtYear = 2079;
 	private static int currentYear = startYear;
 	private static String projectPath = "";
 	private static ArrayList<String> scenariosList = new ArrayList<>();

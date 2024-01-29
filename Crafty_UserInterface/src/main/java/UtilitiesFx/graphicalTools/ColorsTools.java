@@ -35,6 +35,9 @@ public class ColorsTools {
 			 int blue = colormap.get(value/MAX).getBlue();
 			 return Color.rgb(red, green, blue);
 	   }
+  public static Color getColorForValue( double value) {
+		return getColorForValue(colorPaletteType, 1,  value);
+	}
 	public static Color getColorForValue(double MAX, double value) {
 		return getColorForValue(colorPaletteType, MAX,  value);
 	}

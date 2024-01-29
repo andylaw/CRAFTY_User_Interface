@@ -1,10 +1,9 @@
 package main;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.Random;
 
 import UtilitiesFx.cameraTools.Camera;
-import UtilitiesFx.filesTools.ConvertScotlanddata;
 import controllers.MenuBAR;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import model.MaskRestrictions;
 
 
 /**
@@ -47,8 +45,9 @@ public class FxMain extends Application {
 		
 
 		//new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
-	       
+		
 
+		
 		FxMain.primaryStage = primaryStage;
 		subScene = new SubScene(root, w * .45, h *.95);
 
