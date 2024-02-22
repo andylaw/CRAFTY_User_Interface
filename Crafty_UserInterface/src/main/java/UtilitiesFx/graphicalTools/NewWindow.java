@@ -71,7 +71,7 @@ public class  NewWindow extends Stage {
 		subScene.setCamera(camera);
 		root.getChildren().addAll(nodes);
 	//   camera.defaultcamera(root,subScene);
-		camera.adjustCamera(root,subScene);
+	//	camera.adjustCamera(root,subScene);
 		
     
 	    

@@ -1,6 +1,7 @@
 package dataLoader;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -129,17 +130,23 @@ public class AFTsLoader extends HashSet<Manager>{
 		updateAFTProduction( a, file);
 		
 	}
-	public static void updateAFTProduction(Manager a, File file) {
+	public static void updateAFTProduction2(Manager a, File file) {
 		Table T = Table.read().csv(file);
-		Column<?> pr = T.column("Production");
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			a.getProductivityLevel().put(CellsSet.getServicesNames().get(i), Tools.sToD(pr.getString(i)));
-		}
 		CellsSet.getCapitalsName().forEach((Cn) -> {
 			CellsSet.getServicesNames().forEach((Sn) -> {
 				a.getSensitivty().put((Cn + "_" + Sn), Tools.sToD(T.column(Cn).getString(T.column(0).indexOf(Sn))));
 			});
 		});
+	}
+	
+	public static void 	updateAFTProduction(Manager a, File file) {
+		HashMap<String, String[]> matrix = CsvTools.ReadAsaHash(file.getAbsolutePath());
+		for (int i = 0; i < matrix.get("C0").length; i++) {
+			if(CellsSet.getServicesNames().contains(matrix.get("C0")[i]))
+				a.getProductivityLevel().put(matrix.get("C0")[i], Tools.sToD(matrix.get("Production")[i]));
+			else {System.out.println(matrix.get("C0")[i]+"  is not existe in Services List");}
+		}
+		updateAFTProduction2(a,file);
 	}
 	
 	

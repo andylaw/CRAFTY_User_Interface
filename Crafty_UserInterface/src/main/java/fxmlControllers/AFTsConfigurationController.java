@@ -46,7 +46,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import model.CellsSet;
 import model.Manager;
 
@@ -139,6 +138,7 @@ public class AFTsConfigurationController {
 			updateProduction(M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()), productivityTable);
 			Histogram.histo((Pane) histogramePlevel.getParent(), "Productivity levels", histogramePlevel,
 					M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()).getProductivityLevel());
+
 		});
 
 		plotOptimalLandon.setOnAction(e2 -> {
@@ -149,6 +149,7 @@ public class AFTsConfigurationController {
 
 		//scrollgrid.setPrefHeight(Screen.getPrimary().getBounds().getHeight()*0.8);
 		radarChartsGridPane.prefWidthProperty().bind(scrollgrid.widthProperty());
+
 	}
 
 	@FXML

@@ -14,6 +14,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
+import javafx.scene.SubScene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -55,20 +56,20 @@ public class CellsSet {
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 
 		gc = canvas.getGraphicsContext2D();
-
-		/*
-		 * gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-		 * gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		 */
+	//	FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(), canvas.getHeight());
+		
+//		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+//		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		 
 
 		colorMap("FR");
 
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(new VBox(canvas));
 		FxMain.subScene.setCamera(FxMain.camera);
-
-		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
+		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
+		
 		MapControlerBymouse();
 	}
 
@@ -163,10 +164,7 @@ public class CellsSet {
 						menu.put("Select region ", e -> {
 							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy), regioneselected);
 						});
-						menu.put("Save camera view ", e -> {
-							System.out.println(FxMain.camera.getTranslateX() + "," + FxMain.camera.getTranslateY() + ","
-									+ FxMain.camera.getTranslateZ() + ",");
-						});
+						
 //						menu.put("Detach", (x) -> {
 //							List<Integer> findpath = Tools.findIndexPath(canvas, canvas.getParent());
 //							Tools.reinsertChildAtIndexPath(new Separator(), canvas.getParent(), findpath);
@@ -234,4 +232,14 @@ public class CellsSet {
 	public static List<String> getServicesNames() {
 		return servicesNames;
 	}
+
+	public static Canvas getCanvas() {
+		return canvas;
+	}
+
+	public static void setCanvas(Canvas canvas) {
+		CellsSet.canvas = canvas;
+	}
+	
+	
 }

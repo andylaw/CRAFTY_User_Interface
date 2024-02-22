@@ -192,7 +192,7 @@ public class CsvTools {
 	}
 
 	public static void writeCSVfile(String[][] tabl, String filePath) {
-		System.out.print("write: " + filePath);
+		System.out.print("write: " + filePath+" ...");
 		File file = new File(filePath);
 		try {
 			if (!file.exists()) {

@@ -48,13 +48,13 @@ public class CorrelationChiSquare {
 		
 		double ret = chiSquareTest(aft, capitalData);
 				System.out.println(a.getLabel()+" , "+CapitalsName+"->" + ret);
-		return  ret;//Math.max(,0);
+		return ret;// Math.max(ret,0);//
 	}
 
 	static double chiSquareTest(double[] capitalData, double[] aft) {
 
 		// Calculate point-biserial correlation
-		SpearmansCorrelation correlation = new SpearmansCorrelation();//PearsonsCorrelation
+		SpearmansCorrelation correlation = new SpearmansCorrelation ();// PearsonsCorrelation
 		double correlationCoefficient = correlation.correlation(capitalData, aft);
 
 		return correlationCoefficient;

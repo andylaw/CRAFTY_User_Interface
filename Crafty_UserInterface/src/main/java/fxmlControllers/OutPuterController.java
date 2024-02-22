@@ -9,6 +9,7 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
+import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.CellsLoader;
 import dataLoader.Paths;
@@ -19,6 +20,7 @@ import javafx.scene.control.Button;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import model.CellsSet;
 import model.Manager;
@@ -29,8 +31,7 @@ import javafx.scene.layout.GridPane;
 
 public class OutPuterController {
 	 CellsLoader M;
-	@FXML
-	private HBox outputcolorBox;
+
 	@FXML
 	private Button selectoutPut;
 	@FXML
@@ -39,8 +40,13 @@ public class OutPuterController {
 	private GridPane gridChart;
 	@FXML
 	private ScrollPane scroll;
+	@FXML
+	private Button selecserivce ;
+	
+	
 	String outputpath = "";
 	RadioButton[] radioColor;
+	NewWindow colorbox = new NewWindow();
 
 	public void initialize() {
 		System.out.println("initialize "+getClass().getSimpleName());
@@ -77,8 +83,7 @@ public class OutPuterController {
 				}
 			});
 		}
-		outputcolorBox.getChildren().addAll(radioColor);
-		
+
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight()*0.8);
 		gridChart.prefWidthProperty().bind(scroll.widthProperty());
 	}
@@ -93,6 +98,15 @@ public class OutPuterController {
 		}
 	}
 
+	@FXML
+	void selecserivce() {
+		if (!colorbox.isShowing()) {
+			VBox g = new VBox();
+			g.getChildren().addAll(radioColor);
+			colorbox.creatwindows("Display Services and AFT distribution", g);
+	}
+		
+	}
 	@FXML
 	public void yearChoice() {
 		Paths.setCurrentYear((int) Tools.sToD(yearChoice.getValue()));

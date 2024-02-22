@@ -34,9 +34,9 @@ public final class CSVTableView extends TableView<String> {
 			tableView.getItems().add(FXCollections.observableArrayList(data[i]));
 		}
 
-		double height = 25 * (data.length + 1);
+	//	double height = 25 * (data.length + 1);
 		// double width = 100 * data[0].length;
-		tableView.setPrefHeight(height);
+		//tableView.setPrefHeight(height);
 		// tableView.setPrefWidth(width);
 		return tableView;
 	}

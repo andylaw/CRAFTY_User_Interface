@@ -66,7 +66,6 @@ public class SpatialDataController {
 		TabPaneController.M.loadGisData();
 		CellsSet.setCellsSet(TabPaneController.M);
 		CellsSet.plotCells();
-
 		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, CellsSet.getDemand());
 		updatePieChartColorAFts(pieChartColor);
 		mapColorAndCapitalHistogrameInitialisation();
@@ -75,15 +74,15 @@ public class SpatialDataController {
 	}
 
 	private void mapColorAndCapitalHistogrameInitialisation() {
-		int length = CellsSet.getCapitalsName().size() + 1;
-		radioColor = new RadioButton[length + CellsLoader.GISNames.size()];
+		
+		radioColor = new RadioButton[CellsSet.getCapitalsName().size() + 1 ];
 		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
 			radioColor[i] = new RadioButton(CellsSet.getCapitalsName().get(i));
 			vboxForSliderColors.getChildren().add(radioColor[i]);
 
 			int k = i;
 			radioColor[k].setOnAction(e -> {
-				for (int j = 0; j < CellsSet.getCapitalsName().size() + CellsLoader.GISNames.size() + 1; j++) {
+				for (int j = 0; j < CellsSet.getCapitalsName().size() +  1; j++) {
 					if (j != k) {
 						if (radioColor[j] != null) {
 							radioColor[j].setSelected(false);
@@ -106,7 +105,7 @@ public class SpatialDataController {
 		radioColor[CellsSet.getCapitalsName().size()].setSelected(true);
 		vboxForSliderColors.getChildren().add(radioColor[CellsSet.getCapitalsName().size()]);
 		radioColor[CellsSet.getCapitalsName().size()].setOnAction(e -> {
-			for (int j = 0; j < CellsSet.getCapitalsName().size() + CellsLoader.GISNames.size() + 1; j++) {
+			for (int j = 0; j < CellsSet.getCapitalsName().size() + 1; j++) {
 				if (j != CellsSet.getCapitalsName().size()) {
 					if (radioColor[j] != null) {
 						radioColor[j].setSelected(false);
@@ -116,27 +115,6 @@ public class SpatialDataController {
 			histogramCapitals.getData().clear();
 			CellsSet.colorMap("FR");
 		});
-		for (int i = 0; i < CellsLoader.GISNames.size(); i++) {
-			if (CellsLoader.GISNames.get(i).contains("Region_Code")
-					|| CellsLoader.GISNames.get(i).contains("nuts")
-					|| CellsLoader.GISNames.get(i).contains("regions")) {
-				radioColor[CellsSet.getCapitalsName().size() + 1 + i] = new RadioButton(CellsLoader.GISNames.get(i));
-				int k = i + CellsSet.getCapitalsName().size() + 1;
-				radioColor[k].setOnAction(e -> {
-					for (int j = 0; j < CellsSet.getCapitalsName().size() + 1 + CellsLoader.GISNames.size(); j++) {
-						if (k != j) {
-							if (radioColor[j] != null) {
-								radioColor[j].setSelected(false);
-							}
-						}
-					}
-					histogramCapitals.getData().clear();
-					CellsSet.colorMap(CellsLoader.GISNames.get(k - CellsSet.getCapitalsName().size() - 1));
-					CellsSet.setRegioneselected(CellsLoader.GISNames.get(k - CellsSet.getCapitalsName().size() - 1));
-				});
-				vboxForSliderColors.getChildren().add(radioColor[k]);
-			}
-		}
 	}
 
 	void histogrameCapitals(String year, String capitalName) {

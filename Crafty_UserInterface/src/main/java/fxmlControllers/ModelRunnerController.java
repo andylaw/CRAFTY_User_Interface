@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
@@ -18,7 +17,6 @@ import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -35,7 +33,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
@@ -50,12 +47,10 @@ public class ModelRunnerController {
 
 	@FXML
 	private VBox vbox;
-	@FXML
-	private HBox hboxServiceColor;
+	
 	@FXML
 	private Label tickTxt;
-	@FXML
-	private Button configuration;
+
 	@FXML
 	private Button oneStep;
 	@FXML
@@ -78,7 +73,8 @@ public class ModelRunnerController {
 	public static boolean chartSynchronisation = true;
 	double KeyFramelag = 1;
 //	private final long desiredTickMillis = 1000;
-
+	RadioButton[] radioColor;
+	NewWindow colorbox = new NewWindow();
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
@@ -97,7 +93,7 @@ public class ModelRunnerController {
 
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 
-		initializeGridpane(3);
+		initializeGridpane(2);
 		gridPaneLinnChart.prefWidthProperty().bind(scroll.widthProperty());
 	}
 
@@ -110,16 +106,15 @@ public class ModelRunnerController {
 				j = 0;
 			}
 		}
-
 	}
 
 	void initialzeRadioColorBox() {
-		RadioButton[] radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
+		 radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
 		radioColor[radioColor.length - 1] = new RadioButton("FR");
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
 		}
-		hboxServiceColor.getChildren().addAll(radioColor);
+		
 		for (int i = 0; i < radioColor.length; i++) {
 			int m = i;
 			radioColor[i].setOnAction(e -> {
@@ -132,6 +127,16 @@ public class ModelRunnerController {
 				}
 			});
 		}
+	}
+	
+	@FXML
+	void selecserivce() {
+		if (!colorbox.isShowing()) {
+			VBox g = new VBox();
+			g.getChildren().addAll(radioColor);
+			colorbox.creatwindows("Display Services and AFT distribution", g);
+	}
+		
 	}
 
 	@FXML
@@ -212,8 +217,8 @@ public class ModelRunnerController {
 			long delayForNextTick = Math.max(300, endTime - startTime);
 
 			// Schedule the next tick
-			scheduleIteravitveTicks(Duration.millis(delayForNextTick/2));
-			System.out.println("Delay For Last Tick=  " + delay + " Delay For Next Tick " + delayForNextTick+" ms");
+			scheduleIteravitveTicks(Duration.millis(delayForNextTick / 2));
+			System.out.println("Delay For Last Tick=  " + delay + " Delay For Next Tick " + delayForNextTick + " ms");
 
 		}));
 		timeline.play();
@@ -285,11 +290,16 @@ public class ModelRunnerController {
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setHeaderText("Please enter OutPut folder name and any comments");
 
+		String cofiguration = "Remove negative marginal utility values =   " + R.removeNegative + "\n"
+				+ "Land abondenmant (Give-up mechanism) =  " + R.usegiveUp + "\n" + "Considering mutation =  "
+				+ R.isMutated + "\n" + "Percentage of land use that could be changed =  " +(int) (R.percentageCells * 100)
+				+ "% \n \n" + "Add your comments..";
+
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");
 		Text txt = new Text(Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\...");
 		TextArea textArea = new TextArea();
-		textArea.setPromptText("Add comments");
+		textArea.setText(cofiguration);
 		VBox v = new VBox(txt, textField, textArea);
 		DialogPane dialogPane = alert.getDialogPane();
 		dialogPane.setContent(v);

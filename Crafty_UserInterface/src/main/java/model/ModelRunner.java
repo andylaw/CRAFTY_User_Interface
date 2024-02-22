@@ -18,7 +18,7 @@ import fxmlControllers.ModelRunnerController;
  *
  */
 
-public class ModelRunner implements Runnable{
+public class ModelRunner implements Runnable {
 
 	public CellsLoader cells;
 	public String colorDisplay = "FR";
@@ -41,7 +41,7 @@ public class ModelRunner implements Runnable{
 	public ModelRunner(CellsLoader cells) {
 		this.cells = cells;
 //		demandUpdate();
-		compositionAFT =new String[Paths.getEndtYear() - Paths.getStartYear() + 2][cells.AFtsSet.size()];
+		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][cells.AFtsSet.size()];
 		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][CellsSet.getServicesNames().size()
 				* 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
@@ -56,7 +56,7 @@ public class ModelRunner implements Runnable{
 
 	void calculeSystemSupply() {
 		supply = Collections.synchronizedMap(new HashMap<>());
-		CellsSet.getCellsSet() .parallelStream() /**/.forEach(c -> {
+		CellsSet.getCellsSet().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
@@ -68,13 +68,13 @@ public class ModelRunner implements Runnable{
 				});
 			}
 		});
-
+		// System.out.println(supply);
 	}
 
 	void calculeDistributionMean() {
 		distributionMean = Collections.synchronizedMap(new HashMap<>());
 		HashMap<String, Integer> AFTnbr = new HashMap<>();
-		CellsSet.getCellsSet() .parallelStream().forEach(c -> {
+		CellsSet.getCellsSet().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
@@ -97,7 +97,6 @@ public class ModelRunner implements Runnable{
 	}
 
 	void calculeMarginalUtility(int year, boolean removeNegative) {
-		
 
 		supply.forEach((name, val) -> {
 			double marg = removeNegative
@@ -113,8 +112,9 @@ public class ModelRunner implements Runnable{
 		cells.updateCapitals(year);
 
 		// calcule supply
-		System.out.print("calculeSystemSupply...");
+		System.out.print("Calcule System Supply...");
 		calculeSystemSupply();
+
 		System.out.println("Done");
 		if (usegiveUp) {
 			System.out.print("calculeDistributionMean...");
@@ -125,26 +125,28 @@ public class ModelRunner implements Runnable{
 		System.out.print("calculeMarginalUtility...");
 		calculeMarginalUtility(year, removeNegative);
 		System.out.println("Done");
-		
+
 		CellsSet.getCellsSet().parallelStream().forEach(c -> {
 			c.putservices();
-			// Abandonment of lands
-			if (c.getOwner() != null) {
-				if (usegiveUp) {
-					double sum = 0;
-					for (int i = 0; i < c.getServices().values().toArray().length; i++) {
-						sum += (double) c.getServices().values().toArray()[i];
-					}
-					if (sum < distributionMean.get(c.getOwner().getLabel())
-							* (c.getOwner().getGiveUpMean() + c.getOwner().getGiveUpSD() * new Random().nextGaussian())
-							&& c.getOwner().getGiveUpProbabilty() > Math.random()) {
-						c.setOwner(null);
-					}
-				}
-			}
+
 			// Randomly select percentageCells% of the land available to compete on, and set
 			// the competition
 			if (Math.random() < percentageCells || c.getOwner() == null) {
+				// Abandonment of lands
+				if (c.getOwner() != null) {
+					if (usegiveUp) {
+						double sum = 0;
+						for (int i = 0; i < c.getServices().values().toArray().length; i++) {
+							sum += (double) c.getServices().values().toArray()[i];
+						}
+						if (sum < distributionMean.get(c.getOwner().getLabel()) * (c.getOwner().getGiveUpMean()
+								+ c.getOwner().getGiveUpSD() * new Random().nextGaussian())
+								&& c.getOwner().getGiveUpProbabilty() > Math.random()) {
+							c.setOwner(null);
+						}
+					}
+				}
+				// set the competition
 				Manager agent = (Manager) cells.AFtsSet.getAftHash().values().toArray()[new Random()
 						.nextInt(cells.AFtsSet.size())];
 				c.Competition(agent, isMutated, mutationIntval);
@@ -211,7 +213,7 @@ public class ModelRunner implements Runnable{
 	@Override
 	public void run() {
 		go();
-		
+
 	}
 
 }

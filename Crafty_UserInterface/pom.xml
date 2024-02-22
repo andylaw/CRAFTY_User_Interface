@@ -129,6 +129,21 @@
 			<version>3.6.1</version>
 		</dependency>
 
+		<!-- Ikonli Core -->
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-javafx</artifactId>
+			<version>12.2.0</version> <!-- Check for the latest version -->
+		</dependency>
+
+		<!-- FontAwesome Icon Pack -->
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-fontawesome5-pack</artifactId>
+			<version>12.3.1</version>
+		</dependency>
+		
+
 	</dependencies>
 
 

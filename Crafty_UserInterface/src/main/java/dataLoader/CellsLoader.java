@@ -22,7 +22,7 @@ import UtilitiesFx.graphicalTools.WarningWindowes;
 public class CellsLoader  extends HashSet<Cell>{
 
 	private static final long serialVersionUID = 1L;
-	public static List<String> GISNames = new ArrayList<>();//
+	public static List<String> GISRegionsNames = new ArrayList<>();//
 	public  HashMap<String, Cell> hashCell = new HashMap<>();
 	public AFTsLoader AFtsSet;
 	public void loadMap() {
@@ -119,7 +119,7 @@ public class CellsLoader  extends HashSet<Cell>{
 
 	public void loadGisData() {
 		Table T = Table.read().csv(PathTools.fileFilter("\\GIS\\").get(0));
-		GISNames = T.columnNames();
+		GISRegionsNames = T.columnNames();
 		String x = T.column("x") != null ? "x" : "X";
 		String y = T.column("y") != null ? "y" : "Y";
 
@@ -127,13 +127,13 @@ public class CellsLoader  extends HashSet<Cell>{
 			String coor = T.column(x).get(i) + "," + T.column(y).get(i);
 			int ii = i;
 			if (hashCell.get(coor) != null) {
-				GISNames.forEach(name -> {
+				GISRegionsNames.forEach(name -> {
 					if (T.column(name).get(ii) != null)
 						hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
 				});
 			}
 		}
-		System.out.println("GISNames= "+GISNames);
+		System.out.println("Regions Names= "+GISRegionsNames);
 	}
 
 

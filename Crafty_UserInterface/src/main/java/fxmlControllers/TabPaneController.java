@@ -3,14 +3,12 @@ package fxmlControllers;
 import java.util.ArrayList;
 
 import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.GraphicConsol;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -22,8 +20,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Tab;
 
 public class TabPaneController {
-	@FXML
-	private VBox vbox;
+	
 	@FXML
 	private ChoiceBox<String> scenarioschoice;
 	@FXML
@@ -31,7 +28,7 @@ public class TabPaneController {
 	@FXML
 	private TabPane tabpane;
 	@FXML
-	private TitledPane mapTitelPane;
+	private VBox mapBox;
 	@FXML
 	private Tab dataPane;
 //	@FXML
@@ -42,7 +39,7 @@ public class TabPaneController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		mapTitelPane.setContent(FxMain.subScene);
+		mapBox.getChildren().add(FxMain.subScene);
 		PathTools.writePathRecentProject("RecentProject.txt", "\n" + Paths.getProjectPath());
 		scenarioschoice.getItems().addAll(Paths.getScenariosList());
 		scenarioschoice.setValue(Paths.getScenario());
@@ -53,7 +50,7 @@ public class TabPaneController {
 		yearchoice.getItems().addAll(listYears);
 		yearchoice.setValue(listYears.get(0));
 		isNotInitialsation = true;
-		tabpane.setPrefWidth(Screen.getPrimary().getBounds().getWidth()/2);
+		tabpane.setPrefWidth(Screen.getPrimary().getBounds().getWidth()/1.5);
 //	    FxMain.subScene.setWidth(Screen.getPrimary().getBounds().getWidth()-tabpane.getWidth());
 //		mapTitelPane.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
 //          if (isNowExpanded) {

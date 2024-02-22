@@ -4,16 +4,8 @@ import javafx.fxml.FXML;
 
 import javafx.scene.control.TextField;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.AFTsLoader;
 import javafx.event.ActionEvent;
-
 import javafx.scene.control.Slider;
-
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import main.CorrelationChiSquare;
-import model.CellsSet;
-import model.MaskRestrictions;
 import javafx.scene.control.CheckBox;
 
 public class RunCofigController {
@@ -35,31 +27,29 @@ public class RunCofigController {
 	private CheckBox creatCSV;
 //	@FXML
 //	private CheckBox neighboursCollaboration;
-	
+
 	static public ModelRunnerController CA;
-	
-	
+
 //	mutationInterval.setValue(CA.R.mutationIntval );
 //	mutationInterval.valueProperty().addListener((ov, oldval, newval) -> {
 //		CA.R.mutationIntval = mutationInterval.getValue();
 //	});
-	
+
 	public void initialize() {
-		System.out.println("initialize "+getClass().getSimpleName());
+		System.out.println("initialize " + getClass().getSimpleName());
 		removeNegative.setSelected(CA.R.removeNegative);
 		MapSync.setSelected(CA.R.mapSynchronisation);
 		creatCSV.setSelected(CA.R.writeCsvFiles);
 		gUP.setSelected(CA.R.usegiveUp);
 		mutationM.setSelected(CA.R.isMutated);
-	//	neighboursCollaboration.setSelected(CA.R.NeighboorEffect);
+		// neighboursCollaboration.setSelected(CA.R.NeighboorEffect);
 		chartSync.setSelected(ModelRunnerController.chartSynchronisation);
-		cellsPersS.setValue(CA.R.percentageCells *100);
-		
+		cellsPersS.setValue(CA.R.percentageCells * 100);
+		CellPersT.setText((int) cellsPersS.getValue() + "");
 		cellsPersS.valueProperty().addListener((ov, oldval, newval) -> {
-			CA.R.percentageCells = cellsPersS.getValue()/100;
-			CellPersT.setText((int)cellsPersS.getValue()+"");
+			CA.R.percentageCells = cellsPersS.getValue() / 100;
+			CellPersT.setText((int) cellsPersS.getValue() + "");
 		});
-		
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction
@@ -67,18 +57,21 @@ public class RunCofigController {
 	public void removeNegativeMarginal(ActionEvent event) {
 		CA.R.removeNegative = removeNegative.isSelected();
 	}
+
 	// Event Listener on CheckBox[#MapSync].onAction
 	@FXML
 	public void mapSyn(ActionEvent event) {
 		CA.R.mapSynchronisation = MapSync.isSelected();
 	}
+
 	// Event Listener on CheckBox[#gUP].onAction
 	@FXML
 	public void giveUpMechanisme(ActionEvent event) {
 		CA.R.usegiveUp = gUP.isSelected();
-	//	new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
-	/***/
-	//CorrelationChiSquare.ceartCorelationMatrix(CA.M);
+		// new
+		// MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
+		/***/
+		// CorrelationChiSquare.ceartCorelationMatrix(CA.M);
 		/***/
 //		for (int i = 0; i < 100; i++) {
 //		long start=System.nanoTime();
@@ -92,8 +85,9 @@ public class RunCofigController {
 //		CA.M.forEach(c->{
 //			if(c.getOwner()==null) {c.ColorP(Color.RED);}
 //		});
-		
+
 	}
+
 	// Event Listener on CheckBox.onAction
 //	@FXML
 //	public void NeighboursCollaboration(ActionEvent event) {
@@ -108,8 +102,8 @@ public class RunCofigController {
 	// Event Listener on TextField[#CellPersT].onAction
 	@FXML
 	public void cellspersT(ActionEvent event) {
-		CA.R.percentageCells = Tools.sToD(CellPersT.getText())/100;
-		cellsPersS.setValue((int)Tools.sToD(CellPersT.getText()));
+		CA.R.percentageCells = Tools.sToD(CellPersT.getText()) / 100;
+		cellsPersS.setValue((int) Tools.sToD(CellPersT.getText()));
 	}
 
 	// Event Listener on CheckBox[#chartSync].onAction
@@ -117,10 +111,11 @@ public class RunCofigController {
 	public void chartSyn(ActionEvent event) {
 		ModelRunnerController.chartSynchronisation = chartSync.isSelected();
 	}
+
 	// Event Listener on CheckBox[#creatCSV].onAction
 	@FXML
 	public void creatCSV(ActionEvent event) {
 		CA.R.writeCsvFiles = creatCSV.isSelected();
-		
+
 	}
 }

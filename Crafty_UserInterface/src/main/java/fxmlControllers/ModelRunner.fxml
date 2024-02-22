@@ -6,26 +6,51 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <VBox fx:id="vbox" xmlns="http://javafx.com/javafx/21"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="fxmlControllers.ModelRunnerController">
 	<children>
-		<HBox fx:id="hboxServiceColor" spacing="15.0">
-		</HBox>
 		<HBox spacing="15.0">
 			<children>
-				<Button fx:id="configuration" mnemonicParsing="false"
-					onAction="#configuration" text="Configuration" />
+				<Button  mnemonicParsing="false"
+					onAction="#configuration" text="Configuration"
+					styleClass="button-icon">
+					<graphic>
+						<FontIcon iconLiteral="fas-sliders-h" iconSize="20" />
+					</graphic>
+				</Button>
 				<Button fx:id="oneStep" mnemonicParsing="false"
-					onAction="#oneStep" text="One Step" />
+					onAction="#oneStep" text="One Step" styleClass="button-icon">
+					<graphic>
+						<FontIcon iconLiteral="fas-step-forward" iconSize="20" />
+					</graphic>
+				</Button>
 				<Button fx:id="run" mnemonicParsing="false" onAction="#run"
-					text="RUN" />
+					text="RUN" styleClass="button-icon">
+					<graphic>
+						<FontIcon iconLiteral="far-play-circle" iconSize="22" />
+					</graphic>
+				</Button>
 				<Button fx:id="pause" mnemonicParsing="false"
-					onAction="#pause" text="Pause" />
+					onAction="#pause" text="Pause" styleClass="button-icon">
+					<graphic>
+						<FontIcon iconLiteral="far-pause-circle" iconSize="22" />
+					</graphic>
+				</Button>
 				<Button fx:id="stop" mnemonicParsing="false" onAction="#stop"
-					text="Stop &amp; Reset" />
-					<Label fx:id="tickTxt" text="year" />
+					text="Stop &amp; Reset" styleClass="button-icon">
+					<graphic>
+						<FontIcon iconLiteral="far-stop-circle" iconSize="22" />
+					</graphic>
+				</Button>
+				<Button fx:id="selecserivce" onAction="#selecserivce"
+					text="Display a serivce" styleClass="button-icon">
+					<graphic>
+						<FontIcon iconLiteral="fas-list-ul" iconSize="20" />
+					</graphic>
+				</Button>
+				<Label fx:id="tickTxt" text="year" />
 			</children>
 		</HBox>
 		<ScrollPane fx:id="scroll" prefHeight="700.0"

@@ -8,6 +8,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.ScrollPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.Tooltip?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
 	xmlns:fx="http://javafx.com/fxml/1"
@@ -15,14 +17,32 @@
 	<children>
 		<VBox spacing="15.0">
 			<children>
-				<HBox fx:id="outputcolorBox" spacing="15.0">
+				<HBox spacing="15.0">
 					<children>
 						<Button fx:id="selectoutPut" onAction="#selectoutPut"
-							mnemonicParsing="false" text="Select outPut Folder" />
+							mnemonicParsing="false" text="Select outPut Folder"
+							styleClass="button-icon">
+							<graphic>
+								<FontIcon iconLiteral="far-folder-open" iconSize="15" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="Select Existing Model Result" />
+							</tooltip>
+						</Button>
+						<Button fx:id="selecserivce" onAction="#selecserivce"
+							text="Display a serivce" styleClass="button-icon">
+							<graphic>
+								<FontIcon iconLiteral="fas-list-ul" iconSize="15" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="Configuring model running" />
+							</tooltip>
+						</Button>
 						<ChoiceBox fx:id="yearChoice" onAction="#yearChoice" />
 					</children>
 				</HBox>
-				<ScrollPane fx:id="scroll" prefHeight="700.0" prefWidth="700.0">
+				<ScrollPane fx:id="scroll" prefHeight="700.0"
+					prefWidth="700.0">
 					<GridPane fx:id="gridChart" />
 				</ScrollPane>
 			</children>
