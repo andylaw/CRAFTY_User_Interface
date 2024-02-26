@@ -16,9 +16,30 @@ public class AbstractCell {
 	 HashMap<String, String> GisNameValue = new HashMap<>();//
 	 Manager owner;
 	 double tmpValueCell=0;// a changer
-	 Color color = Color.TRANSPARENT;
+	 protected Color color = Color.TRANSPARENT;
+	 private String maskType;
 	 
 	 
+		public Color getColor() {
+		return color;
+	}
+
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+
+		public String getMaskType() {
+		return maskType;
+	}
+
+
+	public void setMaskType(String maskType) {
+		this.maskType = maskType;
+	}
+
+
 		public int getX() {
 			return x;
 		}

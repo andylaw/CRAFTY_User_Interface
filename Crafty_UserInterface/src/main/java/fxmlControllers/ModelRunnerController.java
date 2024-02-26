@@ -14,6 +14,7 @@ import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
+import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -292,8 +293,9 @@ public class ModelRunnerController {
 
 		String cofiguration = "Remove negative marginal utility values =   " + R.removeNegative + "\n"
 				+ "Land abondenmant (Give-up mechanism) =  " + R.usegiveUp + "\n" + "Considering mutation =  "
-				+ R.isMutated + "\n" + "Percentage of land use that could be changed =  " +(int) (R.percentageCells * 100)
-				+ "% \n \n" + "Add your comments..";
+				+ R.isMutated + "\n" + "Percentage of land use that could be changed =  " +(int) (R.percentageCells * 100)+"%"
+				+ "\n" + "Types of land mask restrictions considered =  " +MaskRestrictionDataLoader.ListOfMask.keySet()
+				+ "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");

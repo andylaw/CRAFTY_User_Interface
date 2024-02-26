@@ -32,7 +32,7 @@ public class WarningWindowes {
 
 	public static String alterErrorNotFileFound(String message, String path) {
 		p = path;
-		Alert alert = new Alert(AlertType.ERROR);
+		Alert alert = new Alert(AlertType.WARNING);
 		ButtonType selectfile = new ButtonType("Select a new file", ButtonBar.ButtonData.OK_DONE);
 		alert.setTitle("Error Dialog");
 		alert.setHeaderText(message+" \n"+path);

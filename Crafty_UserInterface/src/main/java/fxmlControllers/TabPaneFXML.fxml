@@ -35,7 +35,7 @@
 									<tabs>
 										<Tab text="General View">
 										<graphic>
-								<FontIcon iconLiteral="fas-globe-europe" iconSize="15" />
+								<FontIcon iconLiteral="fas-home" iconSize="15" />
 							</graphic>
 							<tooltip>
 								<Tooltip text="Model General View" />
@@ -93,6 +93,22 @@
 													source="/fxmlControllers/OutPuter.fxml" /> <!---->
 											</content>
 										</Tab>
+										
+										<Tab text="LandUseControl">
+											<graphic>
+												<FontIcon iconLiteral="far-file-alt"
+													iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip text="Model OutPut" />
+											</tooltip>
+											<content>
+												<fx:include
+													source="/fxmlControllers/MasksPane.fxml" /> <!---->
+											</content>
+										</Tab>
+										
+										
 									</tabs>
 								</TabPane>
 							</children>

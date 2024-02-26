@@ -71,6 +71,7 @@ public class SpatialDataController {
 		mapColorAndCapitalHistogrameInitialisation();
 		radioColor[0].fire();
 		isNotInitialsation=true;
+		
 	}
 
 	private void mapColorAndCapitalHistogrameInitialisation() {

@@ -1,7 +1,6 @@
 package dataLoader;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +13,6 @@ import javafx.scene.paint.Color;
 import model.Manager;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
-import tech.tablesaw.columns.Column;
 
 /**
  * @author Mohamed Byari

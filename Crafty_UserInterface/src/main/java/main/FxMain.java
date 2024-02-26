@@ -3,6 +3,7 @@ package main;
 import java.io.InputStream;
 
 import UtilitiesFx.cameraTools.Camera;
+import UtilitiesFx.filesTools.CsvTools;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -40,14 +41,10 @@ public class FxMain extends Application {
 //		ConvertScotlanddata.initilasiation();
 //		ConvertScotlanddata.scotlandcells("C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\UK\\LandUseControl\\UrbanMask\\SSP5"); 
 //		new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
-		
 
 		FxMain.primaryStage = primaryStage;
 		subScene = new SubScene(root, w * .45, h *.95);
-
-		
-
-
+	//	CsvTools.ReadAsaHash( "not existe",  true); 
 
 		InputStream imageStream = getClass().getResourceAsStream("/craftylogo.png");
 		Image image = new Image(imageStream);
@@ -63,7 +60,7 @@ public class FxMain extends Application {
 		VBox vbox = new VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")),anchor);
 		scene = new Scene(vbox, w * .8, h * .8);
 		scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
-		;
+		
 
 		primaryStage.setScene(scene);
 

@@ -48,8 +48,10 @@ public class PathTools {
 			}
 		}
 	}
-
-	public static ArrayList<String> fileFilter(String... condition) {
+	public static ArrayList<String> fileFilter( String... condition){
+		return fileFilter(false,condition);
+	}
+	public static ArrayList<String> fileFilter( boolean ignoreIfFileNotExists,String... condition) {
 
 		ArrayList<String> turn = new ArrayList<>();
 
@@ -70,7 +72,8 @@ public class PathTools {
 		}
 
 		if (turn.size() == 0) {
-			return fileFilter(WarningWindowes.alterErrorNotFileFound("The file path could not be found:",str));
+			if(ignoreIfFileNotExists) {return null;}
+			return fileFilter(ignoreIfFileNotExists,WarningWindowes.alterErrorNotFileFound("The file path could not be found:",str));
 		} else {
 			return turn;
 		}

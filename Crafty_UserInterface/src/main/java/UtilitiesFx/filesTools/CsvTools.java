@@ -26,7 +26,7 @@ public class CsvTools {
 	 */
 
 	public static String[][] csvReader(String filePath) {
-		// System.out.println("Read " + filePath);
+		 System.out.print("Read as String[][] file: " + filePath+"...");
 		String[][] csv = null;
 		try {
 			int X = 0, Y = 0;
@@ -50,7 +50,9 @@ public class CsvTools {
 			scanner.close();
 
 		} catch (FileNotFoundException e) {
+			return null;
 		}
+		System.out.println("done");
 		return csv;
 	}
 
@@ -83,41 +85,47 @@ public class CsvTools {
 		return ret;
 	}
 
-	private static void correctAddCellToColumnException(Table T,String filePath,AddCellToColumnException e) {
+	private static void correctAddCellToColumnException(Table T, String filePath, AddCellToColumnException e) {
 		writeValueCSVfile(filePath, (int) e.getRowNumber(), (int) e.getColumnIndex(), "0");
 		try {
 			T = Table.read().csv(filePath);
 		} catch (AddCellToColumnException s) {
-			System.out.println("\n"+s.getLocalizedMessage());
-			correctAddCellToColumnException(T,filePath,s);
+			System.out.println("\n" + s.getLocalizedMessage());
+			correctAddCellToColumnException(T, filePath, s);
 		}
 	}
-	
-	public static HashMap<String, String[]> ReadAsaHash(String filePath) {
+	public static HashMap<String, String[]> ReadAsaHash(String filePath){
+		return ReadAsaHash(filePath, false);
+		
+	}
+	public static HashMap<String, String[]> ReadAsaHash(String filePath, boolean ignoreIfFileNotExists) {
 		System.out.print("Read: " + filePath + "...");
 		HashMap<String, String[]> hash = new HashMap<>();
 		Table T = null;
 		try {
 			T = Table.read().csv(filePath);
 		} catch (AddCellToColumnException s) {
-			correctAddCellToColumnException(T,filePath,s);
+			correctAddCellToColumnException(T, filePath, s);
 		} catch (Exception e) {
-			filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
-			T = Table.read().csv(filePath);
-		}
-			List<String> columnNames = T.columnNames();
-
-			for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
-				String name = (String) iterator.next();
-
-				String[] tmp = new String[T.column(name).size()];
-				for (int i = 0; i < tmp.length; i++) {
-					tmp[i] = T.column(name).getString(i);
-				}
-				hash.put(name, tmp);
+			if (ignoreIfFileNotExists) {
+				return null;
+			} else {
+				filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
+				T = Table.read().csv(filePath);
 			}
+		}
+		List<String> columnNames = T.columnNames();
 
-		
+		for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
+			String name = (String) iterator.next();
+
+			String[] tmp = new String[T.column(name).size()];
+			for (int i = 0; i < tmp.length; i++) {
+				tmp[i] = T.column(name).getString(i);
+			}
+			hash.put(name, tmp);
+		}
+
 		System.out.println(" Done");
 		return hash;
 	}
@@ -192,7 +200,7 @@ public class CsvTools {
 	}
 
 	public static void writeCSVfile(String[][] tabl, String filePath) {
-		System.out.print("write: " + filePath+" ...");
+		System.out.print("write: " + filePath + " ...");
 		File file = new File(filePath);
 		try {
 			if (!file.exists()) {

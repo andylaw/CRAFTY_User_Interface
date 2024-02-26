@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -14,7 +15,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
-import javafx.scene.SubScene;
+import dataLoader.MaskRestrictionDataLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -56,11 +57,11 @@ public class CellsSet {
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 
 		gc = canvas.getGraphicsContext2D();
-	//	FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(), canvas.getHeight());
-		
+		// FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
+		// canvas.getHeight());
+
 //		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		 
 
 		colorMap("FR");
 
@@ -69,16 +70,22 @@ public class CellsSet {
 		FxMain.subScene.setCamera(FxMain.camera);
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
-		
+
 		MapControlerBymouse();
 	}
 
-	static public void colorMap(String str) {
+	public static void colorMapClean() {
+		cellsSet.forEach(c -> {
+			c.ColorP(Color.GRAY);
+		});
+	}
+
+	public static void colorMap(String str) {
 		colortype = str;
 		colorMap();
 	}
 
-	static public void colorMap() {
+	public static void colorMap() {
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 
@@ -118,7 +125,19 @@ public class CellsSet {
 			cellsSet.forEach(c -> {
 				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
-
+		} else if (colortype.equalsIgnoreCase("Mask")) {
+//			HashMap<String, Color> maskToColor = new HashMap<>();
+//			
+//			cellsSet.parallelStream().forEach(c -> {
+//				maskToColor.put(c.getMaskType(), ColorsTools.colorlist(new Random().nextInt(24)));
+//			});
+			ArrayList<String > listOfMasks= new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
+			
+			cellsSet.forEach(c -> {
+				if(c.getMaskType()!=null)
+					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
+				else {c.ColorP(Color.GRAY);}
+			});
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
@@ -128,7 +147,7 @@ public class CellsSet {
 			});
 
 			cellsSet.forEach(c -> {
-				c.ColorP(colorGis.get(c.getGisNameValue().get(colortype)));
+				c.ColorP(c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
 			});
 
 		}
@@ -164,7 +183,7 @@ public class CellsSet {
 						menu.put("Select region ", e -> {
 							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy), regioneselected);
 						});
-						
+
 //						menu.put("Detach", (x) -> {
 //							List<Integer> findpath = Tools.findIndexPath(canvas, canvas.getParent());
 //							Tools.reinsertChildAtIndexPath(new Separator(), canvas.getParent(), findpath);
@@ -240,6 +259,5 @@ public class CellsSet {
 	public static void setCanvas(Canvas canvas) {
 		CellsSet.canvas = canvas;
 	}
-	
-	
+
 }
