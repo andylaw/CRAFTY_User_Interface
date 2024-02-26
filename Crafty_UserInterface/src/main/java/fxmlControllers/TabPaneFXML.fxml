@@ -69,6 +69,21 @@
 													source="/fxmlControllers/AFTsConfiguration.fxml" /> <!---->
 											</content>
 										</Tab>
+										<Tab text="LandUseControl">
+											<graphic>
+												<FontIcon iconLiteral="far-file-alt"
+													iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip text="Model OutPut" />
+											</tooltip>
+											<content>
+												<fx:include
+													source="/fxmlControllers/MasksPane.fxml" /> <!---->
+											</content>
+										</Tab>
+										
+										
 										<Tab text="Model runner">
 										<graphic>
 								<FontIcon iconLiteral="fas-play-circle" iconSize="15" />
@@ -94,19 +109,7 @@
 											</content>
 										</Tab>
 										
-										<Tab text="LandUseControl">
-											<graphic>
-												<FontIcon iconLiteral="far-file-alt"
-													iconSize="15" />
-											</graphic>
-											<tooltip>
-												<Tooltip text="Model OutPut" />
-											</tooltip>
-											<content>
-												<fx:include
-													source="/fxmlControllers/MasksPane.fxml" /> <!---->
-											</content>
-										</Tab>
+
 										
 										
 									</tabs>
