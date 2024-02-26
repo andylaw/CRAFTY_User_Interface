@@ -106,7 +106,7 @@ public class MutationExperiences {
 		writOutPut(dir);
 		writeProduction(dir);
 		CsvTools.writeCSVfile(servicedemand, dir + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
-		HashMap<String, Double> nbr = AFTsLoader.hashAgentNbr();
+		HashMap<String, Integer> nbr = AFTsLoader.hashAgentNbr();
 		String[][] NBR = new String[2][nbr.size()];
 		NBR[0] = nbr.keySet().toArray(new String[0]);
 		NBR[2] = nbr.values().stream().map(String::valueOf).toArray(String[]::new);

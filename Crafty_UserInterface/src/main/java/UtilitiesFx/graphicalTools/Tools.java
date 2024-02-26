@@ -69,7 +69,7 @@ public class Tools {
 
 	}
 
-	public static List<String> getKeysInSortedOrder(HashMap<String, Double> map) {
+	public static List<String> getKeysInSortedOrder(HashMap<String, Integer> map) {
 		return map.entrySet().stream().sorted((entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue()))
 				.map(entry -> entry.getKey()).collect(Collectors.toList());
 	}

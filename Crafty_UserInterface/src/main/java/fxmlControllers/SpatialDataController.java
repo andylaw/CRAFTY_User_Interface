@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
@@ -70,26 +72,26 @@ public class SpatialDataController {
 		updatePieChartColorAFts(pieChartColor);
 		mapColorAndCapitalHistogrameInitialisation();
 		radioColor[0].fire();
-		isNotInitialsation=true;
-		
+		isNotInitialsation = true;
+
 	}
 
 	private void mapColorAndCapitalHistogrameInitialisation() {
-		
-		radioColor = new RadioButton[CellsSet.getCapitalsName().size() + 1 ];
+
+		radioColor = new RadioButton[CellsSet.getCapitalsName().size() + 1];
 		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
 			radioColor[i] = new RadioButton(CellsSet.getCapitalsName().get(i));
 			vboxForSliderColors.getChildren().add(radioColor[i]);
 
 			int k = i;
 			radioColor[k].setOnAction(e -> {
-				for (int j = 0; j < CellsSet.getCapitalsName().size() +  1; j++) {
+				for (int j = 0; j < CellsSet.getCapitalsName().size() + 1; j++) {
 					if (j != k) {
 						if (radioColor[j] != null) {
 							radioColor[j].setSelected(false);
 //							OpenTabs.choiceScenario.setDisable(false);
 //							OpenTabs.year.setDisable(false);
-							
+
 						}
 					}
 				}
@@ -165,13 +167,14 @@ public class SpatialDataController {
 	}
 
 	private void updatePieChartColorAFts(PieChart chart) {
-		HashMap<String, Double> hashAgentNbr = AFTsLoader.hashAgentNbr();
+		HashMap<String, Double> convertedMap = new HashMap<>(AFTsLoader.hashAgentNbr().entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().doubleValue())));
 		HashMap<String, Color> color = new HashMap<>();
 		M.AFtsSet.getAftHash().forEach((name, a) -> {
 			color.put(name, a.getColor());
 		});
 
-		new PieChartTools().updateChart(M, hashAgentNbr, color, chart);
+		new PieChartTools().updateChart(M, convertedMap, color, chart);
 		chart.setLegendSide(Side.LEFT);
 		// * add menu to PiChart*//
 		HashMap<String, Consumer<String>> newItemMenu = new HashMap<>();
@@ -180,7 +183,7 @@ public class SpatialDataController {
 			M.AFtsSet.forEach((a) -> {
 				color.put(a.getLabel(), a.getColor());
 			});
-			new PieChartTools().updateChart(M, hashAgentNbr, color, chart);
+			new PieChartTools().updateChart(M, convertedMap, color, chart);
 			CellsSet.colorMap("FR");
 		};
 

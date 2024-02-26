@@ -73,22 +73,15 @@ public class ModelRunner implements Runnable {
 
 	void calculeDistributionMean() {
 		distributionMean = Collections.synchronizedMap(new HashMap<>());
-		HashMap<String, Integer> AFTnbr = new HashMap<>();
+		HashMap<String, Integer> AFTnbr = AFTsLoader.hashAgentNbr();
 		CellsSet.getCellsSet().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
-				CellsSet.getServicesNames().forEach(s -> {
-					double sup = c.prodactivity(c.getOwner(), s);
-					if (distributionMean.containsKey(c.getOwner().getLabel())) {
-						distributionMean.put(c.getOwner().getLabel(),
-								distributionMean.get(c.getOwner().getLabel()) + sup);
-					} else {
-						distributionMean.put(c.getOwner().getLabel(), sup);
-					}
-				});
-				if (AFTnbr.containsKey(c.getOwner().getLabel()))
-					AFTnbr.put(c.getOwner().getLabel(), AFTnbr.get(c.getOwner().getLabel()) + 1);
-				else
-					AFTnbr.put(c.getOwner().getLabel(), 1);
+				double sup = c.utility(c.getOwner());
+				if (distributionMean.containsKey(c.getOwner().getLabel())) {
+					distributionMean.put(c.getOwner().getLabel(), distributionMean.get(c.getOwner().getLabel()) + sup);
+				} else {
+					distributionMean.put(c.getOwner().getLabel(), sup);
+				}
 			}
 		});
 		distributionMean.forEach((aftName, total) -> {
@@ -98,11 +91,11 @@ public class ModelRunner implements Runnable {
 
 	void calculeMarginalUtility(int year, boolean removeNegative) {
 
-		supply.forEach((name, val) -> {
+		supply.forEach((serviceName, serviceVal) -> {
 			double marg = removeNegative
-					? Math.max(CellsSet.getDemand().get(name)[year - Paths.getStartYear()] - val, 0)
-					: CellsSet.getDemand().get(name)[year - Paths.getStartYear()] - val;
-			marginal.put(name, marg);
+					? Math.max(CellsSet.getDemand().get(serviceName)[year - Paths.getStartYear()] - serviceVal, 0)
+					: CellsSet.getDemand().get(serviceName)[year - Paths.getStartYear()] - serviceVal;
+			marginal.put(serviceName, marg);
 		});
 	}
 
@@ -110,25 +103,25 @@ public class ModelRunner implements Runnable {
 		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
 		System.out.println("cells.updateCapitals...");
 		cells.updateCapitals(year);
-
 		// calcule supply
 		System.out.print("Calcule System Supply...");
 		calculeSystemSupply();
 
 		System.out.println("Done");
-		if (usegiveUp) {
-			System.out.print("calculeDistributionMean...");
-			calculeDistributionMean();
-			System.out.println("Done");
-		}
+
 		// update demande & calcule marginal
 		System.out.print("calculeMarginalUtility...");
 		calculeMarginalUtility(year, removeNegative);
 		System.out.println("Done");
 
+		if (usegiveUp) {
+			System.out.print("calculeDistributionMean...");
+			calculeDistributionMean();
+			System.out.println("Done");
+		}
+
 		CellsSet.getCellsSet().parallelStream().forEach(c -> {
 			c.putservices();
-
 			// Randomly select percentageCells% of the land available to compete on, and set
 			// the competition
 			if (Math.random() < percentageCells || c.getOwner() == null) {
@@ -178,7 +171,7 @@ public class ModelRunner implements Runnable {
 			m.getAndIncrement();
 		});
 
-		HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
+		HashMap<String, Integer> AgentNbr = AFTsLoader.hashAgentNbr();
 		AtomicInteger N = new AtomicInteger();
 		AgentNbr.forEach((name, value) -> {
 			compositionAFT[y][N.getAndIncrement()] = value + "";

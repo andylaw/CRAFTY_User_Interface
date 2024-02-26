@@ -171,7 +171,7 @@ public class ModelRunnerController {
 						.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
 				m.getAndIncrement();
 			});
-			HashMap<String, Double> AgentNbr = AFTsLoader.hashAgentNbr();
+			HashMap<String, Integer> AgentNbr = AFTsLoader.hashAgentNbr();
 			AtomicInteger N = new AtomicInteger();
 			AgentNbr.forEach((name, value) -> {
 				lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()

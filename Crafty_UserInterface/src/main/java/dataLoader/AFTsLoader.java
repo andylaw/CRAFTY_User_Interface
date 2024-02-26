@@ -148,14 +148,14 @@ public class AFTsLoader extends HashSet<Manager>{
 	}
 	
 	
-	public static HashMap<String, Double> hashAgentNbr() {
-		HashMap<String, Double> hashAgentNbr = new HashMap<>();
+	public static HashMap<String, Integer> hashAgentNbr() {
+		HashMap<String, Integer> hashAgentNbr = new HashMap<>();
 		CellsSet.getCellsSet().forEach(p -> {
 			if (p.getOwner() != null)
 				if (hashAgentNbr.containsKey(p.getOwner().getLabel())) {
 					hashAgentNbr.put(p.getOwner().getLabel(), hashAgentNbr.get(p.getOwner().getLabel()) + 1);
 				} else {
-					hashAgentNbr.put(p.getOwner().getLabel(), 1.);
+					hashAgentNbr.put(p.getOwner().getLabel(), 1);
 				}
 		});
 		return hashAgentNbr;
