@@ -62,7 +62,7 @@ public class CellsSet {
 		gc = canvas.getGraphicsContext2D();
 		writableImage = new WritableImage(maxX, maxY);
 		pixelWriter = writableImage.getPixelWriter();
-		
+
 //		 FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
 //		 canvas.getHeight());
 //		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
@@ -74,7 +74,6 @@ public class CellsSet {
 //	                pixelWriter.setColor(x, y, color);
 //	            }
 //	        }
-
 
 		long startTime1 = System.currentTimeMillis();
 		colorMap("FR");
@@ -102,6 +101,17 @@ public class CellsSet {
 		colorMap();
 	}
 
+	public static void showOnlyOneAFT(Manager a) {
+		cellsSet.cells.parallelStream().forEach(cell -> {
+			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
+				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), Color.gray(0.65));
+			} else {
+				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), a.getColor());
+			}
+		});
+		gc.drawImage(writableImage, 0, 0);
+	}
+
 	public static void colorMap() {
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
@@ -112,9 +122,9 @@ public class CellsSet {
 			});
 		} else if (capitalsName.contains(colortype)) {
 			cellsSet.cells.parallelStream().forEach(c -> {
-					pixelWriter.setColor( c.getX(), maxY - c.getY(),
-							ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
-				
+				pixelWriter.setColor(c.getX(), maxY - c.getY(),
+						ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
+
 			});
 
 //			cellsSet.cells.forEach(c -> {
@@ -130,10 +140,9 @@ public class CellsSet {
 			double max = values.size() > 0 ? Collections.max(values) : 0;
 
 			cellsSet.cells.parallelStream().forEach(c -> {
-					pixelWriter.setColor( c.getX(), maxY - c.getY(),
-							ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
-					
-				
+				pixelWriter.setColor(c.getX(), maxY - c.getY(),
+						ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
+
 			});
 //			cellsSet.cells.forEach(c -> {
 //				if (c.getServices().get(colortype) != null)
@@ -145,12 +154,11 @@ public class CellsSet {
 				values.add(c.getTmpValueCell());
 			});
 			double max = Collections.max(values);
-			
+
 			cellsSet.cells.parallelStream().forEach(c -> {
-					pixelWriter.setColor( c.getX(), maxY - c.getY(),
-							ColorsTools.getColorForValue(max, c.getTmpValueCell()));	
+				pixelWriter.setColor(c.getX(), maxY - c.getY(), ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
-			
+
 //			cellsSet.cells.forEach(c -> {
 //				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 //			});
@@ -161,14 +169,13 @@ public class CellsSet {
 //				maskToColor.put(c.getMaskType(), ColorsTools.colorlist(new Random().nextInt(24)));
 //			});
 			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
-			
+
 			cellsSet.cells.parallelStream().forEach(c -> {
 				if (c.getMaskType() != null) {
-					pixelWriter.setColor( c.getX(), maxY - c.getY(),
-							ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));}
-				else {
-					pixelWriter.setColor( c.getX(), maxY - c.getY(),
-							Color.gray(0.75));
+					pixelWriter.setColor(c.getX(), maxY - c.getY(),
+							ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
+				} else {
+					pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.gray(0.75));
 				}
 			});
 
@@ -188,10 +195,10 @@ public class CellsSet {
 			});
 
 			cellsSet.cells.parallelStream().forEach(c -> {
-				pixelWriter.setColor( c.getX(), maxY - c.getY(),
-						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));	
-		});
-			
+				pixelWriter.setColor(c.getX(), maxY - c.getY(),
+						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
+			});
+
 //			cellsSet.cells.forEach(c -> {
 //				c.ColorP(c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
 //			});

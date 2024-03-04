@@ -147,7 +147,7 @@ public class AFTsConfigurationController {
 		});
 		isNotInitialsation = true;
 
-		//scrollgrid.setPrefHeight(Screen.getPrimary().getBounds().getHeight()*0.8);
+		// scrollgrid.setPrefHeight(Screen.getPrimary().getBounds().getHeight()*0.8);
 		radarChartsGridPane.prefWidthProperty().bind(scrollgrid.widthProperty());
 
 	}
@@ -158,7 +158,9 @@ public class AFTsConfigurationController {
 		AFTNameLabel.setText(a.getCompleteName());
 		rectangleColor.setFill(a.getColor());
 		if (isNotInitialsation) {
-			showOnlyOneAFT(a);
+
+			CellsSet.showOnlyOneAFT(a);
+
 		}
 		Histogram.histo((Pane) histogramePlevel.getParent(), "Productivity levels", histogramePlevel,
 				a.getProductivityLevel());
@@ -214,16 +216,6 @@ public class AFTsConfigurationController {
 		VBox v = Tools.vBox(plotInitialDistrebution, plotOptimalLandon);
 		Analysewin.creatwindows("", v);
 	};
-
-	void showOnlyOneAFT(Manager a) {
-		CellsSet.getCells().forEach((cell) -> {
-			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
-				cell.ColorP(Color.gray(0.65));
-			} else {
-				cell.ColorP(a.getColor());
-			}
-		});
-	}
 
 	static void ubdateRadarchart(Manager newAFT, GridPane grid) {
 		grid.getChildren().clear();
@@ -412,16 +404,16 @@ public class AFTsConfigurationController {
 			CsvTools.writeCSVfile(tmp2, pathCSV);
 		}
 	}
-	
+
 	public void updaChoisButton() {
-		//AFTChoisButton.getItems().clear();
-		Set <String> set= new HashSet<>();
-		M.AFtsSet.getAftHash().keySet().forEach(name->{
-			if(!AFTChoisButton.getItems().contains(name)) {
+		// AFTChoisButton.getItems().clear();
+		Set<String> set = new HashSet<>();
+		M.AFtsSet.getAftHash().keySet().forEach(name -> {
+			if (!AFTChoisButton.getItems().contains(name)) {
 				set.add(name);
 			}
 		});
 		AFTChoisButton.getItems().addAll(set);
-		//AFTChoisButton.setValue(M.AFtsSet.getAftHash().keySet().iterator().next());
+		// AFTChoisButton.setValue(M.AFtsSet.getAftHash().keySet().iterator().next());
 	}
 }

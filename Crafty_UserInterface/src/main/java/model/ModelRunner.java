@@ -121,7 +121,7 @@ public class ModelRunner implements Runnable {
 			calculeDistributionMean();
 			System.out.println("Done");
 		}
-
+		System.out.print("Start the competition process...");
 		CellsSet.getCells().parallelStream().forEach(c -> {
 			c.putservices();
 			// Randomly select percentageCells% of the land available to compete on, and set
@@ -150,13 +150,16 @@ public class ModelRunner implements Runnable {
 				CellsSubSets.actionInNeighboorSameLabel(c);
 			}
 		});
+		System.out.println("Done");
 		// display Map
 		if (mapSynchronisation) {
 			CellsSet.colorMap(colorDisplay);
 		}
 		// creat .csv output files: servises and AFT for each land
 		if (writeCsvFiles) {
+			System.out.print("writeCsvFiles...");
 			outPutToCsv(year);
+			System.out.println("Done");
 		}
 	}
 
