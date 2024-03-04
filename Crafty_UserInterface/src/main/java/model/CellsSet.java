@@ -20,6 +20,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -34,6 +36,8 @@ import main.FxMain;
 public class CellsSet {
 	private static Canvas canvas;
 	private static GraphicsContext gc;
+	static PixelWriter pixelWriter;
+	static WritableImage writableImage;
 	private static int maxX, maxY;
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
@@ -49,21 +53,34 @@ public class CellsSet {
 			X.add(c.getX());
 			Y.add(c.getY());
 		});
-		maxX = Collections.max(X);
-		maxY = Collections.max(Y);
+		maxX = Collections.max(X) + 1;
+		maxY = Collections.max(Y) + 1;
 		int minX = Collections.min(X);
 		int minY = Collections.min(Y);
-		
-		
-		canvas = new Canvas((maxX - minX) * Cell.getSize(),(maxY - minY) * Cell.getSize());
 
+		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
-		// FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
-		// canvas.getHeight());
-		//gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-		//gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		writableImage = new WritableImage(maxX, maxY);
+		pixelWriter = writableImage.getPixelWriter();
+		
+//		 FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
+//		 canvas.getHeight());
+//		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+//		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
+//		 for (int y = 0; y < canvas.getHeight(); y++) {
+//	            for (int x = 0; x < canvas.getWidth(); x++) {
+//	                Color color = new Color(Math.random(), Math.random(), Math.random(), 1.0);
+//	                pixelWriter.setColor(x, y, color);
+//	            }
+//	        }
+
+
+		long startTime1 = System.currentTimeMillis();
 		colorMap("FR");
+		long endTime1 = System.currentTimeMillis();
+		long re1 = endTime1 - startTime1;
+		System.out.println("time to color map with normale= " + re1);
 
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(canvas);
@@ -88,22 +105,23 @@ public class CellsSet {
 	public static void colorMap() {
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
-
-			cellsSet.cells.forEach(c -> {
+			cellsSet.cells.parallelStream().forEach(c -> {
 				if (c.getOwner() != null) {
-					c.ColorP(c.getOwner().getColor());
-				} else {
-					c.ColorP(Color.WHITE);
+					pixelWriter.setColor(c.getX(), maxY - c.getY(), c.getOwner().getColor());
 				}
 			});
 		} else if (capitalsName.contains(colortype)) {
-
-			cellsSet.cells.forEach(c -> {
-				if (c.getCapitals().get(colortype) != null)
-					c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
+			cellsSet.cells.parallelStream().forEach(c -> {
+					pixelWriter.setColor( c.getX(), maxY - c.getY(),
+							ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
+				
 			});
-		} else if (servicesNames.contains(colortype)) {
 
+//			cellsSet.cells.forEach(c -> {
+//				if (c.getCapitals().get(colortype) != null)
+//					c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
+//			});
+		} else if (servicesNames.contains(colortype)) {
 			cellsSet.cells.parallelStream().forEach(c -> {
 				if (c.getServices().get(colortype) != null)
 					values.add(c.getServices().get(colortype));
@@ -111,33 +129,56 @@ public class CellsSet {
 
 			double max = values.size() > 0 ? Collections.max(values) : 0;
 
-			cellsSet.cells.forEach(c -> {
-				if (c.getServices().get(colortype) != null)
-					c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
+			cellsSet.cells.parallelStream().forEach(c -> {
+					pixelWriter.setColor( c.getX(), maxY - c.getY(),
+							ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
+					
+				
 			});
+//			cellsSet.cells.forEach(c -> {
+//				if (c.getServices().get(colortype) != null)
+//					c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
+//			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
 			cellsSet.cells.parallelStream().forEach(c -> {
 				values.add(c.getTmpValueCell());
 			});
-
 			double max = Collections.max(values);
-			cellsSet.cells.forEach(c -> {
-				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
+			
+			cellsSet.cells.parallelStream().forEach(c -> {
+					pixelWriter.setColor( c.getX(), maxY - c.getY(),
+							ColorsTools.getColorForValue(max, c.getTmpValueCell()));	
 			});
+			
+//			cellsSet.cells.forEach(c -> {
+//				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
+//			});
 		} else if (colortype.equalsIgnoreCase("Mask")) {
 //			HashMap<String, Color> maskToColor = new HashMap<>();
 //			
 //			cellsSet.parallelStream().forEach(c -> {
 //				maskToColor.put(c.getMaskType(), ColorsTools.colorlist(new Random().nextInt(24)));
 //			});
-			ArrayList<String > listOfMasks= new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
+			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
 			
-			cellsSet.cells.forEach(c -> {
-				if(c.getMaskType()!=null) {
-					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));}
-				else {c.ColorP(Color.gray(0.75));}
+			cellsSet.cells.parallelStream().forEach(c -> {
+				if (c.getMaskType() != null) {
+					pixelWriter.setColor( c.getX(), maxY - c.getY(),
+							ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));}
+				else {
+					pixelWriter.setColor( c.getX(), maxY - c.getY(),
+							Color.gray(0.75));
+				}
 			});
+
+//			cellsSet.cells.forEach(c -> {
+//				if (c.getMaskType() != null) {
+//					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
+//				} else {
+//					c.ColorP(Color.gray(0.75));
+//				}
+//			});
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
@@ -146,11 +187,17 @@ public class CellsSet {
 				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
 			});
 
-			cellsSet.cells.forEach(c -> {
-				c.ColorP(c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
-			});
+			cellsSet.cells.parallelStream().forEach(c -> {
+				pixelWriter.setColor( c.getX(), maxY - c.getY(),
+						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));	
+		});
+			
+//			cellsSet.cells.forEach(c -> {
+//				c.ColorP(c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
+//			});
 
 		}
+		gc.drawImage(writableImage, 0, 0);
 	}
 
 	public static void MapControlerBymouse() {
@@ -231,7 +278,8 @@ public class CellsSet {
 	public static CellsLoader getCellsSet() {
 		return cellsSet;
 	}
-	public static Set<Cell>  getCells() {
+
+	public static Set<Cell> getCells() {
 		return cellsSet.cells;
 	}
 

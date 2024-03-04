@@ -109,7 +109,6 @@ public class FileReder {
 				Thread.currentThread().interrupt();
 			}
 		}
-		System.out.println("... executor.isShutdown()= " + executor.isShutdown());
 	}
 
 	static void associateCapitalsToCells(ConcurrentHashMap<String, Integer> indexof, String data) {
@@ -119,7 +118,7 @@ public class FileReder {
 
 		CellsSet.getCapitalsName().forEach(capital_name -> {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name)));
-			CellsSet.getCellsSet().getCell(x, y).getCapitals().put(capital_name, capital_value);//
+			CellsSet.getCellsSet().getCell(x, y).getCapitals().put(capital_name, capital_value);
 		});
 	}
 

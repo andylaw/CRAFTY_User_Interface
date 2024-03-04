@@ -37,6 +37,29 @@ public class FxMain extends Application {
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 
+//		long startTime2 = System.currentTimeMillis();
+//		CsvTools.readerAsHash("C:\\Users\\byari-m\\Documents\\Data\\data-DE\\worlds\\Baseline_map_DE.csv");
+//		long endTime2 = System.currentTimeMillis();
+//		long re2 = endTime2 - startTime2;
+//		
+//			System.out.println("i= "+i+" TablSaw= "+re1+"   BufferedReader= "+ re2+ "propotion "+ (re1/re2));
+//		}
+//	List<File> folderList = PathTools.detectFolders("C:\\Users\\byari-m\\Documents\\Data\\data-DE\\worlds\\Capitals");
+//	for (int i = 0; i < folderList.size(); i++) {
+//		List<File> vect = CsvTools.detectFiles(folderList.get(i).getAbsolutePath());
+//		
+//		for (int j = 0; j < vect.size(); j++) {
+//			System.out.println( vect.get(j).getAbsolutePath());
+//			CsvTools.cleanCsvFile( vect.get(j).getAbsolutePath());
+//	}
+//    	
+
+//    	System.out.println("cleaned");
+
+//		Map<String, String[]> tst = processCSV("C:\\Users\\byari-m\\Downloads\\Baseline_map.csv");
+//		System.out.println(tst.size());
+
+		
 		FxMain.primaryStage = primaryStage;
 		subScene = new SubScene(root, w * .45, h * .95);
 
