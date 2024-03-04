@@ -2,6 +2,7 @@ package UtilitiesFx.graphicalTools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import dataLoader.AFTsLoader;
@@ -22,7 +23,7 @@ import model.CellsSet;
 public class PieChartTools {
 	ArrayList<PieChart.Data> data = new ArrayList<>();
 
-	public void updateChart(HashMap<String, Double> hash, PieChart chart) {
+	public void updateChart(ConcurrentHashMap<String, Double> hash, PieChart chart) {
 
 		chart.getData().clear();
 //		data.clear();
@@ -35,7 +36,7 @@ public class PieChartTools {
 		
 	}
 
-	public void updateChart(HashMap<String, Double> hash, HashMap<String, Color> color, PieChart chart, boolean isInteractive) {
+	public void updateChart(ConcurrentHashMap<String, Double> hash, HashMap<String, Color> color, PieChart chart, boolean isInteractive) {
 		updateChart(hash, chart);
 		for (int i = 0; i < data.size(); i++) {
 			for (Node n : chart.lookupAll(".data" + i)) {
@@ -48,7 +49,7 @@ public class PieChartTools {
 			legendColorStatic(color, chart) ;
 	}
 	
-	public void updateChart(CellsLoader M,HashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
+	public void updateChart(CellsLoader M,ConcurrentHashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
 		updateChart(hash, chart);
 		for (int i = 0; i < data.size(); i++) {
 			for (Node n : chart.lookupAll(".data" + i)) {

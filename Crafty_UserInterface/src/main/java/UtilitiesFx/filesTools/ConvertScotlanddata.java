@@ -12,9 +12,10 @@ public class ConvertScotlanddata {
 
 	public static void initilasiation() {
 		String p = "C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\Wales\\Base_line_map_Wales.csv";
-		HashMap<String, String[]> baseline = CsvTools.ReadAsaHash(p);
-		for (int i = 0; i < baseline.values().iterator().next().length; i++) {
-			set.add(baseline.get("X")[i] + "," + baseline.get("Y")[i]);
+		HashMap<String, ArrayList<String>> baseline = FileReder
+				.ReadAsaHash(p);
+		for (int i = 0; i < baseline.values().iterator().next().size(); i++) {
+			set.add(baseline.get("X").get(i) + "," + baseline.get("Y").get(i));
 		}
 	}
 
@@ -58,12 +59,12 @@ public class ConvertScotlanddata {
 		String aft_services_path = path + "as_javaGPT.csv";
 		String services_capitals_path = path + "sc_DE.csv";
 
-		ArrayList<String> capital = new ArrayList<>(CsvTools.ReadAsaHash(aft_capital_path).keySet());
-		ArrayList<String> services = new ArrayList<>(CsvTools.ReadAsaHash(aft_services_path).keySet());
-		ArrayList<String> aft = new ArrayList<>(CsvTools.ReadAsaHash(path + "AFT_list.csv").keySet());
+		ArrayList<String> capital = new ArrayList<>(FileReder.ReadAsaHash(aft_capital_path).keySet());
+		ArrayList<String> services = new ArrayList<>(FileReder.ReadAsaHash(aft_services_path).keySet());
+		ArrayList<String> aft = new ArrayList<>(FileReder.ReadAsaHash(path + "AFT_list.csv").keySet());
 
-		capital.remove(capital.indexOf("C0"));
-		services.remove(services.indexOf("C0"));
+		capital.remove(capital.indexOf(""));
+		services.remove(services.indexOf(""));
 
 		HashMap<String, Double> aft_capital = csvtoHashmap(aft_capital_path);
 		HashMap<String, Double> aft_services = csvtoHashmap(aft_services_path);

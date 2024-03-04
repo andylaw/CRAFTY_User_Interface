@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import UtilitiesFx.filesTools.CsvTools;
+import UtilitiesFx.filesTools.FileReder;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import model.Cell;
@@ -33,7 +34,8 @@ public class MaskRestrictionDataLoader {
 	}
 
 	public void CellSetToMaskLoader(String maskType) {
-		HashMap<String, String[]> csv = CsvTools.ReadAsaHash(ListOfMask.get(maskType), true);
+		HashMap<String, ArrayList<String>> csv = FileReder
+				.ReadAsaHash(ListOfMask.get(maskType), true);
 		String protec = "PROTECTED";
 		if (csv != null) {
 			for (Iterator<String> iterator = csv.keySet().iterator(); iterator.hasNext();) {
@@ -42,10 +44,10 @@ public class MaskRestrictionDataLoader {
 					protec = n;
 				}
 			}
-			for (int i = 1; i < csv.values().iterator().next().length; i++) {
-				if (csv.get(protec)[i].contains("1")) {
-					Cell c = CellsSet.getCellsSet().getCell((int) Tools.sToD(csv.get("X")[i]),
-							(int) Tools.sToD(csv.get("Y")[i]));
+			for (int i = 1; i < csv.values().iterator().next().size(); i++) {
+				if (csv.get(protec).get(i).contains("1")) {
+					Cell c = CellsSet.getCellsSet().getCell((int) Tools.sToD(csv.get("X").get(i)),
+							(int) Tools.sToD(csv.get("Y").get(i)));
 					if (c != null) {
 						c.setMaskType(maskType);
 					}

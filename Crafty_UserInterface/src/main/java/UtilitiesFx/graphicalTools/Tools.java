@@ -1,5 +1,6 @@
 package UtilitiesFx.graphicalTools;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -151,6 +154,16 @@ public class Tools {
 		return 0;
 	}
 
+	public static ImageView logo (InputStream imageStream, double translateX,double translateY, double scale) {
+		ImageView imageView = new ImageView();;
+		Image image = new Image(imageStream);
+		imageView.setImage(image);
+		imageView.setTranslateX(translateX);
+		imageView.setTranslateY(translateY);
+		imageView.setScaleX(scale);
+		imageView.setScaleY(scale);
+		
+		return imageView;} 
 
 
 }

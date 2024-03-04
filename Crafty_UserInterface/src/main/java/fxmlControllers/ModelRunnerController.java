@@ -76,6 +76,7 @@ public class ModelRunnerController {
 //	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
+	
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
@@ -233,7 +234,7 @@ public class ModelRunnerController {
 
 	@FXML
 	public void stop() {
-		R.cells.ResetMap();
+		R.cells.loadMap();
 		CellsSet.colorMap();
 		try {
 			timeline.stop();

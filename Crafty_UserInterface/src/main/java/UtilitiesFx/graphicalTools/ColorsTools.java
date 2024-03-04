@@ -44,7 +44,7 @@ public class ColorsTools {
 
 	public static Color colorlist(int nbr) {
 
-			return  getColorForValue( "Alphabet", 24,  nbr);//;new Color(Math.random(), Math.random(),Math.random(), 1.0);
+			return  getColorForValue( "Alphabet", 24, nbr%24);//;new Color(Math.random(), Math.random(),Math.random(), 1.0);
 
 	}
     public static String toHex(Color color) {

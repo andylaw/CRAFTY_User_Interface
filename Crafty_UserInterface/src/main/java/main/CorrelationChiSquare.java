@@ -33,11 +33,11 @@ public class CorrelationChiSquare {
 	}
 
 	 static double vectorGenerator(Manager a, String CapitalsName) {
-		double[] aft = new double[CellsSet.getCellsSet().size()];
-		double[] capitalData = new double[CellsSet.getCellsSet().size()];
+		double[] aft = new double[CellsSet.getCells().size()];
+		double[] capitalData = new double[CellsSet.getCells().size()];
 
 		AtomicInteger i = new AtomicInteger();
-		CellsSet.getCellsSet().forEach(c -> {
+		CellsSet.getCells().forEach(c -> {
 			if (c.getOwner() == a)
 				aft[i.get()] = 1;
 			else

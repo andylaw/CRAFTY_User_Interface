@@ -4,7 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import UtilitiesFx.filesTools.CsvTools;
+
+import UtilitiesFx.filesTools.FileReder;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
@@ -18,7 +19,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -117,7 +117,7 @@ public class OutPuterController {
 	}
 
 	void newOutPut(String year) {
-		M.servicesAndOwner(year, outputpath);
+		M.servicesAndOwneroutPut(year, outputpath);
 
 		for (int i = 0; i < radioColor.length; i++) {
 			if (radioColor[i].isSelected()) {
@@ -132,16 +132,16 @@ public class OutPuterController {
 		ArrayList<LineChart<Number, Number>> lineChart = new ArrayList<>();
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		HashMap<String, String[]> reder = CsvTools
+		HashMap<String, ArrayList<String>> reder = FileReder
 				.ReadAsaHash(PathTools.fileFilter(outputpath, "-AggregateServiceDemand.csv").get(0));
 
 		ArrayList<HashMap<String, double[]>> has = new ArrayList<>();
 		CellsSet.getServicesNames().forEach(servicename -> {
 			HashMap<String, double[]> ha = new HashMap<>();
 			reder.forEach((name, value) -> {
-				double[] tmp = new double[value.length];
-				for (int i = 0; i < value.length; i++) {
-					tmp[i] = Tools.sToD(value[i]);
+				double[] tmp = new double[value.size()];
+				for (int i = 0; i < value.size(); i++) {
+					tmp[i] = Tools.sToD(value.get(i));
 				}
 				if (name.contains(servicename)) {
 					ha.put(name, tmp);
@@ -180,13 +180,14 @@ public class OutPuterController {
 	}
 
 	HashMap<String, double[]> updatComposition(String path, String nameFile) {
-		HashMap<String, String[]> reder = CsvTools.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
+		HashMap<String, ArrayList<String>> reder = FileReder
+				.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
 		HashMap<String, double[]> has = new HashMap<>();
 
 		reder.forEach((name, value) -> {
-			double[] tmp = new double[value.length];
-			for (int i = 0; i < value.length; i++) {
-				tmp[i] = Tools.sToD(value[i]);
+			double[] tmp = new double[value.size()];
+			for (int i = 0; i < value.size(); i++) {
+				tmp[i] = Tools.sToD(value.get(i));
 			}
 			has.put(name, tmp);
 

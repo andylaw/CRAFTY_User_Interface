@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -167,7 +168,7 @@ public class NewRegion_Controller {
 
 	static PieChart updateChart() {
 		PieChart chart = new PieChart();
-		HashMap<String, Double> nbrOfPatchInAgent = new HashMap<>();
+		ConcurrentHashMap<String, Double> nbrOfPatchInAgent = new ConcurrentHashMap<>();
 		HashMap<String, Color> color = new HashMap<>();
 
 		patchsInRergion.forEach(p -> {
@@ -189,7 +190,7 @@ public class NewRegion_Controller {
 	}
 
 	static HBox statisticAvregeCapital() {
-		HashMap<String, Double> acumulationOfCapital = new HashMap<>();
+		ConcurrentHashMap<String, Double> acumulationOfCapital = new ConcurrentHashMap<>();
 		patchsInRergion.forEach(c -> {
 			c.getCapitals().forEach((k, v) -> {
 				if (acumulationOfCapital.containsKey(k)) {

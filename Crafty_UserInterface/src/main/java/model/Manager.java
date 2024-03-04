@@ -32,15 +32,15 @@ public class Manager extends AbstractManager{
 			this.label = other.label;
 			this.color = other.color;
 			other.sensitivty.forEach((n, v) -> {
-				this.sensitivty.put(n, v * (1 + intervale * (new Random().nextDouble(2) - 1)));
+				this.sensitivty.put(n, v * (1 + intervale * (2*new Random().nextDouble() - 1)));
 
 			});
 			other.productivityLevel.forEach((n, v) -> {
-				this.productivityLevel.put(n, v * (1 + intervale * (new Random().nextDouble(2) - 1)));
+				this.productivityLevel.put(n, v * (1 + intervale * (2*new Random().nextDouble() - 1)));
 			});
-			this.giveInMean = other.giveInMean * (1 + intervale * (new Random().nextDouble(2) - 1));
-			this.giveUpMean = other.giveUpMean * (1 + intervale * (new Random().nextDouble(2) - 1));
-			this.giveUpProbabilty = other.giveUpProbabilty * (1 + intervale * (new Random().nextDouble(2) - 1));
+			this.giveInMean = other.giveInMean * (1 + intervale * (2*new Random().nextDouble() - 1));
+			this.giveUpMean = other.giveUpMean * (1 + intervale * (2*new Random().nextDouble() - 1));
+			this.giveUpProbabilty = other.giveUpProbabilty * (1 + intervale * (2*new Random().nextDouble() - 1));
 		}
 
 	}

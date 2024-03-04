@@ -49,7 +49,7 @@ public class CellsSubSets {
 
 	public static void selectZone(Cell patch, String zonetype) {
 
-		CellsSet.getCellsSet().forEach(p -> {
+		CellsSet.getCells().forEach(p -> {
 			if (p.getGisNameValue().get(zonetype) != null) {
 				if (p.getGisNameValue().get(zonetype).equals(patch.getGisNameValue().get(zonetype))) {
 					p.ColorP(p.color);

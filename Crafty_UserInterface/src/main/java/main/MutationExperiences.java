@@ -64,7 +64,7 @@ public class MutationExperiences {
 	}
 
 	public void asosieteRandomAAFTTocells() {
-		CellsSet.getCellsSet().forEach(c -> {
+		CellsSet.getCells().forEach(c -> {
 			c.setOwner(M.AFtsSet.getAftHash()
 					.get(M.AFtsSet.getAftHash().keySet().toArray()[new Random().nextInt(M.AFtsSet.getAftHash().keySet().size())]));
 		});
@@ -145,7 +145,7 @@ public class MutationExperiences {
 	}
 
 	void writOutPut(String dir) {
-		String[][] output = new String[CellsSet.getCellsSet().size() + 1][CellsSet.getServicesNames().size() + 3];
+		String[][] output = new String[CellsSet.getCells().size() + 1][CellsSet.getServicesNames().size() + 3];
 		output[0][0] = "X";
 		output[0][1] = "Y";
 		output[0][2] = "Agent";
@@ -153,7 +153,7 @@ public class MutationExperiences {
 			output[0][j + 3] = "Service:" + CellsSet.getServicesNames().get(j);
 		}
 		AtomicInteger i = new AtomicInteger(1);
-		CellsSet.getCellsSet().forEach((c) -> {
+		CellsSet.getCells().forEach((c) -> {
 			output[i.get()][0] = c.getX() + "";
 			output[i.get()][1] = c.getY() + "";
 			output[i.get()][2] = c.getOwner() != null ? c.getOwner().getLabel() : "lazy";

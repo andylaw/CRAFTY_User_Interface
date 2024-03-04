@@ -44,7 +44,7 @@ public class Cell extends AbstractCell {
 			double cvalue = capitals.get(cname);
 			tmp = tmp * Math.pow(cvalue, a.getSensitivty().get(cname + "_" + serviceName));
 		}
-
+//		System.out.println(serviceName+"->"+a.getProductivityLevel().containsKey(serviceName));
 		return tmp * a.getProductivityLevel().get(serviceName);
 	}
 

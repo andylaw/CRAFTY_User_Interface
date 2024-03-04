@@ -66,7 +66,7 @@ public class MasksPaneController {
 					int place = boxMaskTypes.getChildren().indexOf(r) + 1;
 					boxMaskTypes.getChildren().add(place, T[i]);
 				} else {
-					CellsSet.getCellsSet().forEach(c -> {
+					CellsSet.getCells().forEach(c -> {
 						if (c.getMaskType() != null && c.getMaskType().equals(r.getText()))
 							c.setMaskType(null);
 					});

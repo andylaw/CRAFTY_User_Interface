@@ -73,7 +73,8 @@ public class PathTools {
 
 		if (turn.size() == 0) {
 			if(ignoreIfFileNotExists) {return null;}
-			return fileFilter(ignoreIfFileNotExists,WarningWindowes.alterErrorNotFileFound("The file path could not be found:",str));
+			return null;
+//			return fileFilter(ignoreIfFileNotExists,WarningWindowes.alterErrorNotFileFound("The file path could not be found:",str));
 		} else {
 			return turn;
 		}

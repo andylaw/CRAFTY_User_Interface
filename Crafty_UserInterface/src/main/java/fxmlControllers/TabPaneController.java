@@ -9,7 +9,6 @@ import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -81,6 +80,7 @@ public class TabPaneController {
 			if (yearchoice.getValue() != null) {
 				Paths.setCurrentYear((int) Tools.sToD(yearchoice.getValue()));
 				M.updateCapitals(Paths.getCurrentYear());
+				
 				if (dataPane.isSelected()) {
 					for (int i = 0; i < CellsSet.getCapitalsName().size() + 1; i++) {
 						if (SpatialDataController.radioColor[i].isSelected()) {

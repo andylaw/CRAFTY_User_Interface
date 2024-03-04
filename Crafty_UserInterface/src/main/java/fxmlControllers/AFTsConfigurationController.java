@@ -169,7 +169,7 @@ public class AFTsConfigurationController {
 	}
 
 	void colorland(Manager a) {
-		CellsSet.getCellsSet().forEach(C -> {
+		CellsSet.getCells().forEach(C -> {
 			C.landStored(a);
 		});
 		CellsSet.colorMap("tmp");
@@ -216,7 +216,7 @@ public class AFTsConfigurationController {
 	};
 
 	void showOnlyOneAFT(Manager a) {
-		CellsSet.getCellsSet().forEach((cell) -> {
+		CellsSet.getCells().forEach((cell) -> {
 			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
 				cell.ColorP(Color.gray(0.65));
 			} else {

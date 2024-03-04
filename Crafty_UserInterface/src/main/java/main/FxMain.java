@@ -1,16 +1,16 @@
 package main;
 
+
 import java.io.InputStream;
 
 import UtilitiesFx.cameraTools.Camera;
-import UtilitiesFx.filesTools.CsvTools;
+import UtilitiesFx.graphicalTools.Tools;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -30,37 +30,25 @@ public class FxMain extends Application {
 	public static ImageView imageView = new ImageView();
 	public static Stage primaryStage;
 	public static AnchorPane anchor = new AnchorPane();
-	public static Scene scene= new Scene(anchor);
+	public static Scene scene = new Scene(anchor);
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 
-//		ConvertScotlanddata.creatsensitivty();
-//		ConvertScotlanddata.initilasiation();
-//		ConvertScotlanddata.scotlandcells("C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\UK\\LandUseControl\\UrbanMask\\SSP5"); 
-//		new MaskRestrictions().setToMaskInitialisation("C:\\Users\\byari-m\\Documents\\Data\\Scotland\\worlds\\LandUseControl\\UrbanMask\\SSP1\\UrbanMask_SSP1_2070.csv");
-
 		FxMain.primaryStage = primaryStage;
-		subScene = new SubScene(root, w * .45, h *.95);
-	//	CsvTools.ReadAsaHash( "not existe",  true); 
+		subScene = new SubScene(root, w * .45, h * .95);
 
 		InputStream imageStream = getClass().getResourceAsStream("/craftylogo.png");
-		Image image = new Image(imageStream);
-		imageView.setImage(image);
+		imageView = Tools.logo(imageStream, w / 3, h / 3, 0.65);
 		anchor.getChildren().add(imageView);
-		imageView.setTranslateX(w / 3);
-		imageView.setTranslateY(h / 3);
-		imageView.setScaleX(.75);
-		imageView.setScaleY(.75);
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 
-		VBox vbox = new VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")),anchor);
+		VBox vbox = new VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")), anchor);
 		scene = new Scene(vbox, w * .8, h * .8);
 		scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
-		
 
 		primaryStage.setScene(scene);
 
@@ -72,5 +60,6 @@ public class FxMain extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
 
 }

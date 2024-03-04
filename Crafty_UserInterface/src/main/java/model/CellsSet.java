@@ -45,7 +45,7 @@ public class CellsSet {
 	public static void plotCells() {
 		ArrayList<Integer> X = new ArrayList<>();
 		ArrayList<Integer> Y = new ArrayList<>();
-		cellsSet.forEach(c -> {
+		cellsSet.cells.forEach(c -> {
 			X.add(c.getX());
 			Y.add(c.getY());
 		});
@@ -53,29 +53,29 @@ public class CellsSet {
 		maxY = Collections.max(Y);
 		int minX = Collections.min(X);
 		int minY = Collections.min(Y);
-
-		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
+		
+		
+		canvas = new Canvas((maxX - minX) * Cell.getSize(),(maxY - minY) * Cell.getSize());
 
 		gc = canvas.getGraphicsContext2D();
 		// FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
 		// canvas.getHeight());
-
-//		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-//		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		//gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+		//gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		colorMap("FR");
 
 		FxMain.root.getChildren().clear();
-		FxMain.root.getChildren().add(new VBox(canvas));
+		FxMain.root.getChildren().add(canvas);
 		FxMain.subScene.setCamera(FxMain.camera);
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
-
+		System.out.println("Number of cells = " + cellsSet.cells.size());
 		MapControlerBymouse();
 	}
 
 	public static void colorMapClean() {
-		cellsSet.forEach(c -> {
+		cellsSet.cells.forEach(c -> {
 			c.ColorP(Color.GRAY);
 		});
 	}
@@ -89,7 +89,7 @@ public class CellsSet {
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 
-			cellsSet.forEach(c -> {
+			cellsSet.cells.forEach(c -> {
 				if (c.getOwner() != null) {
 					c.ColorP(c.getOwner().getColor());
 				} else {
@@ -98,31 +98,31 @@ public class CellsSet {
 			});
 		} else if (capitalsName.contains(colortype)) {
 
-			cellsSet.forEach(c -> {
+			cellsSet.cells.forEach(c -> {
 				if (c.getCapitals().get(colortype) != null)
 					c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
 			});
 		} else if (servicesNames.contains(colortype)) {
 
-			cellsSet.parallelStream().forEach(c -> {
+			cellsSet.cells.parallelStream().forEach(c -> {
 				if (c.getServices().get(colortype) != null)
 					values.add(c.getServices().get(colortype));
 			});
 
 			double max = values.size() > 0 ? Collections.max(values) : 0;
 
-			cellsSet.forEach(c -> {
+			cellsSet.cells.forEach(c -> {
 				if (c.getServices().get(colortype) != null)
 					c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
 			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
-			cellsSet.parallelStream().forEach(c -> {
+			cellsSet.cells.parallelStream().forEach(c -> {
 				values.add(c.getTmpValueCell());
 			});
 
 			double max = Collections.max(values);
-			cellsSet.forEach(c -> {
+			cellsSet.cells.forEach(c -> {
 				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
 		} else if (colortype.equalsIgnoreCase("Mask")) {
@@ -133,20 +133,20 @@ public class CellsSet {
 //			});
 			ArrayList<String > listOfMasks= new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
 			
-			cellsSet.forEach(c -> {
-				if(c.getMaskType()!=null)
-					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
-				else {c.ColorP(Color.GRAY);}
+			cellsSet.cells.forEach(c -> {
+				if(c.getMaskType()!=null) {
+					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));}
+				else {c.ColorP(Color.gray(0.75));}
 			});
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
-			cellsSet.parallelStream().forEach(c -> {
+			cellsSet.cells.parallelStream().forEach(c -> {
 
 				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
 			});
 
-			cellsSet.forEach(c -> {
+			cellsSet.cells.forEach(c -> {
 				c.ColorP(c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
 			});
 
@@ -230,6 +230,9 @@ public class CellsSet {
 
 	public static CellsLoader getCellsSet() {
 		return cellsSet;
+	}
+	public static Set<Cell>  getCells() {
+		return cellsSet.cells;
 	}
 
 	public static void setCellsSet(CellsLoader cellsSet) {

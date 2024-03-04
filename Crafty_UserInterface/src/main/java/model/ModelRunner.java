@@ -37,6 +37,7 @@ public class ModelRunner implements Runnable {
 
 	public String[][] compositionAFT;
 	public String[][] servicedemand;
+	
 
 	public ModelRunner(CellsLoader cells) {
 		this.cells = cells;
@@ -56,7 +57,8 @@ public class ModelRunner implements Runnable {
 
 	void calculeSystemSupply() {
 		supply = Collections.synchronizedMap(new HashMap<>());
-		CellsSet.getCellsSet().parallelStream().forEach(c -> {
+		
+		CellsSet.getCells().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				CellsSet.getServicesNames().forEach(s -> {
 					double sup = c.prodactivity(c.getOwner(), s);
@@ -68,13 +70,13 @@ public class ModelRunner implements Runnable {
 				});
 			}
 		});
-		// System.out.println(supply);
+		System.out.println(supply);
 	}
 
 	void calculeDistributionMean() {
 		distributionMean = Collections.synchronizedMap(new HashMap<>());
 		HashMap<String, Integer> AFTnbr = AFTsLoader.hashAgentNbr();
-		CellsSet.getCellsSet().parallelStream().forEach(c -> {
+		CellsSet.getCells().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				double sup = c.utility(c.getOwner());
 				if (distributionMean.containsKey(c.getOwner().getLabel())) {
@@ -120,7 +122,7 @@ public class ModelRunner implements Runnable {
 			System.out.println("Done");
 		}
 
-		CellsSet.getCellsSet().parallelStream().forEach(c -> {
+		CellsSet.getCells().parallelStream().forEach(c -> {
 			c.putservices();
 			// Randomly select percentageCells% of the land available to compete on, and set
 			// the competition
@@ -179,7 +181,7 @@ public class ModelRunner implements Runnable {
 	}
 
 	void writOutPutMap(int year) {
-		String[][] output = new String[CellsSet.getCellsSet().size() + 1][CellsSet.getServicesNames().size() + 3];
+		String[][] output = new String[CellsSet.getCells().size() + 1][CellsSet.getServicesNames().size() + 3];
 		output[0][0] = "X";
 		output[0][1] = "Y";
 		output[0][2] = "Agent";
@@ -187,7 +189,7 @@ public class ModelRunner implements Runnable {
 			output[0][j + 3] = "Service:" + CellsSet.getServicesNames().get(j);
 		}
 		AtomicInteger i = new AtomicInteger(1);
-		CellsSet.getCellsSet().forEach(c -> {
+		CellsSet.getCells().forEach(c -> {
 			output[i.get()][0] = c.getX() + "";
 			output[i.get()][1] = c.getY() + "";
 			output[i.get()][2] = c.getOwner() != null ? c.getOwner().getLabel() : "lazy";

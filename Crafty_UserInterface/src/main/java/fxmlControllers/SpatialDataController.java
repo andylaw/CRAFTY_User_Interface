@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -101,6 +102,7 @@ public class SpatialDataController {
 						histogrameCapitals(Paths.getCurrentYear() + "", CellsSet.getCapitalsName().get(k));
 					}
 					CellsSet.colorMap(CellsSet.getCapitalsName().get(k));
+					
 				}
 			});
 		}
@@ -123,7 +125,7 @@ public class SpatialDataController {
 	void histogrameCapitals(String year, String capitalName) {
 
 		Set<Double> dset = new HashSet<>();
-		CellsSet.getCellsSet().forEach(c -> {
+		CellsSet.getCells().forEach(c -> {
 			dset.add(c.getCapitals().get(capitalName));
 		});
 
@@ -167,7 +169,7 @@ public class SpatialDataController {
 	}
 
 	private void updatePieChartColorAFts(PieChart chart) {
-		HashMap<String, Double> convertedMap = new HashMap<>(AFTsLoader.hashAgentNbr().entrySet().stream()
+		ConcurrentHashMap<String, Double> convertedMap = new ConcurrentHashMap<>(AFTsLoader.hashAgentNbr().entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().doubleValue())));
 		HashMap<String, Color> color = new HashMap<>();
 		M.AFtsSet.getAftHash().forEach((name, a) -> {

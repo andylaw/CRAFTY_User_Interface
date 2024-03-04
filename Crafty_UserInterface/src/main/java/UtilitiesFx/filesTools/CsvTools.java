@@ -1,22 +1,16 @@
 package UtilitiesFx.filesTools;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import UtilitiesFx.graphicalTools.Tools;
-import UtilitiesFx.graphicalTools.WarningWindowes;
-import tech.tablesaw.api.ColumnType;
-import tech.tablesaw.api.Table;
-import tech.tablesaw.io.AddCellToColumnException;
-import tech.tablesaw.io.csv.CsvReadOptions;
 
 public class CsvTools {
 
@@ -25,35 +19,49 @@ public class CsvTools {
 	 *
 	 */
 
-	public static String[][] csvReader(String filePath) {
-		 System.out.print("Read as String[][] file: " + filePath+"...");
-		String[][] csv = null;
-		try {
-			int X = 0, Y = 0;
-			Scanner scanner = new Scanner(new File(filePath));
-
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				Y = line.split(",").length;
-				X++;
+	public static String[] csvReaderAsVector(String filePath) {
+		System.out.print("Read as String[][] file: " + filePath + "...");
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				String values = line;
+				lines.add(values);
 			}
-			scanner.close();
-			csv = new String[X][Y];
-			scanner = new Scanner(new File(filePath));
-
-			int i = 0;
-			while (scanner.hasNextLine()) {
-				String[] tokens = scanner.nextLine().split(",");
-				csv[i] = tokens;
-				i++;
-			}
-			scanner.close();
-
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
+
+		// Convert List<String[]> to String[][]
+		String[] array = new String[lines.size()];
+		for (int i = 0; i < lines.size(); i++) {
+			array[i] = lines.get(i);
+		}
 		System.out.println("done");
-		return csv;
+		return array;
+	}
+
+	public static String[][] csvReader(String filePath) {
+		System.out.print("Read as String[][] file: " + filePath + "...");
+		List<String[]> lines = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				String[] values = line.split(","); // Assumes CSV uses comma as delimiter
+				lines.add(values);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Convert List<String[]> to String[][]
+		String[][] array = new String[lines.size()][];
+		for (int i = 0; i < lines.size(); i++) {
+			array[i] = lines.get(i);
+		}
+		System.out.println("done");
+		return array;
 	}
 
 	public static String[] lineFromscsv(int lineNumber, String path) {
@@ -85,93 +93,49 @@ public class CsvTools {
 		return ret;
 	}
 
-	private static void correctAddCellToColumnException(Table T, String filePath, AddCellToColumnException e) {
-		writeValueCSVfile(filePath, (int) e.getRowNumber(), (int) e.getColumnIndex(), "0");
-		try {
-			T = Table.read().csv(filePath);
-		} catch (AddCellToColumnException s) {
-			System.out.println("\n" + s.getLocalizedMessage());
-			correctAddCellToColumnException(T, filePath, s);
+//    public static HashMap<String, String[]> ReadAsaHash(String filePath) {//csvReaderAsHash
+//    	System.out.print("Read: " + filePath + "...");
+//        HashMap<String, List<String>> tempMap = new HashMap<>();
+//        String[] headers = null;
+//        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+//            String line;
+//            if ((line = br.readLine()) != null) {
+//                // Process headers
+//                headers = line.split(",");
+//                for (String header : headers) {
+//                    tempMap.put(header, new ArrayList<>());
+//                }
+//            }
+//            while ((line = br.readLine()) != null) {
+//                String[] values = line.split(",");
+//                for (int i = 0; i < values.length; i++) {
+//                    tempMap.get(headers[i]).add(values[i]);
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // Convert lists to arrays
+//        HashMap<String, String[]> resultMap = new HashMap<>();
+//        for (String header : tempMap.keySet()) {
+//            List<String> valuesList = tempMap.get(header);
+//            String[] valuesArray = new String[valuesList.size()];
+//            valuesArray = valuesList.toArray(valuesArray);
+//            resultMap.put(header, valuesArray);
+//        }
+//        System.out.println(" Done");
+//        return resultMap;
+//    }
+
+	public static void cleanCsvFile(String filePath) {
+		String[] vect = csvReaderAsVector(filePath);
+		String[][] vect2 = new String[vect.length][1];
+		for (int i = 0; i < vect.length; i++) {
+			vect2[i][0] = vect[i].replace(" ", "").replace("\"", "");
 		}
-	}
-	public static HashMap<String, String[]> ReadAsaHash(String filePath){
-		return ReadAsaHash(filePath, false);
-		
-	}
-	public static HashMap<String, String[]> ReadAsaHash(String filePath, boolean ignoreIfFileNotExists) {
-		System.out.print("Read: " + filePath + "...");
-		HashMap<String, String[]> hash = new HashMap<>();
-		Table T = null;
-		try {
-			T = Table.read().csv(filePath);
-		} catch (AddCellToColumnException s) {
-			correctAddCellToColumnException(T, filePath, s);
-		} catch (Exception e) {
-			if (ignoreIfFileNotExists) {
-				return null;
-			} else {
-				filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
-				T = Table.read().csv(filePath);
-			}
-		}
-		List<String> columnNames = T.columnNames();
 
-		for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
-			String name = (String) iterator.next();
-
-			String[] tmp = new String[T.column(name).size()];
-			for (int i = 0; i < tmp.length; i++) {
-				tmp[i] = T.column(name).getString(i);
-			}
-			hash.put(name, tmp);
-		}
-
-		System.out.println(" Done");
-		return hash;
-	}
-
-	public static void tmp() {
-		String[][] T = csvReader("C:\\Users\\byari-m\\Downloads\\anpp.csv");
-		String[] line0 = CsvTools.lineFromscsv(0, "C:\\Users\\byari-m\\Downloads\\anpp.csv");
-
-		String filePath = "C:\\Users\\byari-m\\Downloads\\anpp2000.csv";
-		File file = new File(filePath);
-		try {
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile(), false);
-			BufferedWriter bw = new BufferedWriter(fw);
-			for (int j = 0; j < line0.length; j++) {
-				if (j != 2)
-					bw.write(line0[j] + ",");
-			}
-			bw.newLine();
-			for (int i = 0; i < T.length; i++) {
-				if (T[i][2].equals("2000")) {
-					for (int j = 0; j < T[0].length - 1; j++) {
-						if (j != 2)
-							bw.write(T[i][j] + ",");
-					}
-					bw.write(T[i][T[0].length - 1]);
-					bw.newLine();
-				}
-			}
-			bw.close();
-
-		} catch (IOException e) {
-		}
-	}
-
-	public static double[][] csvReaderDouble(String filePath) {
-		String[][] csvStr = csvReader(filePath);
-		double[][] csv = new double[csvStr.length][csvStr[0].length];
-		for (int i = 0; i < csvStr.length; i++) {
-			for (int j = 0; j < csvStr[0].length; j++) {
-				csv[i][j] = Tools.sToD(csvStr[i][j]);
-			}
-		}
-		return csv;
+		writeCSVfile(vect2, filePath);
 	}
 
 	public static String[] columnFromscsv(int colunNumber, String path) {
