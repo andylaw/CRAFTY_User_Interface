@@ -8,9 +8,25 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import dataLoader.CellsLoader;
+import dataLoader.Paths;
+import fxmlControllers.ModelRunnerController;
+import model.Cell;
+import model.CellsSet;
 
 public class CsvTools {
 
@@ -265,5 +281,36 @@ public class CsvTools {
 
 		return filePaths;
 	}
+
+	public static void exportToCSV(String filePath) {
+		List<String> serviceImmutableList = Collections.unmodifiableList(CellsSet.getServicesNames());
+		// Process the cells in parallel to transform each Cell into a CSV string
+		Set<String> csvLines = CellsSet.getCells().parallelStream().map(c -> {
+			String capitalsFlattened = flattenHashMap(c, serviceImmutableList);
+			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "", c.getOwner() != null ? c.getOwner().getLabel() : "null",capitalsFlattened);
+		}).collect(Collectors.toSet());
+
+		// Write the processed lines to the CSV file
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+			writer.write("Index,X,Y,Agent," + String.join(",", serviceImmutableList) + "\n"); // CSV header
+			for (String line : csvLines) {
+				writer.write(line+"\n");
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static String flattenHashMap(Cell c, List<String> serviceImmutableList) {
+		List<String> service = Collections.synchronizedList(new ArrayList<>());
+		serviceImmutableList.forEach(ServiceName -> {
+			service.add(c.getServices().get(ServiceName) + "");
+		});
+		return String.join(",", service);
+	}
+
+
+
 
 }

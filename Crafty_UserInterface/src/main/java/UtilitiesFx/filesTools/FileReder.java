@@ -24,16 +24,7 @@ import tech.tablesaw.io.AddCellToColumnException;
 
 public class FileReder {
 
-	private static void correctAddCellToColumnException(Table T, String filePath, AddCellToColumnException e) {
-		// writeValueCSVfile(filePath, (int) e.getRowNumber(), (int) e.getColumnIndex(),
-		// "0");
-		try {
-			T = Table.read().csv(filePath);
-		} catch (AddCellToColumnException s) {
-			System.out.println("\n" + s.getLocalizedMessage());
-			correctAddCellToColumnException(T, filePath, s);
-		}
-	}
+
 
 	public static HashMap<String, ArrayList<String>> ReadAsaHash(String filePath) {
 		return ReadAsaHash(filePath, false);
@@ -73,25 +64,31 @@ public class FileReder {
 		return hash;
 	}
 
-	public static void processCSV(CellsLoader cells,String filePath) {// file has capitals services and AFTs ? defind in the beginers the
+	public static void processCSV(CellsLoader cells, String filePath, String type) {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		ConcurrentHashMap<String, Integer> indexof = new ConcurrentHashMap<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			String[] line1 = br.readLine().split(",");
 			for (int i = 0; i < line1.length; i++) {
-				indexof.put(line1[i], i);
+				indexof.put(line1[i].replace("Service:", ""), i);
 			}
-
 			String line;
 			while ((line = br.readLine()) != null) {
 				final String data = line;
 
 				executor.submit(() -> {
-					if(cells==null) {
-						associateCapitalsToCells(indexof, data);}
-					else {
-						createCells( cells, indexof,  data);
+					switch (type) {
+					case "Capitals":
+						associateCapitalsToCells(indexof, data);
+						break;
+					case "Services":
+						associateOutPutServicesToCells(cells, indexof, data);
+						break;
+					case "Baseline":
+						createCells(cells, indexof, data);
+						break;
+
 					}
 				});
 			}
@@ -131,7 +128,7 @@ public class FileReder {
 
 		if (c != null) {
 			c.setOwner(cells.AFtsSet.getAftHash().get(immutableList.get(indexof.get("FR"))));
-		
+
 			CellsLoader.hashCell.put(x + "," + y, c);
 			c.setIndex(CellsLoader.hashCell.size());
 		}
@@ -139,6 +136,24 @@ public class FileReder {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name)));
 			c.getCapitals().put(capital_name, capital_value);//
 		});
+	}
+
+	static void associateOutPutServicesToCells(CellsLoader cells, ConcurrentHashMap<String, Integer> indexof,
+			String data) {
+		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
+		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
+		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
+		String aft_name = immutableList.get(indexof.get("Agent"));
+
+		Cell c = CellsLoader.hashCell.get(x + "," + y);
+
+		c.setOwner(cells.AFtsSet.getAftHash().get(aft_name));
+
+		CellsSet.getServicesNames().forEach(service_name -> {
+			double service_value = Tools.sToD(immutableList.get(indexof.get(service_name)));
+			c.getServices().put(service_name, service_value);
+		});
+
 	}
 
 }

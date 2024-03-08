@@ -23,7 +23,9 @@ public class ModelRunner implements Runnable {
 	public CellsLoader cells;
 	public String colorDisplay = "FR";
 	public boolean mapSynchronisation = true;
+	public int mapSynchronisationGap = 5;
 	public boolean writeCsvFiles = false;
+	public int writeCsvFilesGap = 5;
 	public boolean removeNegative = false;
 	public boolean usegiveUp = false;
 	public boolean isMutated = false;
@@ -37,11 +39,9 @@ public class ModelRunner implements Runnable {
 
 	public String[][] compositionAFT;
 	public String[][] servicedemand;
-	
 
 	public ModelRunner(CellsLoader cells) {
 		this.cells = cells;
-//		demandUpdate();
 		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][cells.AFtsSet.size()];
 		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][CellsSet.getServicesNames().size()
 				* 2];
@@ -57,7 +57,7 @@ public class ModelRunner implements Runnable {
 
 	void calculeSystemSupply() {
 		supply = Collections.synchronizedMap(new HashMap<>());
-		
+
 		CellsSet.getCells().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				CellsSet.getServicesNames().forEach(s -> {
@@ -103,8 +103,9 @@ public class ModelRunner implements Runnable {
 
 	public void go() {
 		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
-		System.out.println("cells.updateCapitals...");
+		System.out.print("cells.updateCapitals| ");
 		cells.updateCapitals(year);
+
 		// calcule supply
 		System.out.print("Calcule System Supply...");
 		calculeSystemSupply();
@@ -121,7 +122,7 @@ public class ModelRunner implements Runnable {
 			calculeDistributionMean();
 			System.out.println("Done");
 		}
-		System.out.print("Start the competition process...");
+		System.out.print("Competition process...");
 		CellsSet.getCells().parallelStream().forEach(c -> {
 			c.putservices();
 			// Randomly select percentageCells% of the land available to compete on, and set
@@ -152,19 +153,23 @@ public class ModelRunner implements Runnable {
 		});
 		System.out.println("Done");
 		// display Map
-		if (mapSynchronisation) {
+		if (mapSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % mapSynchronisationGap == 0
+				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
 			CellsSet.colorMap(colorDisplay);
 		}
 		// creat .csv output files: servises and AFT for each land
 		if (writeCsvFiles) {
+			outPutChartsToCsv(year);
+			if  ((Paths.getCurrentYear() - Paths.getStartYear()) % writeCsvFilesGap == 0
+					|| Paths.getCurrentYear() == Paths.getEndtYear()){
 			System.out.print("writeCsvFiles...");
-			outPutToCsv(year);
+			writOutPutMap(year);
+			
 			System.out.println("Done");
-		}
+		}}
 	}
 
-	void outPutToCsv(int year) {
-		writOutPutMap(year);
+	void outPutChartsToCsv(int year) {
 		AtomicInteger m = new AtomicInteger();
 		int y = year - Paths.getStartYear() + 1;
 
@@ -175,37 +180,21 @@ public class ModelRunner implements Runnable {
 							+ "";
 			m.getAndIncrement();
 		});
-
-		HashMap<String, Integer> AgentNbr = AFTsLoader.hashAgentNbr();
-		AtomicInteger N = new AtomicInteger();
-		AgentNbr.forEach((name, value) -> {
-			compositionAFT[y][N.getAndIncrement()] = value + "";
-		});
+//	A switch should be added here because it consumes a lot of calculations for large projects (EU-1km). and that could be produiced after simulation
+//		HashMap<String, Integer> AgentNbr = AFTsLoader.hashAgentNbr();
+//		AtomicInteger N = new AtomicInteger();
+//		AgentNbr.forEach((name, value) -> {
+//			compositionAFT[y][N.getAndIncrement()] = value + "";
+//		});
 	}
 
-	void writOutPutMap(int year) {
-		String[][] output = new String[CellsSet.getCells().size() + 1][CellsSet.getServicesNames().size() + 3];
-		output[0][0] = "X";
-		output[0][1] = "Y";
-		output[0][2] = "Agent";
-		for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
-			output[0][j + 3] = "Service:" + CellsSet.getServicesNames().get(j);
-		}
-		AtomicInteger i = new AtomicInteger(1);
-		CellsSet.getCells().forEach(c -> {
-			output[i.get()][0] = c.getX() + "";
-			output[i.get()][1] = c.getY() + "";
-			output[i.get()][2] = c.getOwner() != null ? c.getOwner().getLabel() : "lazy";
-			for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
-				output[i.get()][j + 3] = c.getServices().get(CellsSet.getServicesNames().get(j)) + "";
-			}
-			i.getAndIncrement();
-		});
+	
+
+	private void writOutPutMap(int year) {
 		String dir = PathTools.makeDirectory(Paths.getProjectPath() + "\\output\\");
 		dir = PathTools.makeDirectory(dir + Paths.getScenario());
 		dir = PathTools.makeDirectory(dir + "\\" + ModelRunnerController.outPutFolderName);
-
-		CsvTools.writeCSVfile(output, dir + "\\" + Paths.getScenario() + "-Cell-" + year + ".csv");
+		CsvTools.exportToCSV(dir + "\\" + Paths.getScenario() + "-Cell-" + year + ".csv");
 	}
 
 	@Override

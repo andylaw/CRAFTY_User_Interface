@@ -3,6 +3,7 @@ package fxmlControllers;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.TextField;
+import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.Paths;
 import javafx.event.ActionEvent;
@@ -28,6 +29,18 @@ public class RunCofigController {
 	private CheckBox creatCSV;
 //	@FXML
 //	private CheckBox neighboursCollaboration;
+	@FXML
+	private Slider MapSync_GapS;
+	@FXML
+	private TextField MapSync_GapT;
+	@FXML
+	private Slider chartSync_GapS;
+	@FXML
+	private TextField chartSync_GapT;
+	@FXML
+	private TextField CSV_GapT;
+	@FXML
+	private Slider CSV_GapS;
 
 	static public ModelRunnerController CA;
 
@@ -51,6 +64,26 @@ public class RunCofigController {
 			CA.R.percentageCells = cellsPersS.getValue() / 100;
 			CellPersT.setText((int) cellsPersS.getValue() + "");
 		});
+
+		MapSync_GapS.setValue(CA.R.mapSynchronisationGap);
+		MapSync_GapT.setText((int) MapSync_GapS.getValue() + "");
+		MapSync_GapS.valueProperty().addListener((ov, oldval, newval) -> {
+			CA.R.mapSynchronisationGap = (int) MapSync_GapS.getValue();
+			MapSync_GapT.setText((int) MapSync_GapS.getValue() + "");
+		});
+
+		chartSync_GapS.setValue(ModelRunnerController.chartSynchronisationGap);
+		chartSync_GapT.setText((int) chartSync_GapS.getValue() + "");
+		chartSync_GapS.valueProperty().addListener((ov, oldval, newval) -> {
+			ModelRunnerController.chartSynchronisationGap = (int) chartSync_GapS.getValue();
+			chartSync_GapT.setText((int) chartSync_GapS.getValue() + "");
+		});
+		CSV_GapS.setValue(CA.R.writeCsvFilesGap);
+		CSV_GapT.setText((int) CSV_GapS.getValue() + "");
+		CSV_GapS.valueProperty().addListener((ov, oldval, newval) -> {
+			CA.R.writeCsvFilesGap = (int) CSV_GapS.getValue();
+			CSV_GapT.setText((int) CSV_GapS.getValue() + "");
+		});
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction
@@ -69,10 +102,10 @@ public class RunCofigController {
 	@FXML
 	public void giveUpMechanisme(ActionEvent event) {
 		CA.R.usegiveUp = gUP.isSelected();
-	 
+
 		/***/
 		// CorrelationChiSquare.ceartCorelationMatrix(CA.M);
-		System.out.println(Paths.getAllfilesPathInData());
+		// System.out.println(Paths.getAllfilesPathInData());
 
 	}
 
@@ -92,6 +125,27 @@ public class RunCofigController {
 	public void cellspersT(ActionEvent event) {
 		CA.R.percentageCells = Tools.sToD(CellPersT.getText()) / 100;
 		cellsPersS.setValue((int) Tools.sToD(CellPersT.getText()));
+	}
+
+	@FXML
+	public void mapSync_GapAction(ActionEvent event) {
+		// CA.R.percentageCells = Tools.sToD(MapSync_GapT.getText()) / 100;
+		// //MapSync_GapT //MapSync_GapS
+		MapSync_GapS.setValue((int) Tools.sToD(MapSync_GapT.getText()));
+	}
+
+	@FXML
+	public void chartSyncAction(ActionEvent event) {
+		// CA.R.percentageCells = Tools.sToD(chartSync_GapT.getText()) /
+		// 100;//chartSync_GapT//chartSync_GapS
+		chartSync_GapS.setValue((int) Tools.sToD(chartSync_GapT.getText()));
+	}
+
+	@FXML
+	public void CSVAction(ActionEvent event) {
+		// CA.R.percentageCells = Tools.sToD(chartSync_GapT.getText()) /
+		// 100;//chartSync_GapT//chartSync_GapS
+		CSV_GapS.setValue((int) Tools.sToD(CSV_GapT.getText()));
 	}
 
 	// Event Listener on CheckBox[#chartSync].onAction

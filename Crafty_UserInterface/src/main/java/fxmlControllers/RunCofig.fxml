@@ -37,8 +37,16 @@
               <content>
                         <VBox>
                            <children>
+                           <HBox>
                               <CheckBox fx:id="MapSync" mnemonicParsing="false" onAction="#mapSyn" text="Map Synchronisation" />
-                              <CheckBox fx:id="chartSync" mnemonicParsing="false" onAction="#chartSyn" text="Chart Synchronisation" />
+                              <Slider fx:id="MapSync_GapS" blockIncrement="1.0" majorTickUnit="9.0" max="20" min="1.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                                    <TextField fx:id="MapSync_GapT" onAction="#mapSync_GapAction" prefHeight="25.0" prefWidth="58.0" />
+                             </HBox>
+                             <HBox>
+                             <CheckBox fx:id="chartSync" mnemonicParsing="false" onAction="#chartSyn" text="Chart Synchronisation" />
+                              <Slider fx:id="chartSync_GapS" blockIncrement="1.0" majorTickUnit="9.0" max="20.0" min="1.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                              <TextField fx:id="chartSync_GapT" onAction="#chartSyncAction" prefHeight="25.0" prefWidth="58.0" />
+                             </HBox> 
                            </children>
                         </VBox>
               </content>
@@ -49,7 +57,11 @@
         <content>
                   <VBox>
                      <children>
-                        <CheckBox fx:id="creatCSV" mnemonicParsing="false" onAction="#creatCSV" text="Create .csv output files" />
+                        <HBox>
+                             <CheckBox fx:id="creatCSV" mnemonicParsing="false" onAction="#creatCSV" text="Create .csv output files" />
+                              <Slider fx:id="CSV_GapS" blockIncrement="1.0" majorTickUnit="9.0" max="20.0"  min="1.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                              <TextField fx:id="CSV_GapT" onAction="#CSVAction" prefHeight="25.0" prefWidth="58.0" />
+                             </HBox> 
                      </children>
                   </VBox>
         </content>

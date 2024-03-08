@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.PieChartTools;
@@ -70,6 +71,16 @@ public class SpatialDataController {
 		CellsSet.setCellsSet(TabPaneController.M);
 		CellsSet.plotCells();
 		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, CellsSet.getDemand());
+	//////
+				String ItemName = "Save as CSV";
+				Consumer<String> action = x -> {
+					SaveAs.exportLineChartDataToCSV(demandsChart);
+				};
+				HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
+				othersMenuItems.put(ItemName, action);
+				MousePressed.mouseControle((Pane)demandsChart.getParent(), demandsChart,othersMenuItems);
+	//////
+		
 		updatePieChartColorAFts(pieChartColor);
 		mapColorAndCapitalHistogrameInitialisation();
 		radioColor[0].fire();

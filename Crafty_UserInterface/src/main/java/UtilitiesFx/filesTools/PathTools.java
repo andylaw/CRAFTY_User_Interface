@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.Paths;
 import main.FxMain;
 import javafx.stage.DirectoryChooser;
@@ -21,7 +20,6 @@ import javafx.stage.FileChooser;
  */
 
 public class PathTools {
-
 	public static ArrayList<String> findFolder(final File folder, String condition, boolean onlyFolder) {
 		ArrayList<String> stringList = new ArrayList<>();
 		for (final File fileEntry : folder.listFiles()) {

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -24,7 +23,6 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.FxMain;
 
@@ -113,6 +111,7 @@ public class CellsSet {
 	}
 
 	public static void colorMap() {
+		System.out.print("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 			cellsSet.cells.parallelStream().forEach(c -> {
@@ -127,10 +126,6 @@ public class CellsSet {
 
 			});
 
-//			cellsSet.cells.forEach(c -> {
-//				if (c.getCapitals().get(colortype) != null)
-//					c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
-//			});
 		} else if (servicesNames.contains(colortype)) {
 			cellsSet.cells.parallelStream().forEach(c -> {
 				if (c.getServices().get(colortype) != null)
@@ -142,12 +137,7 @@ public class CellsSet {
 			cellsSet.cells.parallelStream().forEach(c -> {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(),
 						ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
-
 			});
-//			cellsSet.cells.forEach(c -> {
-//				if (c.getServices().get(colortype) != null)
-//					c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
-//			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
 			cellsSet.cells.parallelStream().forEach(c -> {
@@ -159,15 +149,8 @@ public class CellsSet {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(), ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
 
-//			cellsSet.cells.forEach(c -> {
-//				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
-//			});
 		} else if (colortype.equalsIgnoreCase("Mask")) {
-//			HashMap<String, Color> maskToColor = new HashMap<>();
-//			
-//			cellsSet.parallelStream().forEach(c -> {
-//				maskToColor.put(c.getMaskType(), ColorsTools.colorlist(new Random().nextInt(24)));
-//			});
+
 			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
 
 			cellsSet.cells.parallelStream().forEach(c -> {
@@ -179,13 +162,6 @@ public class CellsSet {
 				}
 			});
 
-//			cellsSet.cells.forEach(c -> {
-//				if (c.getMaskType() != null) {
-//					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
-//				} else {
-//					c.ColorP(Color.gray(0.75));
-//				}
-//			});
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
@@ -199,12 +175,10 @@ public class CellsSet {
 						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
 			});
 
-//			cellsSet.cells.forEach(c -> {
-//				c.ColorP(c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
-//			});
 
 		}
 		gc.drawImage(writableImage, 0, 0);
+		System.out.println("Done");
 	}
 
 	public static void MapControlerBymouse() {
@@ -216,26 +190,26 @@ public class CellsSet {
 				// Convert pixel coordinates to cell coordinates
 				int cx = (int) (pixelX / Cell.getSize());
 				int cy = (int) (maxY - pixelY / Cell.getSize());
-				if (cellsSet.hashCell.get(cx + "," + cy) != null) {
+				if (CellsLoader.hashCell.get(cx + "," + cy) != null) {
 					gc.setFill(Color.BLACK);
 					gc.fillRect(pixelX, pixelY, Cell.getSize(), Cell.getSize());
 					HashMap<String, Consumer<String>> menu = new HashMap<>();
-					if (!NewRegion_Controller.patchsInRergion.contains(cellsSet.hashCell.get(cx + "," + cy))) {
+					if (!NewRegion_Controller.patchsInRergion.contains(CellsLoader.hashCell.get(cx + "," + cy))) {
 
-						CellWindow localData = new CellWindow(cellsSet.hashCell.get(cx + "," + cy));
+						CellWindow localData = new CellWindow(CellsLoader.hashCell.get(cx + "," + cy));
 						Consumer<String> creatWindos = (x) -> {
 							localData.windosLocalInfo();
 						};
 						menu.put("Access to Cell (" + cx + "," + cy + ") information", creatWindos);
 
 						menu.put("Print Info", e -> {
-							System.out.println(cellsSet.hashCell.get(cx + "," + cy));
+							System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
 						});
 						menu.put("Save Map as PNG", e -> {
 							SaveAs.png(canvas);
 						});
 						menu.put("Select region ", e -> {
-							CellsSubSets.selectZone(cellsSet.hashCell.get(cx + "," + cy), regioneselected);
+							CellsSubSets.selectZone(CellsLoader.hashCell.get(cx + "," + cy), regioneselected);
 						});
 
 //						menu.put("Detach", (x) -> {

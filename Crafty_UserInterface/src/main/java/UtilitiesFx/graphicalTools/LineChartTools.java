@@ -1,19 +1,15 @@
 package UtilitiesFx.graphicalTools;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-import dataLoader.Paths;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -25,8 +21,9 @@ import javafx.scene.shape.Rectangle;
 
 public class LineChartTools {
 
-	public void lineChart(CellsLoader M,Pane box, LineChart<Number, Number> lineChart, HashMap<String, double[]> hash) {
-		lineChart.getData().clear(); 
+	public void lineChart(CellsLoader M, Pane box, LineChart<Number, Number> lineChart,
+			HashMap<String, double[]> hash) {
+		lineChart.getData().clear();
 		Series<Number, Number>[] series = new XYChart.Series[hash.size()];
 
 		AtomicInteger i = new AtomicInteger();
@@ -60,22 +57,22 @@ public class LineChartTools {
 					K.getAndIncrement();
 				}
 			});
-			if(M!=null)
-			labelcolor(M,lineChart);
+			if (M != null)
+				labelcolor(M, lineChart);
 			lineChart.setCreateSymbols(false);
 		}
-		if(box!=null)
-		MousePressed.mouseControle(box, lineChart);
+		if (box != null) {
+			MousePressed.mouseControle(box, lineChart);
+		}
 	}
-	
 
-	
-
-	public  void labelcolor(CellsLoader M, LineChart<Number, Number> lineChart) {
+	public void labelcolor(CellsLoader M, LineChart<Number, Number> lineChart) {
 		int m = 0;
 		for (Node item : lineChart.lookupAll("Label.chart-legend-item")) {
-			Label label = (Label) item;//
-			Color co = M.AFtsSet.getAftHash().get(label.getText()) != null ?M.AFtsSet.getAftHash().get(label.getText()).getColor() : ColorsTools.colorlist(m);
+			Label label = (Label) item;
+			Color co = M.AFtsSet.getAftHash().get(label.getText()) != null
+					? M.AFtsSet.getAftHash().get(label.getText()).getColor()
+					: ColorsTools.colorlist(m);
 			final Rectangle rectangle = new Rectangle(10, 10, co);
 			label.setGraphic(rectangle);
 			m++;

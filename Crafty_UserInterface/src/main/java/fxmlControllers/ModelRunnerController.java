@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
+import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
@@ -18,6 +20,7 @@ import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -48,7 +51,7 @@ public class ModelRunnerController {
 
 	@FXML
 	private VBox vbox;
-	
+
 	@FXML
 	private Label tickTxt;
 
@@ -67,16 +70,18 @@ public class ModelRunnerController {
 	CellsLoader M;
 	public static String outPutFolderName;
 	public ModelRunner R;
-	Timeline timeline = new Timeline();
+	Timeline timeline /* = new Timeline() */;
 	AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
 	NewWindow runConfiguration;
 	public static boolean chartSynchronisation = true;
+	public static int chartSynchronisationGap = 5;
+
 	double KeyFramelag = 1;
 //	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
-	
+
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
@@ -111,12 +116,12 @@ public class ModelRunnerController {
 	}
 
 	void initialzeRadioColorBox() {
-		 radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
+		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
 		radioColor[radioColor.length - 1] = new RadioButton("FR");
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
 		}
-		
+
 		for (int i = 0; i < radioColor.length; i++) {
 			int m = i;
 			radioColor[i].setOnAction(e -> {
@@ -130,20 +135,19 @@ public class ModelRunnerController {
 			});
 		}
 	}
-	
+
 	@FXML
 	void selecserivce() {
 		if (!colorbox.isShowing()) {
 			VBox g = new VBox();
 			g.getChildren().addAll(radioColor);
 			colorbox.creatwindows("Display Services and AFT distribution", g);
-	}
-		
+		}
+
 	}
 
 	@FXML
 	public void configuration() {
-
 		RunCofigController.CA = this;
 		if (!runConfiguration.isShowing()) {
 			try {
@@ -159,11 +163,12 @@ public class ModelRunnerController {
 
 	@FXML
 	public void oneStep() {
+		System.out.println("------------------- Start of Tick  |" + tick.get() + "| -------------------");
 		Paths.setCurrentYear(tick.get());
 		R.run();
 		tickTxt.setText(tick.toString());
-
-		if (chartSynchronisation) {
+		if (chartSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % chartSynchronisationGap == 0
+				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
 			CellsSet.getServicesNames().forEach(name -> {
 				lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
@@ -180,8 +185,8 @@ public class ModelRunnerController {
 				N.getAndIncrement();
 			});
 		}
+		System.out.println("------------------- End of Tick  |" + tick.get() + "| -------------------");
 		tick.getAndIncrement();
-
 	}
 
 	@FXML
@@ -198,8 +203,8 @@ public class ModelRunnerController {
 		if (Paths.getCurrentYear() >= Paths.getEndtYear()) {
 			// Stop if max iterations reached
 			if (R.writeCsvFiles) {
-				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
-						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
+//				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+//						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
 				CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
 						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
 			}
@@ -213,15 +218,16 @@ public class ModelRunnerController {
 		timeline = new Timeline(new KeyFrame(delay, event -> {
 			long startTime = System.currentTimeMillis();
 			// Perform the simulation update
-			oneStep();
+			Platform.runLater(() -> {
+				oneStep();
+			});
 			long endTime = System.currentTimeMillis();
 			// Calculate the delay for the next tick to maintain the rhythm
-			long delayForNextTick = Math.max(300, endTime - startTime);
+			long delayForNextTick = Math.max(300, (endTime - startTime) / 3);
 
 			// Schedule the next tick
-			scheduleIteravitveTicks(Duration.millis(delayForNextTick / 2));
+			scheduleIteravitveTicks(Duration.millis(delayForNextTick));
 			System.out.println("Delay For Last Tick=  " + delay + " Delay For Next Tick " + delayForNextTick + " ms");
-
 		}));
 		timeline.play();
 	}
@@ -267,7 +273,15 @@ public class ModelRunnerController {
 			l.getData().add(s1);
 			l.getData().add(s2);
 			lineChart.add(l);
-			MousePressed.mouseControle(vbox, l);
+
+			String ItemName = "Save as CSV";
+			Consumer<String> action = x -> {
+				SaveAs.exportLineChartDataToCSV(l);
+			};
+			HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
+			othersMenuItems.put(ItemName, action);
+
+			MousePressed.mouseControle(vbox, l, othersMenuItems);
 		});
 		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
 				new NumberAxis());
@@ -294,9 +308,9 @@ public class ModelRunnerController {
 
 		String cofiguration = "Remove negative marginal utility values =   " + R.removeNegative + "\n"
 				+ "Land abondenmant (Give-up mechanism) =  " + R.usegiveUp + "\n" + "Considering mutation =  "
-				+ R.isMutated + "\n" + "Percentage of land use that could be changed =  " +(int) (R.percentageCells * 100)+"%"
-				+ "\n" + "Types of land mask restrictions considered =  " +MaskRestrictionDataLoader.ListOfMask.keySet()
-				+ "\n \n" + "Add your comments..";
+				+ R.isMutated + "\n" + "Percentage of land use that could be changed =  "
+				+ (int) (R.percentageCells * 100) + "%" + "\n" + "Types of land mask restrictions considered =  "
+				+ MaskRestrictionDataLoader.ListOfMask.keySet() + "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");

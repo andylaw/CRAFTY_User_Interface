@@ -3,10 +3,12 @@ package fxmlControllers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.function.Consumer;
 
 import UtilitiesFx.filesTools.FileReder;
 import UtilitiesFx.filesTools.PathTools;
+import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
@@ -30,7 +32,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 
 public class OutPuterController {
-	 CellsLoader M;
+	CellsLoader M;
 
 	@FXML
 	private Button selectoutPut;
@@ -41,24 +43,17 @@ public class OutPuterController {
 	@FXML
 	private ScrollPane scroll;
 	@FXML
-	private Button selecserivce ;
-	
-	
+	private Button selecserivce;
+
 	String outputpath = "";
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
 
 	public void initialize() {
-		System.out.println("initialize "+getClass().getSimpleName());
-		M=TabPaneController.M;
+		System.out.println("initialize " + getClass().getSimpleName());
+		M = TabPaneController.M;
 		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
 
-		ArrayList<String> yearList = new ArrayList<>();
-		for (int i = Paths.getStartYear(); i < Paths.getEndtYear(); i++) {
-			yearList.add(i + "");
-		}
-
-		yearChoice.getItems().addAll(yearList);
 		yearChoice.setValue(Paths.getCurrentYear() + "");
 
 		for (int i = 0; i < radioColor.length; i++) {
@@ -84,15 +79,24 @@ public class OutPuterController {
 			});
 		}
 
-		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight()*0.8);
+		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 		gridChart.prefWidthProperty().bind(scroll.widthProperty());
 	}
 
 	@FXML
 	public void selectoutPut() {
 		File selectedDirectory = PathTools.selectFolder(Paths.getProjectPath() + "\\output");
+
 		if (selectedDirectory != null) {
 			outputpath = selectedDirectory.getAbsolutePath();
+
+			ArrayList<String> yearList = new ArrayList<>();
+			PathTools.findAllFiles(outputpath).forEach(str -> {
+				String tmp = new File(str).getName();
+				if (tmp.contains("-Cell-"))
+					yearList.add(tmp.replace(".csv", "").replace("-Cell-", "").replace(Paths.getScenario(), ""));
+			});
+			yearChoice.getItems().addAll(yearList);
 			newOutPut(yearChoice.getValue());
 			Graphs(gridChart);
 		}
@@ -104,9 +108,10 @@ public class OutPuterController {
 			VBox g = new VBox();
 			g.getChildren().addAll(radioColor);
 			colorbox.creatwindows("Display Services and AFT distribution", g);
+		}
+
 	}
-		
-	}
+
 	@FXML
 	public void yearChoice() {
 		Paths.setCurrentYear((int) Tools.sToD(yearChoice.getValue()));
@@ -151,37 +156,49 @@ public class OutPuterController {
 			lineChart.add(
 					new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
 		});
-		has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
-		lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
+		// this is for creating the chart for AFTs aggregationComoposition  // will move tho output analyse
+		//has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
+		//lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
 
 			HashMap<String, double[]> data = has.get(i);
 			LineChart<Number, Number> Ch = lineChart.get(i);
-			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, data);
-			if (i == has.size() - 1) {
-				Ch.setCreateSymbols(false);
-				for (int k2 = 0; k2 < Ch.getData().size(); k2++) {
-					Manager a = M.AFtsSet.getAftHash().get(Ch.getData().get(k2).getName());
-					Ch.getData().get(k2).getNode().lookup(".chart-series-line")
-							.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
-				}
 
-				new LineChartTools().labelcolor(M, Ch);
-				
-			}
+			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, data);
+			// this for coloring the Chart by the AFTs color after the creation of the chart
+//			if (i == has.size() - 1) {
+//				Ch.setCreateSymbols(false);
+//				for (int k2 = 0; k2 < Ch.getData().size(); k2++) {
+//					Manager a = M.AFtsSet.getAftHash().get(Ch.getData().get(k2).getName());
+//					Ch.getData().get(k2).getNode().lookup(".chart-series-line")
+//							.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
+//				}
+//
+//				new LineChartTools().labelcolor(M, Ch);
+//
+//			}
 			gridPane.add(Tools.vBox(Ch), j++, k);
-			MousePressed.mouseControle((Pane)Ch.getParent(), Ch);
+			MousePressed.mouseControle((Pane) Ch.getParent(), Ch);
 			if (j % 3 == 0) {
 				k++;
 				j = 0;
 			}
+
+			//////
+			String ItemName = "Save as CSV";
+			Consumer<String> action = x -> {
+				SaveAs.exportLineChartDataToCSV(Ch);
+			};
+			HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
+			othersMenuItems.put(ItemName, action);
+			MousePressed.mouseControle((Pane)Ch.getParent(), Ch,othersMenuItems);
+			//////
 		}
 	}
 
 	HashMap<String, double[]> updatComposition(String path, String nameFile) {
-		HashMap<String, ArrayList<String>> reder = FileReder
-				.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
+		HashMap<String, ArrayList<String>> reder = FileReder.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
 		HashMap<String, double[]> has = new HashMap<>();
 
 		reder.forEach((name, value) -> {

@@ -21,42 +21,38 @@ import UtilitiesFx.graphicalTools.Tools;
  *
  */
 
-public class CellsLoader{
-
+public class CellsLoader {
 
 	public static List<String> GISRegionsNames = new ArrayList<>();//
 	public static ConcurrentHashMap<String, Cell> hashCell = new ConcurrentHashMap<>();
-	public  Set<Cell> cells = Collections.synchronizedSet(new HashSet<>());
+	public Set<Cell> cells = Collections.synchronizedSet(new HashSet<>());
 	public AFTsLoader AFtsSet;
 
 	public void loadMap() {
-		
-		AFtsSet= new AFTsLoader();
-		hashCell.clear();
 
-		
-		String baseLindPath = PathTools.fileFilter("\\worlds\\",	"Baseline_map").iterator().next();
-		System.out.print("Importing data from the baseline map : "+baseLindPath+"...");
-		FileReder.processCSV(this, baseLindPath);
+		AFtsSet = new AFTsLoader();
+		hashCell.clear();
+		cells.clear();
+
+		String baseLindPath = PathTools.fileFilter("\\worlds\\", "Baseline_map").iterator().next();
+		System.out.print("Importing data from the baseline map : " + baseLindPath + "...");
+		FileReder.processCSV(this, baseLindPath,"Baseline");
 		cells.addAll(hashCell.values());
 		System.out.println(" Done");
 		updateDemand();
 	}
-	
-
-
 
 	public static void updateDemand() {
-		HashMap<String, ArrayList<String>> d = FileReder.ReadAsaHash(PathTools.fileFilter(Paths.getScenario(), "demand").get(0));
-		d.forEach((name,vect)->{
-			double [] v=new double[vect.size()];
-			for (int i = 0; i <v.length; i++) {
-				v[i]=Tools.sToD(vect.get(i));
+		HashMap<String, ArrayList<String>> d = FileReder
+				.ReadAsaHash(PathTools.fileFilter(Paths.getScenario(), "demand").get(0));
+		d.forEach((name, vect) -> {
+			double[] v = new double[vect.size()];
+			for (int i = 0; i < v.length; i++) {
+				v[i] = Tools.sToD(vect.get(i));
 			}
 			CellsSet.getDemand().put(name, v);
 		});
 	}
-
 
 	public void loadCapitalsAndServiceList() {
 		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Capitals.csv").get(0));
@@ -64,13 +60,15 @@ public class CellsLoader{
 		for (int n = 1; n < line0.length; n++) {
 			CellsSet.getCapitalsName().add(line0[n]);
 		}
-		System.out.println("Capitals size="+CellsSet.getCapitalsName().size()+" CellsSet.getCapitalsName() "+CellsSet.getCapitalsName());
+		System.out.println("Capitals size=" + CellsSet.getCapitalsName().size() + " CellsSet.getCapitalsName() "
+				+ CellsSet.getCapitalsName());
 		CellsSet.getServicesNames().clear();
 		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Services.csv").get(0));
 		for (int n = 1; n < line0s.length; n++) {
 			CellsSet.getServicesNames().add(line0s[n]);
 		}
-		System.out.println("Services size="+CellsSet.getServicesNames().size()+ "CellsSet.getServicesNames()="+CellsSet.getServicesNames());
+		System.out.println("Services size=" + CellsSet.getServicesNames().size() + "CellsSet.getServicesNames()="
+				+ CellsSet.getServicesNames());
 	}
 
 	public void loadGisData() {
@@ -89,46 +87,28 @@ public class CellsLoader{
 				});
 			}
 		}
-		
+
 	}
 
-
 	public void updateCapitals(int year) {
-		year=Math.min(year, Paths.getEndtYear());
+		year = Math.min(year, Paths.getEndtYear());
 		if (!Paths.getScenario().equalsIgnoreCase("Baseline")) {
 			String path = PathTools.fileFilter(year + "", Paths.getScenario(), "\\capitals\\").get(0);
-			System.out.print("Updating Capitals from : "+path+"...");
-			FileReder.processCSV(null,path);
+			System.out.print("Updating Capitals from : " + path + "...");
+			FileReder.processCSV(this,path,"Capitals");
 			System.out.println(" Done");
 		}
 	}
-	
-	public void servicesAndOwneroutPut(String year, String outputpath)  {
-		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
-		HashMap<String, ArrayList<String>> hash = FileReder
-				.ReadAsaHash(PathTools.fileFilter(outputpath, "-Cell-" + year + ".csv").get(0));
-		String x = hash.containsKey("x") ? "x" : "X";
-		String y = hash.containsKey("y") ? "y" : "Y";
-		System.out.println(CellsSet.getServicesNames());
-		for (int i = 0; i < hash.values().iterator().next().size(); i++) {
-			int ii = i;
-			Cell c = hashCell.get(hash.get(x).get(i) + "," + hash.get(y).get(i));
-			c.getServices().clear();
-			CellsSet.getServicesNames().forEach(name -> {
-				if (c != null)
-					c.getServices().put(name, Tools.sToD(hash.get("Service:" + name).get(ii)));
-			});
 
-			AFtsSet.getAftHash().forEach((name, agent) -> {
-				if (name.equals(hash.get("Agent").get(ii))) {
-					c.setOwner(agent);
-				}
-			});
-		}
+	public void servicesAndOwneroutPut(String year, String outputpath){
+		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));		
+		String path = PathTools.fileFilter(outputpath, "-Cell-" + year + ".csv").get(0);
+		System.out.print("Updating Services and AFTs from : " + path + "...");
+		FileReder.processCSV(this,path,"Services");
+		System.out.println(" Done");
 	}
 
-
-	public   Cell getCell(int i, int j) {
+	public Cell getCell(int i, int j) {
 		return hashCell.get(i + "," + j);
 	}
 
