@@ -302,6 +302,31 @@ public class CsvTools {
 		}
 	}
 
+
+
+    public static void exportSetToCSV( String filePath) {
+        // Create the header
+        StringBuilder stringBuilder = new StringBuilder("x,y,label,capitals\n");
+        List<String> serviceImmutableList = Collections.unmodifiableList(CellsSet.getServicesNames());
+        // Use parallel stream to process the cells and build CSV lines
+        String allLines = CellsSet.getCells().parallelStream().map(c -> {
+			String capitalsFlattened = flattenHashMap(c, serviceImmutableList);
+			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "", c.getOwner() != null ? c.getOwner().getLabel() : "null",capitalsFlattened);
+		})
+                // Note: Collecting as a joining operation directly into a single String
+                .collect(Collectors.joining("\n"));
+
+        // Append all lines to the StringBuilder
+        stringBuilder.append(allLines);
+
+        // Write the entire StringBuilder content to the file at once
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(stringBuilder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 	private static String flattenHashMap(Cell c, List<String> serviceImmutableList) {
 		List<String> service = Collections.synchronizedList(new ArrayList<>());
 		serviceImmutableList.forEach(ServiceName -> {
@@ -309,8 +334,4 @@ public class CsvTools {
 		});
 		return String.join(",", service);
 	}
-
-
-
-
 }
