@@ -105,14 +105,6 @@ public class RunCofigController {
 		/***/
 		// CorrelationChiSquare.ceartCorelationMatrix(CA.M);
 		// System.out.println(Paths.getAllfilesPathInData());
-		for (int i = 0; i < 10; i++) {
-			long startTime2 = System.currentTimeMillis();
-			CsvTools.exportToCSV("C:\\Users\\byari-m\\Desktop\\folder\\NotParallel"+i+".csv");
-			long endTime2 = System.currentTimeMillis();
-			long delayForNextTick2 = endTime2 - startTime2;
-		
-			System.out.println( " notP= " + delayForNextTick2 );
-		}
 	}
 
 	// Event Listener on CheckBox.onAction
