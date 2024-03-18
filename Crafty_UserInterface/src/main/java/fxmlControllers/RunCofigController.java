@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Paths;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
 import javafx.scene.control.CheckBox;
@@ -107,16 +106,12 @@ public class RunCofigController {
 		// CorrelationChiSquare.ceartCorelationMatrix(CA.M);
 		// System.out.println(Paths.getAllfilesPathInData());
 		for (int i = 0; i < 10; i++) {
-			long startTime = System.currentTimeMillis();
-			CsvTools.exportSetToCSV("C:\\Users\\byari-m\\Desktop\\folder\\Parallel"+i+".csv");
-			long endTime = System.currentTimeMillis();
-			long delayForNextTick = endTime - startTime;
 			long startTime2 = System.currentTimeMillis();
 			CsvTools.exportToCSV("C:\\Users\\byari-m\\Desktop\\folder\\NotParallel"+i+".csv");
 			long endTime2 = System.currentTimeMillis();
 			long delayForNextTick2 = endTime2 - startTime2;
-			long portion = delayForNextTick2 / delayForNextTick;
-			System.out.println("P= " + delayForNextTick + " notP= " + delayForNextTick2 + "  == " + portion);
+		
+			System.out.println( " notP= " + delayForNextTick2 );
 		}
 	}
 

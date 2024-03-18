@@ -3,6 +3,7 @@ package main;
 
 import java.io.InputStream;
 
+
 import UtilitiesFx.cameraTools.Camera;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.application.Application;
@@ -24,7 +25,6 @@ import javafx.stage.Stage;
 
 public class FxMain extends Application {
 	public static Camera camera = new Camera();
-
 	public static SubScene subScene;
 	public static Group root = new Group();
 	public static ImageView imageView = new ImageView();
@@ -32,12 +32,13 @@ public class FxMain extends Application {
 	public static AnchorPane anchor = new AnchorPane();
 	public static Scene scene = new Scene(anchor);
 
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		System.out.println("\u001B[36m--Starting with CRAFTY-- \u001B[0m");
+		
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
-
-		
 		FxMain.primaryStage = primaryStage;
 		subScene = new SubScene(root, w * .45, h * .95);
 

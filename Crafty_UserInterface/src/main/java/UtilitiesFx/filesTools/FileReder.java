@@ -13,17 +13,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.graphicalTools.Tools;
+import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.CellsLoader;
 import model.Cell;
 import model.CellsSet;
+import model.ModelRunner;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.AddCellToColumnException;
 
 public class FileReder {
-
+	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
 
 
 	public static HashMap<String, ArrayList<String>> ReadAsaHash(String filePath) {
@@ -32,22 +36,24 @@ public class FileReder {
 	}
 
 	public static HashMap<String, ArrayList<String>> ReadAsaHash(String filePath, boolean ignoreIfFileNotExists) {
-		System.out.print("Read: " + filePath + "...");
+		LOGGER.info("Reading : " + filePath);
 		HashMap<String, ArrayList<String>> hash = new HashMap<>();
 		Table T = null;
 		try {
 			T = Table.read().csv(filePath);
 		} catch (AddCellToColumnException s) {
-			System.err.println(s.getMessage());
+			
+			LOGGER.error(s.getMessage());
 			/* correctAddCellToColumnException(T, filePath, s); */}
-//		 catch (Exception e) {
-//			if (ignoreIfFileNotExists) {
-//				return null;
-//			} else {
-//				filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
-//				T = Table.read().csv(filePath);
-//			}
-//		}
+		 catch (Exception e) {
+			if (ignoreIfFileNotExists) {
+				LOGGER.error(e.getMessage()+" \n     return null");
+				return null;
+			} else {
+				filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
+				T = Table.read().csv(filePath);
+			}
+		}
 		List<String> columnNames = T.columnNames();
 
 		for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
@@ -60,7 +66,6 @@ public class FileReder {
 			hash.put(name, tmp);
 		}
 
-		System.out.println(" Done");
 		return hash;
 	}
 
@@ -93,7 +98,8 @@ public class FileReder {
 				});
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			
+			LOGGER.error(e.getMessage());
 		} finally {
 			executor.shutdown();
 			try {
@@ -103,6 +109,7 @@ public class FileReder {
 				}
 			} catch (InterruptedException e) {
 				executor.shutdownNow();
+				LOGGER.error(e.getMessage());
 				Thread.currentThread().interrupt();
 			}
 		}

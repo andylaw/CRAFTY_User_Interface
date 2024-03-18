@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import controllers.CellWindow;
@@ -32,6 +35,7 @@ import main.FxMain;
  */
 
 public class CellsSet {
+	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
 	private static Canvas canvas;
 	private static GraphicsContext gc;
 	static PixelWriter pixelWriter;
@@ -66,25 +70,15 @@ public class CellsSet {
 //		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-//		 for (int y = 0; y < canvas.getHeight(); y++) {
-//	            for (int x = 0; x < canvas.getWidth(); x++) {
-//	                Color color = new Color(Math.random(), Math.random(), Math.random(), 1.0);
-//	                pixelWriter.setColor(x, y, color);
-//	            }
-//	        }
-
-		long startTime1 = System.currentTimeMillis();
 		colorMap("FR");
-		long endTime1 = System.currentTimeMillis();
-		long re1 = endTime1 - startTime1;
-		System.out.println("time to color map with normale= " + re1);
+
 
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(canvas);
 		FxMain.subScene.setCamera(FxMain.camera);
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
-		System.out.println("Number of cells = " + cellsSet.cells.size());
+		LOGGER.info("Number of cells = " + cellsSet.cells.size());
 		MapControlerBymouse();
 	}
 
@@ -111,7 +105,7 @@ public class CellsSet {
 	}
 
 	public static void colorMap() {
-		System.out.print("Changing the map colors...");
+		LOGGER.info("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 			cellsSet.cells.parallelStream().forEach(c -> {
@@ -178,7 +172,6 @@ public class CellsSet {
 
 		}
 		gc.drawImage(writableImage, 0, 0);
-		System.out.println("Done");
 	}
 
 	public static void MapControlerBymouse() {
@@ -202,7 +195,7 @@ public class CellsSet {
 						};
 						menu.put("Access to Cell (" + cx + "," + cy + ") information", creatWindos);
 
-						menu.put("Print Info", e -> {
+						menu.put("Print Info into the Console", e -> {
 							System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
 						});
 						menu.put("Save Map as PNG", e -> {

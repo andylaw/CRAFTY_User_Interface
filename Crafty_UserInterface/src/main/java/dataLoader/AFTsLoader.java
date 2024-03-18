@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.FileReder;
 import UtilitiesFx.filesTools.PathTools;
@@ -13,6 +16,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.scene.paint.Color;
 import model.Manager;
+import model.ModelRunner;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
 
@@ -21,29 +25,29 @@ import tech.tablesaw.api.Table;
  *
  */
 
-public class AFTsLoader extends HashSet<Manager>{
-
-
+public class AFTsLoader extends HashSet<Manager> {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
 	private static final long serialVersionUID = 1L;
-	private  HashMap<String, Manager> hash = new HashMap<>();
-
+	private HashMap<String, Manager> hash = new HashMap<>();
 
 	public AFTsLoader() {
 		initializeAFTs();
 		addAll(hash.values());
 		agentsColorinitialisation();
 	}
-	public  void agentsColorinitialisation(){
+
+	public void agentsColorinitialisation() {
 		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = FileReder.ReadAsaHash(colorFiles.iterator().next());
-			
+
 			forEach(a -> {
 				for (int i = 0; i < T.get("Color").size(); i++) {
 					if (T.get("Label").get(i).equalsIgnoreCase(a.getLabel())) {
 						a.setColor(Color.web(T.get("Color").get(i)));
 						if (T.keySet().contains("Name")) {
-							a.setCompleteName(T.get("Name").get(i)) ;
+							a.setCompleteName(T.get("Name").get(i));
 						} else {
 							a.setCompleteName("--");
 						}
@@ -51,17 +55,16 @@ public class AFTsLoader extends HashSet<Manager>{
 				}
 			});
 		}
-		
+
 	}
 
-	public  void updateColorsInputData(){
+	public void updateColorsInputData() {
 		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = FileReder.ReadAsaHash(colorFiles.iterator().next());
 			ArrayList<String> tmp = new ArrayList<>();
-			forEach( a -> {
+			forEach(a -> {
 				for (int i = 0; i < T.get("Color").size(); i++) {
-					System.out.println(T.get("Label").get(i)+" ?-> "+ a.getLabel());
 					if (T.get("Label").get(i).replace("	", "").equalsIgnoreCase(a.getLabel())) {
 						tmp.add(ColorsTools.toHex(a.getColor()));
 					}
@@ -81,25 +84,24 @@ public class AFTsLoader extends HashSet<Manager>{
 		}
 	}
 
-	 void initializeAFTs() {
+	void initializeAFTs() {
 		hash.clear();
 		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario());
 		pFiles.forEach(f -> {
 			initializeAFTProduction(f);
 		});
-		
-		
+
 		List<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario());
 		bFiles.forEach(f -> {
 			initializeAFTBehevoir(f);
 		});
 	}
-	
-	public  void updateAFTs() {
+
+	public void updateAFTs() {
 		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario());
 		pFiles.forEach(f -> {
 			File file = new File(f);
-			updateAFTProduction(hash.get(file.getName().replace(".csv", "")),  file) ;
+			updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
 		});
 		List<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario());
 		bFiles.forEach(f -> {
@@ -108,30 +110,32 @@ public class AFTsLoader extends HashSet<Manager>{
 		});
 	}
 
-	public  void initializeAFTBehevoir(String aftPath) {
+	public void initializeAFTBehevoir(String aftPath) {
 		File file = new File(aftPath);
 		Manager a = hash.get(file.getName().replace(".csv", "").replace("AftParams_", ""));
-		updateAFTBehevoir( a, file);
+		updateAFTBehevoir(a, file);
 	}
-	public static void updateAFTBehevoir(Manager a,File file) {
+
+	public static void updateAFTBehevoir(Manager a, File file) {
 		HashMap<String, ArrayList<String>> reder = FileReder.ReadAsaHash(file.getAbsolutePath());
 		a.setGiveInMean(Tools.sToD(reder.get("givingInDistributionMean").get(0)));
-		a.setGiveUpMean (Tools.sToD(reder.get("givingUpDistributionMean").get(0)));
-		a.setGiveInSD (Tools.sToD(reder.get("givingInDistributionSD").get(0)));
-		a.setGiveUpSD ( Tools.sToD(reder.get("givingUpDistributionSD").get(0)));
-		a.setServiceLevelNoiseMin ( Tools.sToD(reder.get("serviceLevelNoiseMin").get(0)));
-		a.setServiceLevelNoiseMax ( Tools.sToD(reder.get("serviceLevelNoiseMax").get(0)));
-		a.setGiveUpProbabilty ( Tools.sToD(reder.get("givingUpProb").get(0)));
+		a.setGiveUpMean(Tools.sToD(reder.get("givingUpDistributionMean").get(0)));
+		a.setGiveInSD(Tools.sToD(reder.get("givingInDistributionSD").get(0)));
+		a.setGiveUpSD(Tools.sToD(reder.get("givingUpDistributionSD").get(0)));
+		a.setServiceLevelNoiseMin(Tools.sToD(reder.get("serviceLevelNoiseMin").get(0)));
+		a.setServiceLevelNoiseMax(Tools.sToD(reder.get("serviceLevelNoiseMax").get(0)));
+		a.setGiveUpProbabilty(Tools.sToD(reder.get("givingUpProb").get(0)));
 	}
-	
-	public  void initializeAFTProduction(String aftPath) {
+
+	public void initializeAFTProduction(String aftPath) {
 		File file = new File(aftPath);
 		Manager a = new Manager(file.getName().replace(".csv", ""));
 		a.setColor(Color.color(Math.random(), Math.random(), Math.random()));
 		hash.put(a.getLabel(), a);
-		updateAFTProduction( a, file);
-	
+		updateAFTProduction(a, file);
+
 	}
+
 	public static void updateSensitivty(Manager a, File file) {
 		Table T = Table.read().csv(file);
 		CellsSet.getCapitalsName().forEach((Cn) -> {
@@ -140,20 +144,19 @@ public class AFTsLoader extends HashSet<Manager>{
 			});
 		});
 	}
-	
+
 	public static void 	updateAFTProduction(Manager a, File file) {
 		HashMap<String, ArrayList<String>> matrix = FileReder.ReadAsaHash(file.getAbsolutePath());
 		
 		for (int i = 0; i < matrix.get("C0").size(); i++) {
 			if(CellsSet.getServicesNames().contains(matrix.get("C0").get(i))) {//
 				a.getProductivityLevel().put(matrix.get("C0").get(i), Tools.sToD(matrix.get("Production").get(i)));}
-			else {System.out.println(matrix.get("C0").get(i)+"  is not existe in Services List");}
+			else {LOGGER.warn(matrix.get("C0").get(i)+"  is not existe in Services List, will be ignored");}
 		}
-//		System.out.println(a.getLabel()+ " -> ProductivityLevel= "+ a.getProductivityLevel().keySet());
+		LOGGER.info(a.getLabel()+ " -> ProductivityLevel= "+ a.getProductivityLevel().keySet());
 		updateSensitivty(a,file);
 	}
-	
-	
+
 	public static HashMap<String, Integer> hashAgentNbr() {
 		HashMap<String, Integer> hashAgentNbr = new HashMap<>();
 		CellsSet.getCells().forEach(p -> {
@@ -166,8 +169,8 @@ public class AFTsLoader extends HashSet<Manager>{
 		});
 		return hashAgentNbr;
 	}
-	
-	public  HashMap<String, Manager> getAftHash() {
+
+	public HashMap<String, Manager> getAftHash() {
 		return hash;
 	}
 

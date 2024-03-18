@@ -1,6 +1,4 @@
-C:\Users\byari-m\Documents\Data\data_EUpaper_nocsv
-C:\Users\byari-m\Documents\Data\Scotland
-C:\Users\byari-m\Documents\Data\data_UK
+
 C:\Users\byari-m\Documents\Data\data-DE
-G:\LandUse\_CommonWork\CRAFTY-EU-1km
-G:\LandUse\_CommonWork\CRAFTY-DE\data-DE
+C:\Users\byari-m\Documents\Data\Scotland
+C:\Users\byari-m\Documents\Data\data_EUpaper_nocsv

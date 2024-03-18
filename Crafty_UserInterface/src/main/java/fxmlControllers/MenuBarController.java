@@ -4,10 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import main.FxMain;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
@@ -140,6 +142,7 @@ public class MenuBarController {
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	private void updateRecentFilesMenu(){
 		recent.getItems().clear();
 		String[] paths = PathTools.read("RecentProject.txt").split("\n");
@@ -153,6 +156,19 @@ public class MenuBarController {
 			});
 			recent.getItems().add(item);}
 		}
+		MenuItem item = new MenuItem("Clear History");
+		item.setOnAction(event -> {
+			try {
+				new FileWriter("RecentProject.txt", false);
+				recent.getItems().clear();
+			//	recent.getItems().add(item);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		recent.getItems().add(new SeparatorMenuItem());
+		recent.getItems().add(item);
 	}
 
 }

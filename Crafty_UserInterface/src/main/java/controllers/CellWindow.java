@@ -145,6 +145,7 @@ public class CellWindow {
 		return hash;
 	}
 
+	@SuppressWarnings({ "unchecked", "unused" })
 	HashMap<String, Number[]>[] outputData() {
 		HashMap<String, Number[]>[] hash = new HashMap[3];
 		hash[0] = new HashMap<>();

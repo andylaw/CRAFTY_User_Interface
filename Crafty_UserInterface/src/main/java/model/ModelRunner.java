@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import dataLoader.AFTsLoader;
@@ -19,7 +22,7 @@ import fxmlControllers.ModelRunnerController;
  */
 
 public class ModelRunner implements Runnable {
-
+	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
 	public CellsLoader cells;
 	public String colorDisplay = "FR";
 	public boolean mapSynchronisation = true;
@@ -70,7 +73,7 @@ public class ModelRunner implements Runnable {
 				});
 			}
 		});
-		System.out.println(supply);
+		LOGGER.info("supply= "+supply);
 	}
 
 	void calculeDistributionMean() {
@@ -103,26 +106,26 @@ public class ModelRunner implements Runnable {
 
 	public void go() {
 		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
-		System.out.print("cells.updateCapitals| ");
+		
+		LOGGER.info("Cells.updateCapitals");
+		
 		cells.updateCapitals(year);
 
 		// calcule supply
-		System.out.print("Calcule System Supply...");
+		LOGGER.info("Calculating the Supply");
 		calculeSystemSupply();
-
-		System.out.println("Done");
+		
 
 		// update demande & calcule marginal
-		System.out.print("calculeMarginalUtility...");
+		LOGGER.info("Calculating marginal Utility");
 		calculeMarginalUtility(year, removeNegative);
-		System.out.println("Done");
 
 		if (usegiveUp) {
-			System.out.print("calculeDistributionMean...");
+			LOGGER.info("Calculating Distribution Mean");
 			calculeDistributionMean();
-			System.out.println("Done");
+			LOGGER.info("Distribution Mean... done");
 		}
-		System.out.print("Competition process...");
+		LOGGER.info("Launching the competition process...");
 		CellsSet.getCells().parallelStream().forEach(c -> {
 			c.putservices();
 			// Randomly select percentageCells% of the land available to compete on, and set
@@ -151,7 +154,7 @@ public class ModelRunner implements Runnable {
 				CellsSubSets.actionInNeighboorSameLabel(c);
 			}
 		});
-		System.out.println("Done");
+		LOGGER.info("Competition Process Completed");
 		// display Map
 		if (mapSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % mapSynchronisationGap == 0
 				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
@@ -162,10 +165,9 @@ public class ModelRunner implements Runnable {
 			outPutChartsToCsv(year);
 			if  ((Paths.getCurrentYear() - Paths.getStartYear()) % writeCsvFilesGap == 0
 					|| Paths.getCurrentYear() == Paths.getEndtYear()){
-			System.out.print("writeCsvFiles...");
+			
 			writOutPutMap(year);
 			
-			System.out.println("Done");
 		}}
 	}
 

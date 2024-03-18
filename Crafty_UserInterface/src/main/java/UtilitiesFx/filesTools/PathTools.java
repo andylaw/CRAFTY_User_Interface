@@ -6,11 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.Paths;
 import main.FxMain;
+import model.ModelRunner;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -20,6 +26,9 @@ import javafx.stage.FileChooser;
  */
 
 public class PathTools {
+
+	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
+
 	public static ArrayList<String> findFolder(final File folder, String condition, boolean onlyFolder) {
 		ArrayList<String> stringList = new ArrayList<>();
 		for (final File fileEntry : folder.listFiles()) {
@@ -46,13 +55,14 @@ public class PathTools {
 			}
 		}
 	}
-	public static ArrayList<String> fileFilter( String... condition){
-		return fileFilter(false,condition);
+
+	public static ArrayList<String> fileFilter(String... condition) {
+		return fileFilter(false, condition);
 	}
-	public static ArrayList<String> fileFilter( boolean ignoreIfFileNotExists,String... condition) {
+
+	public static ArrayList<String> fileFilter(boolean ignoreIfFileNotExists, String... condition) {
 
 		ArrayList<String> turn = new ArrayList<>();
-
 		Paths.getAllfilesPathInData().forEach(e -> {
 			boolean testCodition = true;
 			for (int j = 0; j < condition.length; j++) {
@@ -70,15 +80,20 @@ public class PathTools {
 		}
 
 		if (turn.size() == 0) {
-			if(ignoreIfFileNotExists) {return null;}
-			return null;
-//			return fileFilter(ignoreIfFileNotExists,WarningWindowes.alterErrorNotFileFound("The file path could not be found:",str));
+			if (ignoreIfFileNotExists) {
+				LOGGER.warn(" File ignored because there is no file in its name that satisfies these conditions: "
+						+ Arrays.toString(condition));
+				return null;
+			}
+
+			return fileFilter(ignoreIfFileNotExists,
+					WarningWindowes.alterErrorNotFileFound("The file path could not be found:", str));
 		} else {
 			return turn;
 		}
 	}
-	
-	public static ArrayList<String> findAllFiles(String path)  {
+
+	public static ArrayList<String> findAllFiles(String path) {
 		ArrayList<String> Listpathe = new ArrayList<>();
 		final File folder = new File(path);
 		creatListPaths(folder, Listpathe);
@@ -92,7 +107,7 @@ public class PathTools {
 			scanner = new Scanner(new File(filePath));
 
 			while (scanner.hasNextLine()) {
-				line =line+"\n"+ scanner.nextLine();
+				line = line + "\n" + scanner.nextLine();
 			}
 		} catch (FileNotFoundException e) {
 		}
@@ -122,21 +137,22 @@ public class PathTools {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, keepTxt))) {
 			writer.write(text);
 		} catch (IOException ex) {
-			System.err.println("Error writing to file: " + ex.getMessage());
+			LOGGER.error("Error writing to file: " + ex.getMessage());
 		}
 	}
+
 	static public void writePathRecentProject(String path, String text) {
 		String paths = PathTools.read(path);
-		if(!paths.contains(text)) {
-		File file = new File(path);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-			writer.write(text);
-		} catch (IOException ex) {
-			System.err.println("Error writing to file: " + ex.getMessage());
-		}
+		if (!paths.contains(text)) {
+			File file = new File(path);
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+				writer.write(text);
+			} catch (IOException ex) {
+				LOGGER.error("Error writing to file: " + ex.getMessage());
+			}
 		}
 	}
-	
+
 	public static List<File> detectFolders(String folderPath) {
 		List<File> filePaths = new ArrayList<>();
 		File folder = new File(folderPath);
@@ -153,7 +169,7 @@ public class PathTools {
 				}
 			}
 		} else {
-			System.out.println("Folder not found: " + folderPath);
+			LOGGER.error("Folder not found: " + folderPath);
 		}
 		return filePaths;
 	}
@@ -165,6 +181,5 @@ public class PathTools {
 		}
 		return dir;
 	}
-	
 
 }
