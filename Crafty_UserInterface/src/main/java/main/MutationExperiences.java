@@ -95,7 +95,7 @@ public class MutationExperiences {
 			CellsSet.getServicesNames().forEach(name -> {
 				servicedemand[tick.get() - 2015][m.get()] = R.supply.get(name) + "";
 				servicedemand[tick.get() - 2015][m.get()
-						+ CellsSet.getServicesNames().size()] = CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]
+						+ CellsSet.getServicesNames().size()] = CellsSet.getDemand(name,tick.get())
 								+ "";
 				m.getAndIncrement();
 			});

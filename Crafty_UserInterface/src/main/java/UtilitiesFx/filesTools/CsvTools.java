@@ -247,8 +247,8 @@ public class CsvTools {
 	}
 
 	public static void exportToCSV(String filePath) {
-		LOGGER.info("Processing data to write a csv file");
-//		long startTime = System.currentTimeMillis();
+		LOGGER.info("Processing data to write a csv file...");
+
 		List<String> serviceImmutableList = Collections.unmodifiableList(CellsSet.getServicesNames());
 		// Process the cells in parallel to transform each Cell into a CSV string
 		Set<String> csvLines = CellsSet.getCells().parallelStream().map(c -> {
@@ -256,9 +256,6 @@ public class CsvTools {
 			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "", c.getOwner() != null ? c.getOwner().getLabel() : "null",capitalsFlattened);
 		}).collect(Collectors.toSet());
 		
-//		long endTime = System.currentTimeMillis();
-//		long delayForNextTick = endTime - startTime;
-//		long startTime2 = System.currentTimeMillis();
 		LOGGER.info("Writing processed lines to the CSV file : "+filePath);
 		// Write the processed lines to the CSV file
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
@@ -270,9 +267,7 @@ public class CsvTools {
 		} catch (IOException e) {
 			LOGGER.error("Unable to export file: " + filePath+"\n"+ e.getMessage());
 		}
-//		long endTime2 = System.currentTimeMillis();
-//		long delayForNextTick2 = endTime2 - startTime2;
-//		System.out.println("PUT Cell into list=  "+delayForNextTick+"  write in File = "+delayForNextTick2);
+		LOGGER.info("Processing data to write a csv file...");
 	}
 
 

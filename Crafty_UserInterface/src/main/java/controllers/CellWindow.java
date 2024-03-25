@@ -152,6 +152,7 @@ public class CellWindow {
 		hash[1] = new HashMap<>();
 		hash[2] = new HashMap<>();
 		ArrayList<String> list = PathTools.fileFilter(/* Path.referqnceWorld, */ "\\output\\" + Paths.getScenario(), "-Cell-");
+		System.out.println(list);
 		ArrayList<String> agent = new ArrayList<>();
 		ArrayList<Double> competitiveness = new ArrayList<>();
 		ArrayList<HashMap<String, Double>> listOfcapihash = new ArrayList<>();

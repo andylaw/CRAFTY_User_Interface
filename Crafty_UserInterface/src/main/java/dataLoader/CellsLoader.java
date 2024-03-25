@@ -78,7 +78,9 @@ public class CellsLoader {
 	}
 
 	public void loadGisData() {
-		Table T = Table.read().csv(PathTools.fileFilter("\\GIS\\").get(0));
+		try {
+		String path = PathTools.fileFilter(true,"\\GIS\\").get(0);
+		Table T = Table.read().csv(path);
 		GISRegionsNames = T.columnNames();
 		String x = T.column("x") != null ? "x" : "X";
 		String y = T.column("y") != null ? "y" : "Y";
@@ -93,11 +95,15 @@ public class CellsLoader {
 				});
 			}
 		}
+		}catch(NullPointerException e) {
+			LOGGER.warn("The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
+		}
 
 	}
 
 	public void updateCapitals(int year) {
 		year = Math.min(year, Paths.getEndtYear());
+		
 		if (!Paths.getScenario().equalsIgnoreCase("Baseline")) {
 			String path = PathTools.fileFilter(year + "", Paths.getScenario(), "\\capitals\\").get(0);
 			LOGGER.info("Updating Capitals from : " + path );
@@ -106,8 +112,9 @@ public class CellsLoader {
 	}
 
 	public void servicesAndOwneroutPut(String year, String outputpath) {
+		System.out.println(year);
 		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
-		String path = PathTools.fileFilter(outputpath, "-Cell-" + year + ".csv").get(0);
+		String path = PathTools.fileFilter( year ).get(0);
 		LOGGER.info("Updating Services and AFTs Distribution from : " + path );
 		FileReder.processCSV(this, path, "Services");
 	}

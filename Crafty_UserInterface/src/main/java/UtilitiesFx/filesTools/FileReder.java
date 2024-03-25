@@ -50,8 +50,10 @@ public class FileReder {
 				LOGGER.error(e.getMessage()+" \n     return null");
 				return null;
 			} else {
-				filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
-				T = Table.read().csv(filePath);
+				e.printStackTrace();
+				LOGGER.error(e.getMessage()+" \n     return null");
+				//filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
+			//	T = Table.read().csv(filePath);
 			}
 		}
 		List<String> columnNames = T.columnNames();
@@ -72,7 +74,6 @@ public class FileReder {
 	public static void processCSV(CellsLoader cells, String filePath, String type) {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		ConcurrentHashMap<String, Integer> indexof = new ConcurrentHashMap<>();
-
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			String[] line1 = br.readLine().split(",");
 			for (int i = 0; i < line1.length; i++) {
@@ -160,6 +161,7 @@ public class FileReder {
 			double service_value = Tools.sToD(immutableList.get(indexof.get(service_name)));
 			c.getServices().put(service_name, service_value);
 		});
+	//	System.out.println(c.getServices());
 
 	}
 

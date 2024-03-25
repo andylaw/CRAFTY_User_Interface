@@ -73,7 +73,7 @@ public class ModelRunner implements Runnable {
 				});
 			}
 		});
-		LOGGER.info("supply= "+supply);
+		LOGGER.info("supply= " + supply);
 	}
 
 	void calculeDistributionMean() {
@@ -97,24 +97,22 @@ public class ModelRunner implements Runnable {
 	void calculeMarginalUtility(int year, boolean removeNegative) {
 
 		supply.forEach((serviceName, serviceVal) -> {
-			double marg = removeNegative
-					? Math.max(CellsSet.getDemand().get(serviceName)[year - Paths.getStartYear()] - serviceVal, 0)
-					: CellsSet.getDemand().get(serviceName)[year - Paths.getStartYear()] - serviceVal;
+			double demand = CellsSet.getDemand(serviceName, year);
+			double marg = removeNegative ? Math.max(demand - serviceVal, 0) : demand - serviceVal;
 			marginal.put(serviceName, marg);
 		});
 	}
 
 	public void go() {
 		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
-		
+
 		LOGGER.info("Cells.updateCapitals");
-		
+
 		cells.updateCapitals(year);
 
 		// calcule supply
 		LOGGER.info("Calculating the Supply");
 		calculeSystemSupply();
-		
 
 		// update demande & calcule marginal
 		LOGGER.info("Calculating marginal Utility");
@@ -160,15 +158,16 @@ public class ModelRunner implements Runnable {
 				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
 			CellsSet.colorMap(colorDisplay);
 		}
-		// creat .csv output files: servises and AFT for each land
+		// create .csv output files: services and AFT for each land
 		if (writeCsvFiles) {
 			outPutChartsToCsv(year);
-			if  ((Paths.getCurrentYear() - Paths.getStartYear()) % writeCsvFilesGap == 0
-					|| Paths.getCurrentYear() == Paths.getEndtYear()){
-			
-			writOutPutMap(year);
-			
-		}}
+			if ((Paths.getCurrentYear() - Paths.getStartYear()) % writeCsvFilesGap == 0
+					|| Paths.getCurrentYear() == Paths.getEndtYear()) {
+
+				writOutPutMap(year);
+
+			}
+		}
 	}
 
 	void outPutChartsToCsv(int year) {
@@ -178,7 +177,7 @@ public class ModelRunner implements Runnable {
 		CellsSet.getServicesNames().forEach(name -> {
 			servicedemand[y][m.get()] = supply.get(name) + "";
 			servicedemand[y][m.get()
-					+ CellsSet.getServicesNames().size()] = CellsSet.getDemand().get(name)[year - Paths.getStartYear()]
+					+ CellsSet.getServicesNames().size()] = CellsSet.getDemand(name,year)
 							+ "";
 			m.getAndIncrement();
 		});
@@ -189,8 +188,6 @@ public class ModelRunner implements Runnable {
 //			compositionAFT[y][N.getAndIncrement()] = value + "";
 //		});
 	}
-
-	
 
 	private void writOutPutMap(int year) {
 		String dir = PathTools.makeDirectory(Paths.getProjectPath() + "\\output\\");

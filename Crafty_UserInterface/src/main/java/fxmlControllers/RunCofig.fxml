@@ -23,7 +23,7 @@
                               <HBox spacing="5.0">
                                  <children>
                                     <Label text="Percentage Cells  " />
-                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="15.0" max="30.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="15.0" max="60.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
                                     <TextField fx:id="CellPersT" onAction="#cellspersT" prefHeight="25.0" prefWidth="58.0" />
                               <Label text="\%" />
                                  </children>

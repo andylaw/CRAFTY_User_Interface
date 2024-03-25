@@ -172,7 +172,7 @@ public class ModelRunnerController {
 			AtomicInteger m = new AtomicInteger();
 			CellsSet.getServicesNames().forEach(name -> {
 				lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
-						CellsSet.getDemand().get(name)[tick.get() - Paths.getStartYear()]));
+						CellsSet.getDemand(name,tick.get())));
 				lineChart.get(m.get()).getData().get(1).getData()
 						.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
 				m.getAndIncrement();

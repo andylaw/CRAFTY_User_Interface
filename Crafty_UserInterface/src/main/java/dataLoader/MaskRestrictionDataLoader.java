@@ -72,7 +72,6 @@ public class MaskRestrictionDataLoader {
 			return restric;
 		} else
 			return null;
-
 	}
 
 }

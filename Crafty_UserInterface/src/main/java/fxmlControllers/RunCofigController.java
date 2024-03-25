@@ -3,7 +3,6 @@ package fxmlControllers;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.TextField;
-import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;

@@ -96,21 +96,12 @@
 													source="/fxmlControllers/ModelRunner.fxml" /> <!---->
 											</content>
 										</Tab>
-										<Tab text="OutPut">
-										<graphic>
-								<FontIcon iconLiteral="fas-folder-open" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="Model OutPut" />
-							</tooltip>
-											<content>
+										
+						<!---->
+											
 												<fx:include
-													source="/fxmlControllers/OutPuter.fxml" /> <!---->
-											</content>
-										</Tab>
-										
-
-										
+													source="/fxmlControllers/outPutTab.fxml" /> <!---->
+											
 										
 									</tabs>
 								</TabPane>

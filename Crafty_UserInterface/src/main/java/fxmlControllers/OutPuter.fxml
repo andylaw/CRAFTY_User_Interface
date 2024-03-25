@@ -29,15 +29,6 @@
 								<Tooltip text="Select Existing Model Result" />
 							</tooltip>
 						</Button>
-						<Button fx:id="selecserivce" onAction="#selecserivce"
-							text="Display a serivce" styleClass="button-icon">
-							<graphic>
-								<FontIcon iconLiteral="fas-list-ul" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="Configuring model running" />
-							</tooltip>
-						</Button>
 						<ChoiceBox fx:id="yearChoice" onAction="#yearChoice" />
 					</children>
 				</HBox>

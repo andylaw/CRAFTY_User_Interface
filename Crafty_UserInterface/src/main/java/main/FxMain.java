@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-/**
+/*--***--/
  * @author Mohamed Byari
  *
  */
@@ -35,7 +35,7 @@ public class FxMain extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		System.out.println("\u001B[36m--Starting with CRAFTY-- \u001B[0m");
+		System.out.println(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/*+"\u001B[0m"*/);
 		
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();

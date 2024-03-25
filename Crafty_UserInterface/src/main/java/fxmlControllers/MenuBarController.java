@@ -101,6 +101,7 @@ public class MenuBarController {
 		if (selectedDirectory != null) {
 			if (selectedDirectory != null) {
 				List<String> folderMissig = Paths.checkfolders(selectedDirectory.getAbsolutePath());
+				
 				boolean ispathcorrect = true;
 				if (folderMissig.size() > 0) {
 					ispathcorrect = false;

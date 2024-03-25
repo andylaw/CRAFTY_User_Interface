@@ -81,13 +81,13 @@ public class PathTools {
 
 		if (turn.size() == 0) {
 			if (ignoreIfFileNotExists) {
-				LOGGER.warn(" File ignored because there is no file in its name that satisfies these conditions: "
+				LOGGER.warn(" File ignored because there is no file in its path with these key worlds : "
 						+ Arrays.toString(condition));
 				return null;
 			}
-
-			return fileFilter(ignoreIfFileNotExists,
-					WarningWindowes.alterErrorNotFileFound("The file path could not be found:", str));
+			return null;
+//			return fileFilter(ignoreIfFileNotExists,
+//					WarningWindowes.alterErrorNotFileFound("The file path could not be found:", str));
 		} else {
 			return turn;
 		}

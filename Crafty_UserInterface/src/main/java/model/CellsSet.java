@@ -18,6 +18,7 @@ import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
+import dataLoader.Paths;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -71,7 +72,6 @@ public class CellsSet {
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		colorMap("FR");
-
 
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(canvas);
@@ -168,7 +168,6 @@ public class CellsSet {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(),
 						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
 			});
-
 
 		}
 		gc.drawImage(writableImage, 0, 0);
@@ -267,6 +266,15 @@ public class CellsSet {
 
 	public static HashMap<String, double[]> getDemand() {
 		return demand;
+	}
+	public static double getDemand(String key, int index) {
+		int tick = index-Paths.getStartYear();
+		if (tick >= demand.values().iterator().next().length) {
+			tick = demand.values().iterator().next().length - 1;
+			LOGGER.warn("There are no demand \'"+key+ "\' for this year: \"" + index + "\" using the latest available demands "
+					+ (tick + Paths.getStartYear()));
+		}
+		return demand.get(key)[tick];
 	}
 
 	public static List<String> getCapitalsName() {

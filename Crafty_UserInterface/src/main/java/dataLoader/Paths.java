@@ -2,9 +2,13 @@ package dataLoader;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import UtilitiesFx.filesTools.FileReder;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
+import model.ModelRunner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,7 +20,8 @@ import java.util.HashMap;
  */
 
 public final class Paths {
-	private static String[] foldersNecessary = { "agents", "csv", "production", "worlds", "GIS" };
+	private static final Logger LOGGER = LogManager.getLogger(Paths.class);
+	private static String[] foldersNecessary = { "agents", "csv", "production", "worlds" };
 	private static int startYear;
 	private static int endtYear;
 	private static int currentYear = startYear;
@@ -33,15 +38,20 @@ public final class Paths {
 	}
 
 	static void initialSenarios() {
-		HashMap<String, ArrayList<String>> hash = FileReder
-				.ReadAsaHash(PathTools.fileFilter("\\scenarios.csv").iterator().next());
+		String path = PathTools.fileFilter("\\scenarios.csv").iterator().next();
+		HashMap<String, ArrayList<String>> hash = FileReder.ReadAsaHash(path);
+		System.out.println(hash);
 		setScenariosList(hash.get("Name"));
 		for (String scenario : scenariosList) {
-			scenariosHash.put(scenario, hash.get("startYear").get(hash.get("Name").indexOf(scenario)) + "_"
-					+ hash.get("endtYear").get(hash.get("Name").indexOf(scenario)));
+			try {
+				scenariosHash.put(scenario, hash.get("startYear").get(hash.get("Name").indexOf(scenario)) + "_"
+						+ hash.get("endtYear").get(hash.get("Name").indexOf(scenario)));
+			} catch (NullPointerException e) {
+				LOGGER.fatal("cannot find \"Name\", \"startYear\" and/or \"endtYear\" in the head of the file :"+ path);
+				break;
+			}
 		}
 		setScenario(getScenariosList().get(getScenariosList().size() - 1));
-		
 
 	}
 
@@ -114,7 +124,8 @@ public final class Paths {
 		String[] temp = scenariosHash.get(scenario).split("_");
 		startYear = (int) Tools.sToD(temp[0]);
 		endtYear = (int) Tools.sToD(temp[1]);
-		//System.out.println(scenario+"--> startYear= "+ startYear+", endtYear "+ endtYear);
+		 System.out.println(scenario+"--> startYear= "+ startYear+", endtYear "+
+		 endtYear);
 	}
 
 }
