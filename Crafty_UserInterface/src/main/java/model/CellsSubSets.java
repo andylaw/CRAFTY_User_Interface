@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import controllers.NewRegion_Controller;
+import dataLoader.CellsLoader;
 import javafx.scene.paint.Color;
 
 public class CellsSubSets {
@@ -49,7 +50,7 @@ public class CellsSubSets {
 
 	public static void selectZone(Cell patch, String zonetype) {
 
-		CellsSet.getCells().forEach(p -> {
+		CellsLoader.hashCell.values().forEach(p -> {
 			if (p.getGisNameValue().get(zonetype) != null) {
 				if (p.getGisNameValue().get(zonetype).equals(patch.getGisNameValue().get(zonetype))) {
 					p.ColorP(p.color);

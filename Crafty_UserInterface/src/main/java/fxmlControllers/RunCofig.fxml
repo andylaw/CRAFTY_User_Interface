@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
@@ -18,12 +19,15 @@
                            <children>
                               <CheckBox fx:id="removeNegative" mnemonicParsing="false" onAction="#removeNegativeMarginal" text="Remove negative Marginal utility" />
                               <CheckBox fx:id="gUP" mnemonicParsing="false" onAction="#giveUpMechanisme" text="Give Up mechanism" />
+                              <CheckBox fx:id="isAveragedPerCellResidualDemand" mnemonicParsing="false" onAction="#averagedPerCellResidualDemand" text="Averaged Per Cell Residual Demand" />
                             <!--    <CheckBox fx:id="neighboursCollaboration" mnemonicParsing="false" onAction="#NeighboursCollaboration" text="Neighbours collaboration" /> -->
                               <CheckBox fx:id="mutationM" mnemonicParsing="false" onAction="#MutationMechanism" text="Mutation mechanism" />
+                               <RadioButton fx:id="withBestAFT" mnemonicParsing="false" onAction="#bestAFT" text="Select the best AFT for land competition" />
+                              <RadioButton fx:id="withRandomAFT" mnemonicParsing="false" onAction="#randomAFT" text="Randomly select an AFT for land competition" />
                               <HBox spacing="5.0">
                                  <children>
                                     <Label text="Percentage Cells  " />
-                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="15.0" max="60.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="1.0" max="5" minorTickCount="2"  showTickLabels="true" showTickMarks="true" />
                                     <TextField fx:id="CellPersT" onAction="#cellspersT" prefHeight="25.0" prefWidth="58.0" />
                               <Label text="\%" />
                                  </children>

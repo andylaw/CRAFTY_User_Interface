@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.FileReder;
+import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.scene.paint.Color;
 import model.Manager;
-import model.ModelRunner;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
 
@@ -27,9 +28,10 @@ import tech.tablesaw.api.Table;
 
 public class AFTsLoader extends HashSet<Manager> {
 	
-	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
+	private static final Logger LOGGER = LogManager.getLogger(AFTsLoader.class);
 	private static final long serialVersionUID = 1L;
-	private HashMap<String, Manager> hash = new HashMap<>();
+	private static ConcurrentHashMap<String, Manager> hash = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, Integer> hashAgentNbr;
 
 	public AFTsLoader() {
 		initializeAFTs();
@@ -40,7 +42,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	public void agentsColorinitialisation() {
 		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
 		if (colorFiles.size() > 0) {
-			HashMap<String, ArrayList<String>> T = FileReder.ReadAsaHash(colorFiles.iterator().next());
+			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 
 			forEach(a -> {
 				for (int i = 0; i < T.get("Color").size(); i++) {
@@ -61,7 +63,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	public void updateColorsInputData() {
 		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
 		if (colorFiles.size() > 0) {
-			HashMap<String, ArrayList<String>> T = FileReder.ReadAsaHash(colorFiles.iterator().next());
+			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 			ArrayList<String> tmp = new ArrayList<>();
 			forEach(a -> {
 				for (int i = 0; i < T.get("Color").size(); i++) {
@@ -86,6 +88,7 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	void initializeAFTs() {
 		hash.clear();
+		System.out.println(Paths.getScenario());
 		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario());
 		pFiles.forEach(f -> {
 			initializeAFTProduction(f);
@@ -95,6 +98,7 @@ public class AFTsLoader extends HashSet<Manager> {
 		bFiles.forEach(f -> {
 			initializeAFTBehevoir(f);
 		});
+		checkAFTsBehevoireParametres(bFiles);
 	}
 
 	public void updateAFTs() {
@@ -106,8 +110,13 @@ public class AFTsLoader extends HashSet<Manager> {
 		List<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario());
 		bFiles.forEach(f -> {
 			File file = new File(f);
-			updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
+			try {
+			updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);}
+			catch(NullPointerException e) {
+				LOGGER.error("AFT Not in the List: "+ file );
+			}
 		});
+		checkAFTsBehevoireParametres(bFiles);
 	}
 
 	public void initializeAFTBehevoir(String aftPath) {
@@ -115,9 +124,22 @@ public class AFTsLoader extends HashSet<Manager> {
 		Manager a = hash.get(file.getName().replace(".csv", "").replace("AftParams_", ""));
 		updateAFTBehevoir(a, file);
 	}
+	
+	void checkAFTsBehevoireParametres(List<String> bFiles) {
+	
+		List<String> bf= new ArrayList<>();
+		bFiles.forEach(f->{
+			bf.add(new File(f).getName().replace(".csv", "").replace("AftParams_", ""));
+		});
+		hash.keySet().forEach(label->{
+			if(!bf.contains(label)) {
+				LOGGER.warn("no behevoir parametrs for the AFT:  "+ label );
+			}
+		});
+	}
 
 	public static void updateAFTBehevoir(Manager a, File file) {
-		HashMap<String, ArrayList<String>> reder = FileReder.ReadAsaHash(file.getAbsolutePath());
+		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(file.getAbsolutePath());
 		a.setGiveInMean(Tools.sToD(reder.get("givingInDistributionMean").get(0)));
 		a.setGiveUpMean(Tools.sToD(reder.get("givingUpDistributionMean").get(0)));
 		a.setGiveInSD(Tools.sToD(reder.get("givingInDistributionSD").get(0)));
@@ -140,38 +162,38 @@ public class AFTsLoader extends HashSet<Manager> {
 		Table T = Table.read().csv(file);
 		CellsSet.getCapitalsName().forEach((Cn) -> {
 			CellsSet.getServicesNames().forEach((Sn) -> {
-				a.getSensitivty().put((Cn + "_" + Sn), Tools.sToD(T.column(Cn).getString(T.column(0).indexOf(Sn))));
+				a.getSensitivity().put((Cn + "_" + Sn), Tools.sToD(T.column(Cn).getString(T.column(0).indexOf(Sn))));
 			});
 		});
 	}
 
 	public static void 	updateAFTProduction(Manager a, File file) {
-		HashMap<String, ArrayList<String>> matrix = FileReder.ReadAsaHash(file.getAbsolutePath());
+		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(file.getAbsolutePath());
+		String c0= matrix.keySet().contains("C0")? "C0":"Unnamed: 0";
 		
-		for (int i = 0; i < matrix.get("C0").size(); i++) {
-			if(CellsSet.getServicesNames().contains(matrix.get("C0").get(i))) {//
-				a.getProductivityLevel().put(matrix.get("C0").get(i), Tools.sToD(matrix.get("Production").get(i)));}
-			else {LOGGER.warn(matrix.get("C0").get(i)+"  is not existe in Services List, will be ignored");}
+		for (int i = 0; i < matrix.get(c0).size(); i++) {
+			if(CellsSet.getServicesNames().contains(matrix.get(c0).get(i))) {
+				a.getProductivityLevel().put(matrix.get(c0).get(i), Tools.sToD(matrix.get("Production").get(i)));}
+			else {LOGGER.warn(matrix.get(c0).get(i)+"  is not existe in Services List, will be ignored");}
 		}
-		LOGGER.info(a.getLabel()+ " -> ProductivityLevel= "+ a.getProductivityLevel().keySet());
+		LOGGER.info(a.getLabel()+ " -> ProductivityLevel= "+ a.getProductivityLevel());
 		updateSensitivty(a,file);
 	}
 
-	public static HashMap<String, Integer> hashAgentNbr() {
-		HashMap<String, Integer> hashAgentNbr = new HashMap<>();
-		CellsSet.getCells().forEach(p -> {
-			if (p.getOwner() != null)
-				if (hashAgentNbr.containsKey(p.getOwner().getLabel())) {
-					hashAgentNbr.put(p.getOwner().getLabel(), hashAgentNbr.get(p.getOwner().getLabel()) + 1);
-				} else {
-					hashAgentNbr.put(p.getOwner().getLabel(), 1);
-				}
+	public static void hashAgentNbr() {
+		 hashAgentNbr = new ConcurrentHashMap<>();
+		CellsLoader.hashCell.values().forEach(c -> {
+			if (c.getOwner() != null)
+			    hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 		});
-		return hashAgentNbr;
 	}
 
-	public HashMap<String, Manager> getAftHash() {
+	public static ConcurrentHashMap<String, Manager> getAftHash() {
 		return hash;
+	}
+	public static Manager getRandomAFT() {
+		 List<String> keys = new ArrayList<>(hash.keySet());
+		return hash.get(keys.get(new Random().nextInt(keys.size()))); 
 	}
 
 }

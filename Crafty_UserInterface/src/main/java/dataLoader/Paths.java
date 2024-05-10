@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import UtilitiesFx.filesTools.FileReder;
+import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import model.ModelRunner;
@@ -39,8 +39,7 @@ public final class Paths {
 
 	static void initialSenarios() {
 		String path = PathTools.fileFilter("\\scenarios.csv").iterator().next();
-		HashMap<String, ArrayList<String>> hash = FileReder.ReadAsaHash(path);
-		System.out.println(hash);
+		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(path);
 		setScenariosList(hash.get("Name"));
 		for (String scenario : scenariosList) {
 			try {
@@ -51,7 +50,7 @@ public final class Paths {
 				break;
 			}
 		}
-		setScenario(getScenariosList().get(getScenariosList().size() - 1));
+		setScenario(getScenariosList().get(1));
 
 	}
 

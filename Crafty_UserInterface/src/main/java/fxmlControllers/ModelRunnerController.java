@@ -16,6 +16,7 @@ import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
+import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.Paths;
 import javafx.animation.KeyFrame;
@@ -172,14 +173,13 @@ public class ModelRunnerController {
 			AtomicInteger m = new AtomicInteger();
 			CellsSet.getServicesNames().forEach(name -> {
 				lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
-						CellsSet.getDemand(name,tick.get())));
+						DemandModel.getDemand(name,tick.get())));
 				lineChart.get(m.get()).getData().get(1).getData()
-						.add(new XYChart.Data<>(tick.get(), R.supply.get(name)));
+						.add(new XYChart.Data<>(tick.get(), R.totalSupply.get(name)));
 				m.getAndIncrement();
 			});
-			HashMap<String, Integer> AgentNbr = AFTsLoader.hashAgentNbr();
 			AtomicInteger N = new AtomicInteger();
-			AgentNbr.forEach((name, value) -> {
+			AFTsLoader.hashAgentNbr.forEach((name, value) -> {
 				lineChart.get(lineChart.size() - 1).getData().get(N.get()).getData()
 						.add(new XYChart.Data<>(tick.get(), value));
 				N.getAndIncrement();
@@ -191,16 +191,16 @@ public class ModelRunnerController {
 
 	@FXML
 	public void run() {
+//		popUpRunWindowz();
 		run.setDisable(true);
 		simulationFolderName();
-		CellsLoader.updateDemand();
+		DemandModel.updateDemand();
 		scheduleIteravitveTicks(Duration.millis(1000));
-
 	}
+	
 
 	private void scheduleIteravitveTicks(Duration delay) {
-
-		if (Paths.getCurrentYear() >= Paths.getEndtYear()) {
+		if (Paths.getCurrentYear() >= Paths.getEndtYear()-1) {
 			// Stop if max iterations reached
 			if (R.writeCsvFiles) {
 //				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
@@ -272,6 +272,7 @@ public class ModelRunnerController {
 					new NumberAxis());
 			l.getData().add(s1);
 			l.getData().add(s2);
+			LineChartTools.configurexAxis(l, Paths.getStartYear(), Paths.getEndtYear());
 			lineChart.add(l);
 
 			String ItemName = "Save as CSV";
@@ -287,7 +288,7 @@ public class ModelRunnerController {
 				new NumberAxis());
 		lineChart.add(l);
 
-		R.cells.AFtsSet.getAftHash().forEach((name, a) -> {
+		AFTsLoader.getAftHash().forEach((name, a) -> {
 			Series<Number, Number> s = new XYChart.Series<Number, Number>();
 			s.setName(name);
 			l.getData().add(s);
@@ -333,5 +334,36 @@ public class ModelRunnerController {
 
 		return alert;
 	}
+	
+//	private void popUpRunWindowz() {
+//		NewWindow dialog = new NewWindow();
+//		if (!dialog.isShowing()) {
+//				
+//			Button yes= new Button("Yes");
+//			Slider CSV_GapS= Tools.slider(1, 30, 15) ;
+//			CSV_GapS.setValue(R.writeCsvFilesGap);
+//			CSV_GapS.valueProperty().addListener((ov, oldval, newval) -> {
+//				R.writeCsvFilesGap = (int) CSV_GapS.getValue();
+//			});
+//			Button no= new Button("No");
+//				yes.setOnAction(e -> {
+//					dialog.close();
+//					R.writeCsvFiles=true;
+//					simulationFolderName();
+//				});
+//				no.setOnAction(e -> {
+//					dialog.close();
+//				});
+//				
+//				VBox vbox= Tools.vBox(
+//						Tools.text("save Output into CSV Files", Color.BLUE)
+//						,
+//						Tools.hBox(yes,CSV_GapS,new Separator(),no)
+//						);
+//				Group g = new Group(vbox);
+//				dialog.creatwindows("Run Configuration", g);
+//		}
+//	}
+
 
 }

@@ -63,6 +63,7 @@ public class Tools {
 		return choice;
 	}
 
+
 	public static void choiceBox(ChoiceBox<String> choice, ArrayList<String> list) {
 		if (list.size() == 0) {
 			list.add("Empty");

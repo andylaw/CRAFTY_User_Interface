@@ -7,6 +7,7 @@ import java.util.List;
 
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.Tools;
+import dataLoader.AFTsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import eu.hansolo.fx.charts.CircularPlot;
 import eu.hansolo.fx.charts.CircularPlotBuilder;
@@ -14,6 +15,7 @@ import eu.hansolo.fx.charts.data.PlotItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
@@ -48,32 +50,44 @@ public class MasksPaneController {
 			r.setOnAction(e -> {
 				int i = radioListOfMasks.indexOf(r);
 				if (r.isSelected()) {
+					Maskloader.CellSetToMaskLoader(r.getText());
+					ChoiceBox<String> boxYears = Tools
+							.choiceBox(MaskRestrictionDataLoader.listOfyears.get(r.getText()));
+					boxYears.setOnAction(e2 -> {
+						MaskRestrictionDataLoader.updateCellsmask(r.getText(), (int) Tools.sToD(boxYears.getValue()));
+						CellsSet.colorMap("Mask");
+					});
+
 					ArrayList<CheckBox> radioListOfAFTs = new ArrayList<>();
 					VBox boxOfAftRadios = new VBox();
-					TabPaneController.M.AFtsSet.getAftHash().keySet().forEach(n -> {
+					AFTsLoader.getAftHash().keySet().forEach(n -> {
 						CheckBox radio = new CheckBox(n);
 						radioListOfAFTs.add(radio);
 						boxOfAftRadios.getChildren().add(radio);
 					});
 
-					Maskloader.CellSetToMaskLoader(r.getText());
+					boxYears.fireEvent(e);
+
 					HashMap<String, Boolean> restrictionsRul = Maskloader.restrictionsRulsUpload(r.getText());
 					restrictions.put(r.getText(), restrictionsRul);
 					ArrayList<PlotItem> itemsList = initPlotItem();
 					radioListOfAFTs.get(0).setSelected(true);
-					List<PlotItem> items = circularPlot(itemsList, restrictionsRul, radioListOfAFTs.get(0).getText(),true);
-					circularPlot[i] = CircularPlotBuilder.create().items(items).decimals(0).minorTickMarksVisible(false)
-							.build();
+					List<PlotItem> items = circularPlot(itemsList, restrictionsRul, radioListOfAFTs.get(0).getText(),
+							true);
+					circularPlot[i] = CircularPlotBuilder.create().items(items).decimals(0).connectionOpacity(0.9)
+							.minorTickMarksVisible(false).build();
 					VBox boxMask = new VBox();
 					T[i] = Tools.T("  Possible transitions for " + r.getText() + " Restriction ", true, boxMask);
-					Text text = Tools.text("Select the AFT (landowner) to display the possible transitions from this AFT to other AFTs (competitors):", Color.BLUE);
-					boxMask.getChildren().addAll(Tools.hBox(text),
+					Text text = Tools.text(
+							"Select the AFT (landowner) to display the possible transitions from this AFT to other AFTs (competitors):",
+							Color.BLUE);
+					boxMask.getChildren().addAll(Tools.hBox(text, boxYears),
 							Tools.hBox(boxOfAftRadios, circularPlot[i]));
-//		
 					radioListOfAFTs.forEach(rad -> {
 						rad.setOnAction(e2 -> {
-								circularPlot[i].setItems(circularPlot(itemsList, restrictionsRul, rad.getText(),rad.isSelected()));
-							
+							circularPlot[i].setItems(
+									circularPlot(itemsList, restrictionsRul, rad.getText(), rad.isSelected()));
+
 						});
 					});
 
@@ -81,16 +95,13 @@ public class MasksPaneController {
 					int place = boxMaskTypes.getChildren().indexOf(r) + 1;
 					boxMaskTypes.getChildren().add(place, T[i]);
 				} else {
-					CellsSet.getCells().forEach(c -> {
-						if (c.getMaskType() != null && c.getMaskType().equals(r.getText()))
-							c.setMaskType(null);
-					});
+					Maskloader.cleanType(r.getText());
 					restrictions.remove(r.getText());
 					boxMaskTypes.getChildren().removeAll(T[i]);
 
 				}
 				CellsSet.colorMap("Mask");
-				System.out.println(restrictions.keySet());
+				// System.out.println(restrictions.keySet());
 			});
 
 		});
@@ -100,10 +111,6 @@ public class MasksPaneController {
 	// Event Listener on Button[#handButton].onAction
 	@FXML
 	public void clear(ActionEvent event) {
-//		CellsSet.getCellsSet().forEach(c -> {
-//			c.setMaskType(null);
-//		});
-		CellsSet.colorMap("Mask");
 		radioListOfMasks.forEach(r -> {
 			r.setSelected(false);
 			r.fireEvent(event);
@@ -118,11 +125,11 @@ public class MasksPaneController {
 		return itemsList;
 	}
 
-	private List<PlotItem> circularPlot(ArrayList<PlotItem> itemsList, HashMap<String, Boolean> restrictions,
-			String ow, boolean toAdd) {
+	private List<PlotItem> circularPlot(ArrayList<PlotItem> itemsList, HashMap<String, Boolean> restrictions, String ow,
+			boolean toAdd) {
 
 		// itemsList.forEach(owner -> {});
-		
+
 		PlotItem own = null;
 		for (Iterator<PlotItem> iterator = itemsList.iterator(); iterator.hasNext();) {
 			PlotItem plotItem = (PlotItem) iterator.next();
@@ -134,17 +141,19 @@ public class MasksPaneController {
 		PlotItem owner = own;
 		itemsList.forEach(competitor -> {
 			int nbr = restrictions.get(owner.getName() + "_" + competitor.getName()) ? 1 : -1;
-			if(toAdd) {owner.addToOutgoing(competitor, nbr);}
-			else owner.removeFromOutgoing(competitor);
+			if (toAdd) {
+				owner.addToOutgoing(competitor, nbr);
+			} else
+				owner.removeFromOutgoing(competitor);
 		});
 
 		PlotItem[] its = new PlotItem[itemsList.size()];
 		for (int i = 0; i < its.length; i++) {
 			its[i] = itemsList.get(i);
 		}
-		
+
 		List<PlotItem> items = List.of(its);
-		
+
 		return items;
 	}
 

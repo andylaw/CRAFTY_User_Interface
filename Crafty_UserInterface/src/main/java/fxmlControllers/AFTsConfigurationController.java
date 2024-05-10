@@ -171,7 +171,7 @@ public class AFTsConfigurationController {
 	}
 
 	void colorland(Manager a) {
-		CellsSet.getCells().forEach(C -> {
+		CellsLoader.hashCell.values().forEach(C -> {
 			C.landStored(a);
 		});
 		CellsSet.colorMap("tmp");
@@ -188,7 +188,7 @@ public class AFTsConfigurationController {
 		String[][] tab = CSVTableView.tableViewToArray(tabV);
 		for (int i = 1; i < tab.length; i++) {
 			for (int j = 1; j < tab[0].length; j++) {
-				newAFT.getSensitivty().put(tab[0][j] + "_" + tab[i][0], Tools.sToD(tab[i][j]));
+				newAFT.getSensitivity().put(tab[0][j] + "_" + tab[i][0], Tools.sToD(tab[i][j]));
 			}
 		}
 		ubdateRadarchart(newAFT, grid);
@@ -242,7 +242,7 @@ public class AFTsConfigurationController {
 	public static YChart<ValueChartItem> ychart(Pane box, Manager agent, String servicesName) {
 		List<ValueChartItem> listvalues = new ArrayList<>();
 		CellsSet.getCapitalsName().forEach(cname -> {
-			double y = Math.min(100, agent.getSensitivty().get(cname + "_" + servicesName) * 100);
+			double y = Math.min(100, agent.getSensitivity().get(cname + "_" + servicesName) * 100);
 			listvalues.add(new ValueChartItem(y, ""));
 		});
 
@@ -267,7 +267,7 @@ public class AFTsConfigurationController {
 			sensetivtyTable[i + 1][0] = CellsSet.getServicesNames().get(i);
 			for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
 				sensetivtyTable[0][j + 1] = CellsSet.getCapitalsName().get(j);
-				sensetivtyTable[i + 1][j + 1] = a.getSensitivty()
+				sensetivtyTable[i + 1][j + 1] = a.getSensitivity()
 						.get(CellsSet.getCapitalsName().get(j) + "_" + CellsSet.getServicesNames().get(i)) + "";
 			}
 
@@ -358,7 +358,7 @@ public class AFTsConfigurationController {
 
 			for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
 				tab[j + 1][0] = CellsSet.getServicesNames().get(j);
-				tab[j + 1][i + 1] = a.getSensitivty()
+				tab[j + 1][i + 1] = a.getSensitivity()
 						.get(CellsSet.getCapitalsName().get(i) + "_" + CellsSet.getServicesNames().get(j)) + "";
 				tab[j + 1][CellsSet.getCapitalsName().size() + 1] = a.getProductivityLevel()
 						.get(CellsSet.getServicesNames().get(j)) + "";

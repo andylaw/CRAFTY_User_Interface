@@ -26,7 +26,7 @@
 			</graphic>
 		</Menu>
 		<SeparatorMenuItem />
-		<MenuItem text="Resrart" onAction="#resrart" />
+		<MenuItem text="Restart" onAction="#resrart" />
 		<MenuItem text="Exit" onAction="#Exit" />
 	</items>
 		</Menu>
@@ -34,7 +34,7 @@
 			<MenuItem text="Map Color Palettes" onAction="#colorPallet" />
 		</Menu>
 		<Menu text="Help">
-			<MenuItem text="CRFATY Website" onAction="#welcome" />
+			<MenuItem text="CRAFTY Website" onAction="#welcome" />
 		</Menu>
 	</MenuBar>
 	</top>

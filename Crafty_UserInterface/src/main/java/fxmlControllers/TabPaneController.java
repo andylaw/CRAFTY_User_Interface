@@ -6,6 +6,7 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.CellsLoader;
+import dataLoader.DemandModel;
 import dataLoader.Paths;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
@@ -65,9 +66,9 @@ public class TabPaneController {
 	public void scenarioschoice() {
 		if (isNotInitialsation) {
 			Paths.setScenario(scenarioschoice.getValue());
-			CellsLoader.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
+			DemandModel.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
-			new LineChartTools().lineChart(M, (Pane) chart.getParent(), chart, CellsSet.getDemand());
+			new LineChartTools().lineChart(M, (Pane) chart.getParent(), chart, DemandModel.getDemand());
 			yearchoice();
 			M.AFtsSet.updateAFTs();
 			// AFTsConfigurationController.choiceAgnetSetOnAction();

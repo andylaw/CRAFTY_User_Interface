@@ -13,10 +13,8 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.Paths;
 import main.FxMain;
-import model.ModelRunner;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -27,7 +25,7 @@ import javafx.stage.FileChooser;
 
 public class PathTools {
 
-	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
+	private static final Logger LOGGER = LogManager.getLogger(PathTools.class);
 
 	public static ArrayList<String> findFolder(final File folder, String condition, boolean onlyFolder) {
 		ArrayList<String> stringList = new ArrayList<>();

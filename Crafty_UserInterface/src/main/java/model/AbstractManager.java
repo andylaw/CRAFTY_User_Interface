@@ -9,13 +9,13 @@ import javafx.scene.paint.Color;
 public abstract class AbstractManager {
 	String label;
 	String completeName;
-	HashMap<String, Double> sensitivty = new HashMap<>();
+	HashMap<String, Double> sensitivity = new HashMap<>();
 	HashMap<String, Double> productivityLevel = new HashMap<>();
 	double giveInMean = 0, giveInSD = 0, giveUpMean = 0, giveUpSD = 0, serviceLevelNoiseMin = 0,
 			serviceLevelNoiseMax = 0, giveUpProbabilty = 0;
 	Color color;
-	public HashMap<String, Double> getSensitivty() {
-		return sensitivty;
+	public HashMap<String, Double> getSensitivity() {
+		return sensitivity;
 	}
 
 	public double getServiceLevelNoiseMin() {

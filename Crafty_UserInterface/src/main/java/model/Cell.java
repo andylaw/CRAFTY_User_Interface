@@ -1,9 +1,10 @@
 package model;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Random;
 
+import dataLoader.AFTsLoader;
+import dataLoader.CellsLoader;
 import fxmlControllers.MasksPaneController;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -35,28 +36,32 @@ public class Cell extends AbstractCell {
 	}
 
 	// ----------------------------------
-	public double prodactivity(Manager a, String serviceName) {
+
+	public double productivity(Manager a, String serviceName) {
 		if (a == null)
 			return 0;
-		double tmp = 1;
-		for (Iterator<String> j = capitals.keySet().iterator(); j.hasNext();) {
-			String cname = (String) j.next();
-			double cvalue = capitals.get(cname);
-			tmp = tmp * Math.pow(cvalue, a.getSensitivty().get(cname + "_" + serviceName));
-		}
-//		System.out.println(serviceName+"->"+a.getProductivityLevel().containsKey(serviceName));
-		return tmp * a.getProductivityLevel().get(serviceName);
+		double product = capitals.entrySet().stream()
+				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + serviceName)))
+				.reduce(1.0, (x, y) -> x * y);
+
+		return product * a.getProductivityLevel().get(serviceName);
 	}
 
 	double utility(Manager a) {
-		if (a == null)
+		if (a == null) {
 			return 0;
-		double sum = 0;
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			String sname = CellsSet.getServicesNames().get(i);
-			sum += ModelRunner.marginal.get(sname) * prodactivity(a, sname) * a.getProductivityLevel().get(sname);
 		}
-		return sum;
+		return CellsSet.getServicesNames().stream().mapToDouble(
+				sname -> ModelRunner.marginal.get(sname) * productivity(a, sname) * a.getProductivityLevel().get(sname))
+				.sum();
+	}
+
+	double utility() {
+		if (owner == null) {
+			return 0;
+		}
+		return CellsSet.getServicesNames().stream().mapToDouble(sname -> ModelRunner.marginal.get(sname)
+				* services.get(sname) * owner.getProductivityLevel().get(sname)).sum();
 	}
 
 	void Competition(Manager competitor, boolean ismutated, double mutationInterval) {
@@ -72,7 +77,7 @@ public class Cell extends AbstractCell {
 		}
 		if (makeCopetition) {
 			double uC = utility(competitor);
-			double uO = utility(owner);
+			double uO = utility();
 
 			if (owner == null) {
 				if (uC > 0)
@@ -88,23 +93,58 @@ public class Cell extends AbstractCell {
 
 					owner = ismutated ? new Manager(competitor, mutationInterval) : competitor;
 				}
+
 			}
 		}
 	}
 
+	Manager mostCompetitiveAgent() {
+		double uti = 0;
+		Manager theBestAFT = null;
+		for (Manager agent : AFTsLoader.getAftHash().values()) {
+			double u = utility(agent);
+			if (u > uti) {
+				uti = u;
+				theBestAFT = agent;
+			}
+		}
+		return theBestAFT;
+	}
+
+	void CompetitionWithRandomAFt(boolean ismutated, double mutationInterval) {
+		Competition(AFTsLoader.getRandomAFT(), ismutated, mutationInterval);
+	}
+
+	void CompetitionWithThebestAFt(boolean ismutated, double mutationInterval) {
+		Competition(mostCompetitiveAgent(), ismutated, mutationInterval);
+	}
+
 	void putservices() {
 		CellsSet.getServicesNames().forEach(sname -> {
-			services.put(sname, prodactivity(owner, sname));
+			services.put(sname, productivity(owner, sname));
 		});
 	}
 
+	void giveUp() {
+		if (owner != null) {
+			double cUtility = utility();
+			double averageutility = ModelRunner.distributionMean.get(getOwner().getLabel());
+
+			if ((cUtility < averageutility
+					* (getOwner().getGiveUpMean() + getOwner().getGiveUpSD() * new Random().nextGaussian())
+					&& getOwner().getGiveUpProbabilty() > Math.random()) /* || (cUtility < 0) */) {
+				setOwner(null);
+				CellsLoader.getUnmanageCells().add(this);
+			}
+		}
+	}
 //------------------------------------------//
 
 	public void landStored(Manager a) {
 		double sum = 0;
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			String sname = CellsSet.getServicesNames().get(i);
-			sum += prodactivity(a, sname) * a.getProductivityLevel().get(sname);
+			sum += productivity(a, sname) * a.getProductivityLevel().get(sname);
 		}
 		setTmpValueCell(sum);
 	}
@@ -114,7 +154,6 @@ public class Cell extends AbstractCell {
 		return " ------------------------------------------- \n" + "Patch [Index= " + index + "  x=" + x + " y= " + y
 				+ "\n capitalsValue=" + capitals + "\n ow=" + owner.getLabel() + "\n" + owner.toString() + "] \n "
 				+ "------------------------------------------- \n";
-
 	}
 
 }

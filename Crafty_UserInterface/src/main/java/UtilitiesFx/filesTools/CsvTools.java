@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-
+import dataLoader.CellsLoader;
 import model.Cell;
 import model.CellsSet;
 
@@ -251,7 +250,7 @@ public class CsvTools {
 
 		List<String> serviceImmutableList = Collections.unmodifiableList(CellsSet.getServicesNames());
 		// Process the cells in parallel to transform each Cell into a CSV string
-		Set<String> csvLines = CellsSet.getCells().parallelStream().map(c -> {
+		Set<String> csvLines = CellsLoader.hashCell.values().parallelStream().map(c -> {
 			String capitalsFlattened = flattenHashMap(c, serviceImmutableList);
 			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "", c.getOwner() != null ? c.getOwner().getLabel() : "null",capitalsFlattened);
 		}).collect(Collectors.toSet());

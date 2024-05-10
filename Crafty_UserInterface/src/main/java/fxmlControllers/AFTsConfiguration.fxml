@@ -104,7 +104,7 @@
 
 					<VBox spacing="10.0">
 						<children>
-							<TableView fx:id="productivityTable" prefHeight="50.0" />
+							<TableView fx:id="productivityTable" prefHeight="72" />
 							<HBox>
 								<children>
 									<TitledPane animated="true"

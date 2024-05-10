@@ -19,7 +19,7 @@ public class Manager extends AbstractManager{
 		completeName = "";
 		CellsSet.getCapitalsName().forEach((Cn) -> {
 			CellsSet.getServicesNames().forEach((Sn) -> {
-				sensitivty.put((Cn + "_" + Sn), 0.);
+				sensitivity.put((Cn + "_" + Sn), 0.);
 			});
 		});
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
@@ -31,8 +31,8 @@ public class Manager extends AbstractManager{
 		if (other != null) {
 			this.label = other.label;
 			this.color = other.color;
-			other.sensitivty.forEach((n, v) -> {
-				this.sensitivty.put(n, v * (1 + intervale * (2*new Random().nextDouble() - 1)));
+			other.sensitivity.forEach((n, v) -> {
+				this.sensitivity.put(n, v * (1 + intervale * (2*new Random().nextDouble() - 1)));
 
 			});
 			other.productivityLevel.forEach((n, v) -> {
@@ -51,7 +51,7 @@ public class Manager extends AbstractManager{
 																				// Random().nextInt(17));
 		CellsSet.getCapitalsName().forEach((Cn) -> {
 			CellsSet.getServicesNames().forEach((Sn) -> {
-				this.sensitivty.put((Cn + "_" + Sn), Math.random() > 0.5 ? Math.random() : 0);
+				this.sensitivity.put((Cn + "_" + Sn), Math.random() > 0.5 ? Math.random() : 0);
 			});
 		});
 		CellsSet.getServicesNames().forEach((Sn) -> {
@@ -71,7 +71,7 @@ public class Manager extends AbstractManager{
 
 	@Override
 	public String toString() {
-		return "AFT [label=" + label + " ,\n sensitivty=" + sensitivty + ",\n productivityLevel=" + productivityLevel
+		return "AFT [label=" + label + " ,\n sensitivty=" + sensitivity + ",\n productivityLevel=" + productivityLevel
 				+ ",\n giveIn=" + giveInMean + ", giveUp=" + giveUpMean + ", giveUpProbabilty=" + giveUpProbabilty
 				+ "]";
 	}

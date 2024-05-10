@@ -18,17 +18,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.graphicalTools.Tools;
-import UtilitiesFx.graphicalTools.WarningWindowes;
+import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import model.Cell;
 import model.CellsSet;
-import model.ModelRunner;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.AddCellToColumnException;
 
-public class FileReder {
-	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
-
+public class ReaderFile {
+	private static final Logger LOGGER = LogManager.getLogger(ReaderFile.class);
 
 	public static HashMap<String, ArrayList<String>> ReadAsaHash(String filePath) {
 		return ReadAsaHash(filePath, false);
@@ -42,18 +40,18 @@ public class FileReder {
 		try {
 			T = Table.read().csv(filePath);
 		} catch (AddCellToColumnException s) {
-			
+
 			LOGGER.error(s.getMessage());
-			/* correctAddCellToColumnException(T, filePath, s); */}
-		 catch (Exception e) {
+			/* correctAddCellToColumnException(T, filePath, s); */} catch (Exception e) {
 			if (ignoreIfFileNotExists) {
-				LOGGER.error(e.getMessage()+" \n     return null");
+				LOGGER.error(e.getMessage() + " \n     return null");
 				return null;
 			} else {
 				e.printStackTrace();
-				LOGGER.error(e.getMessage()+" \n     return null");
-				//filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be found:", filePath);
-			//	T = Table.read().csv(filePath);
+				LOGGER.error(e.getMessage() + " \n     return null");
+				// filePath = WarningWindowes.alterErrorNotFileFound("The file path could not be
+				// found:", filePath);
+				// T = Table.read().csv(filePath);
 			}
 		}
 		List<String> columnNames = T.columnNames();
@@ -71,21 +69,26 @@ public class FileReder {
 		return hash;
 	}
 
+
 	public static void processCSV(CellsLoader cells, String filePath, String type) {
+		LOGGER.info("Importing data for "+type+" from : " + filePath + "...");
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		ConcurrentHashMap<String, Integer> indexof = new ConcurrentHashMap<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			String[] line1 = br.readLine().split(",");
-			for (int i = 0; i < line1.length; i++) {
-				indexof.put(line1[i].replace("Service:", ""), i);
-			}
+				for (int i = 0; i < line1.length; i++) {
+					indexof.put(line1[i].replace("Service:", "").replace("\"", "").toUpperCase(), i);
+				}
+				
 			String line;
 			while ((line = br.readLine()) != null) {
 				final String data = line;
-
+				
 				executor.submit(() -> {
+					
 					switch (type) {
 					case "Capitals":
+					//	System.out.println(type +"-->"+ data);
 						associateCapitalsToCells(indexof, data);
 						break;
 					case "Services":
@@ -99,7 +102,7 @@ public class FileReder {
 				});
 			}
 		} catch (IOException e) {
-			
+
 			LOGGER.error(e.getMessage());
 		} finally {
 			executor.shutdown();
@@ -115,14 +118,14 @@ public class FileReder {
 			}
 		}
 	}
+	
 
 	static void associateCapitalsToCells(ConcurrentHashMap<String, Integer> indexof, String data) {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
 		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
-
 		CellsSet.getCapitalsName().forEach(capital_name -> {
-			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name)));
+			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));
 			CellsSet.getCellsSet().getCell(x, y).getCapitals().put(capital_name, capital_value);
 		});
 	}
@@ -131,17 +134,18 @@ public class FileReder {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
 		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
-
+		
 		Cell c = new Cell(x, y);
 
 		if (c != null) {
-			c.setOwner(cells.AFtsSet.getAftHash().get(immutableList.get(indexof.get("FR"))));
+		//	if(AFTsLoader.getAftHash().contains(immutableList.get(indexof.get("FR")))){}
+			c.setOwner(AFTsLoader.getAftHash().get(immutableList.get(indexof.get("FR"))));
 
 			CellsLoader.hashCell.put(x + "," + y, c);
 			c.setIndex(CellsLoader.hashCell.size());
 		}
 		CellsSet.getCapitalsName().forEach(capital_name -> {
-			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name)));
+			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));
 			c.getCapitals().put(capital_name, capital_value);//
 		});
 	}
@@ -151,17 +155,17 @@ public class FileReder {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
 		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
-		String aft_name = immutableList.get(indexof.get("Agent"));
+		String aft_name = immutableList.get(indexof.get("AGENT"));
 
 		Cell c = CellsLoader.hashCell.get(x + "," + y);
 
-		c.setOwner(cells.AFtsSet.getAftHash().get(aft_name));
+		c.setOwner(AFTsLoader.getAftHash().get(aft_name));
 
 		CellsSet.getServicesNames().forEach(service_name -> {
-			double service_value = Tools.sToD(immutableList.get(indexof.get(service_name)));
+			double service_value = Tools.sToD(immutableList.get(indexof.get(service_name.toUpperCase())));
 			c.getServices().put(service_name, service_value);
 		});
-	//	System.out.println(c.getServices());
+		// System.out.println(c.getServices());
 
 	}
 

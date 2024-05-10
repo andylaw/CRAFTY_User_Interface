@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -18,7 +20,6 @@ import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
-import dataLoader.Paths;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -36,7 +37,7 @@ import main.FxMain;
  */
 
 public class CellsSet {
-	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
+	private static final Logger LOGGER = LogManager.getLogger(CellsSet.class);
 	private static Canvas canvas;
 	private static GraphicsContext gc;
 	static PixelWriter pixelWriter;
@@ -45,14 +46,15 @@ public class CellsSet {
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
-	private static HashMap<String, double[]> demand = new HashMap<>();
-	private static List<String> capitalsName = new ArrayList<>();
-	private static List<String> servicesNames = new ArrayList<>();
+	
+	private static List<String> capitalsName =  Collections.synchronizedList(new ArrayList<>()); 
+	private static List<String> servicesNames =  Collections.synchronizedList(new ArrayList<>()); 
+	
 
 	public static void plotCells() {
 		ArrayList<Integer> X = new ArrayList<>();
 		ArrayList<Integer> Y = new ArrayList<>();
-		cellsSet.cells.forEach(c -> {
+		CellsLoader.hashCell.values().forEach(c -> {
 			X.add(c.getX());
 			Y.add(c.getY());
 		});
@@ -60,7 +62,7 @@ public class CellsSet {
 		maxY = Collections.max(Y) + 1;
 		int minX = Collections.min(X);
 		int minY = Collections.min(Y);
-
+		System.out.println("||"+(maxX - minX) +","+ (maxY - minY) );
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
 		writableImage = new WritableImage(maxX, maxY);
@@ -70,7 +72,7 @@ public class CellsSet {
 //		 canvas.getHeight());
 //		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
+		
 		colorMap("FR");
 
 		FxMain.root.getChildren().clear();
@@ -78,15 +80,38 @@ public class CellsSet {
 		FxMain.subScene.setCamera(FxMain.camera);
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
-		LOGGER.info("Number of cells = " + cellsSet.cells.size());
+		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
+		
 		MapControlerBymouse();
+
 	}
 
-	public static void colorMapClean() {
-		cellsSet.cells.forEach(c -> {
-			c.ColorP(Color.GRAY);
-		});
-	}
+    public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> hashCell, double percentage) {
+
+        int numberOfElementsToSelect = (int) (hashCell.size() * (percentage));
+
+        // Use parallel stream for better performance on large maps
+        List<String> keys = new ArrayList<>(hashCell.keySet());
+        ConcurrentHashMap<String, Cell> randomSubset = new ConcurrentHashMap<>();
+     
+        Collections.shuffle(keys, new Random()); // Shuffling the keys for randomness
+        keys.parallelStream()
+            .unordered() // This improve performance by eliminating the need for maintaining order
+            .limit(numberOfElementsToSelect)
+            .forEach(key -> randomSubset.put(key, hashCell.get(key)));
+        return randomSubset;
+    }
+    
+    public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> hashCell, double percentage) {
+
+        int numberOfElementsToSelect = (int) (hashCell.size() * (percentage));
+        ConcurrentHashMap<String, Cell> subset = new ConcurrentHashMap<>();
+        hashCell.keySet().parallelStream()
+        	.unordered() 
+            .limit(numberOfElementsToSelect)
+            .forEach(key -> subset.put(key, hashCell.get(key)));
+        return subset;
+    }
 
 	public static void colorMap(String str) {
 		colortype = str;
@@ -94,7 +119,7 @@ public class CellsSet {
 	}
 
 	public static void showOnlyOneAFT(Manager a) {
-		cellsSet.cells.parallelStream().forEach(cell -> {
+		CellsLoader.hashCell.values().parallelStream().forEach(cell -> {
 			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
 				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), Color.gray(0.65));
 			} else {
@@ -108,38 +133,39 @@ public class CellsSet {
 		LOGGER.info("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getOwner() != null) {
 					pixelWriter.setColor(c.getX(), maxY - c.getY(), c.getOwner().getColor());
 				}
+				else {pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.WHITE);}
 			});
 		} else if (capitalsName.contains(colortype)) {
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(),
 						ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
 
 			});
 
 		} else if (servicesNames.contains(colortype)) {
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getServices().get(colortype) != null)
 					values.add(c.getServices().get(colortype));
 			});
 
 			double max = values.size() > 0 ? Collections.max(values) : 0;
 
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(),
 						ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
 			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				values.add(c.getTmpValueCell());
 			});
 			double max = Collections.max(values);
 
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(), ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
 
@@ -147,7 +173,7 @@ public class CellsSet {
 
 			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
 
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getMaskType() != null) {
 					pixelWriter.setColor(c.getX(), maxY - c.getY(),
 							ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
@@ -159,12 +185,12 @@ public class CellsSet {
 		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 
 				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
 			});
 
-			cellsSet.cells.parallelStream().forEach(c -> {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				pixelWriter.setColor(c.getX(), maxY - c.getY(),
 						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
 			});
@@ -252,9 +278,9 @@ public class CellsSet {
 		return cellsSet;
 	}
 
-	public static Set<Cell> getCells() {
-		return cellsSet.cells;
-	}
+//	public static Set<Cell> getCells() {
+//		return cellsSet.cells;
+//	}
 
 	public static void setCellsSet(CellsLoader cellsSet) {
 		CellsSet.cellsSet = cellsSet;
@@ -264,18 +290,7 @@ public class CellsSet {
 		CellsSet.regioneselected = regioneselected;
 	}
 
-	public static HashMap<String, double[]> getDemand() {
-		return demand;
-	}
-	public static double getDemand(String key, int index) {
-		int tick = index-Paths.getStartYear();
-		if (tick >= demand.values().iterator().next().length) {
-			tick = demand.values().iterator().next().length - 1;
-			LOGGER.warn("There are no demand \'"+key+ "\' for this year: \"" + index + "\" using the latest available demands "
-					+ (tick + Paths.getStartYear()));
-		}
-		return demand.get(key)[tick];
-	}
+	
 
 	public static List<String> getCapitalsName() {
 		return capitalsName;
@@ -292,5 +307,6 @@ public class CellsSet {
 	public static void setCanvas(Canvas canvas) {
 		CellsSet.canvas = canvas;
 	}
+
 
 }

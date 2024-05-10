@@ -7,6 +7,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
 
 public class RunCofigController {
 	@FXML
@@ -25,6 +26,12 @@ public class RunCofigController {
 	private CheckBox chartSync;
 	@FXML
 	private CheckBox creatCSV;
+	@FXML
+	private CheckBox isAveragedPerCellResidualDemand;
+	@FXML
+	private RadioButton withBestAFT;
+	@FXML
+	private RadioButton withRandomAFT;
 //	@FXML
 //	private CheckBox neighboursCollaboration;
 	@FXML
@@ -57,10 +64,12 @@ public class RunCofigController {
 		// neighboursCollaboration.setSelected(CA.R.NeighboorEffect);
 		chartSync.setSelected(ModelRunnerController.chartSynchronisation);
 		cellsPersS.setValue(CA.R.percentageCells * 100);
-		CellPersT.setText((int) cellsPersS.getValue() + "");
+		CellPersT.setText( Math.round(cellsPersS.getValue() * 10) / 10.+ "");
 		cellsPersS.valueProperty().addListener((ov, oldval, newval) -> {
 			CA.R.percentageCells = cellsPersS.getValue() / 100;
-			CellPersT.setText((int) cellsPersS.getValue() + "");
+			CellPersT.setText(Math.round(cellsPersS.getValue() * 10) / 10.  + ""); //  ;
+
+
 		});
 
 		MapSync_GapS.setValue(CA.R.mapSynchronisationGap);
@@ -106,6 +115,11 @@ public class RunCofigController {
 		// System.out.println(Paths.getAllfilesPathInData());
 	}
 
+	@FXML
+	public void averagedPerCellResidualDemand(ActionEvent event) {
+		CA.R.isAveragedPerCellResidualDemand = isAveragedPerCellResidualDemand.isSelected();
+	}
+
 	// Event Listener on CheckBox.onAction
 //	@FXML
 //	public void NeighboursCollaboration(ActionEvent event) {
@@ -117,6 +131,27 @@ public class RunCofigController {
 		CA.R.isMutated = mutationM.isSelected();
 	}
 
+	@FXML
+	public void bestAFT(ActionEvent event) {
+		CA.R.withBestAFT = withBestAFT.isSelected();
+		if (withBestAFT.isSelected()) {
+			withRandomAFT.setSelected(false);
+		} else {
+			withRandomAFT.setSelected(true);
+		}
+	}
+
+	@FXML
+	public void randomAFT(ActionEvent event) {
+		CA.R.withBestAFT = !withRandomAFT.isSelected();
+		if (withRandomAFT.isSelected()) {
+			withBestAFT.setSelected(false);
+		} else {
+			withBestAFT.setSelected(true);
+		}
+
+	}
+
 	// Event Listener on TextField[#CellPersT].onAction
 	@FXML
 	public void cellspersT(ActionEvent event) {
@@ -126,22 +161,16 @@ public class RunCofigController {
 
 	@FXML
 	public void mapSync_GapAction(ActionEvent event) {
-		// CA.R.percentageCells = Tools.sToD(MapSync_GapT.getText()) / 100;
-		// //MapSync_GapT //MapSync_GapS
 		MapSync_GapS.setValue((int) Tools.sToD(MapSync_GapT.getText()));
 	}
 
 	@FXML
 	public void chartSyncAction(ActionEvent event) {
-		// CA.R.percentageCells = Tools.sToD(chartSync_GapT.getText()) /
-		// 100;//chartSync_GapT//chartSync_GapS
 		chartSync_GapS.setValue((int) Tools.sToD(chartSync_GapT.getText()));
 	}
 
 	@FXML
 	public void CSVAction(ActionEvent event) {
-		// CA.R.percentageCells = Tools.sToD(chartSync_GapT.getText()) /
-		// 100;//chartSync_GapT//chartSync_GapS
 		CSV_GapS.setValue((int) Tools.sToD(CSV_GapT.getText()));
 	}
 

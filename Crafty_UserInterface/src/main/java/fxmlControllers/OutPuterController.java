@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-import UtilitiesFx.filesTools.FileReder;
+import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.LineChartTools;
@@ -104,21 +104,22 @@ public class OutPuterController {
 		ArrayList<LineChart<Number, Number>> lineChart = new ArrayList<>();
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		HashMap<String, ArrayList<String>> reder = FileReder
+		HashMap<String, ArrayList<String>> reder = ReaderFile
 				.ReadAsaHash(PathTools.fileFilter(outputpath, "AggregateServiceDemand.csv").get(0));
 
-		ArrayList<HashMap<String, double[]>> has = new ArrayList<>();
+		ArrayList<HashMap<String, ArrayList<Double>>> has = new ArrayList<>();
 		CellsSet.getServicesNames().forEach(servicename -> {
-			HashMap<String, double[]> ha = new HashMap<>();
+			HashMap<String, ArrayList<Double>> ha = new HashMap<>();
 			reder.forEach((name, value) -> {
-				double[] tmp = new double[value.size()];
+				ArrayList<Double> tmp = new ArrayList<>();
 				for (int i = 0; i < value.size(); i++) {
-					tmp[i] = Tools.sToD(value.get(i));
+					tmp.add(Tools.sToD(value.get(i)));
 				}
 				if (name.contains(servicename)) {
 					ha.put(name, tmp);
 				}
 			});
+			
 			has.add(ha);
 			lineChart.add(
 					new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
@@ -129,10 +130,11 @@ public class OutPuterController {
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
 
-			HashMap<String, double[]> data = has.get(i);
+			
 			LineChart<Number, Number> Ch = lineChart.get(i);
-
-			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, data);
+			
+			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, has.get(i));
+			
 			// this for coloring the Chart by the AFTs color after the creation of the chart
 //			if (i == has.size() - 1) {
 //				Ch.setCreateSymbols(false);
@@ -165,7 +167,7 @@ public class OutPuterController {
 	}
 
 	HashMap<String, double[]> updatComposition(String path, String nameFile) {
-		HashMap<String, ArrayList<String>> reder = FileReder.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
+		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
 		HashMap<String, double[]> has = new HashMap<>();
 
 		reder.forEach((name, value) -> {

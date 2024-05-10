@@ -3,8 +3,8 @@ package main;
 
 import java.io.InputStream;
 
-
 import UtilitiesFx.cameraTools.Camera;
+import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-/*--***--/
+/*
  * @author Mohamed Byari
  *
  */
@@ -36,7 +36,6 @@ public class FxMain extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		System.out.println(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/*+"\u001B[0m"*/);
-		
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 		FxMain.primaryStage = primaryStage;

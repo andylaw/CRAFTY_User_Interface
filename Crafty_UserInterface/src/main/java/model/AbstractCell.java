@@ -1,6 +1,5 @@
 package model;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.scene.paint.Color;
@@ -14,7 +13,7 @@ public class AbstractCell {
 	 int x, y;
 	 ConcurrentHashMap<String, Double> capitals = new ConcurrentHashMap<>();
 	 ConcurrentHashMap<String, Double> services = new ConcurrentHashMap<>();
-	 HashMap<String, String> GisNameValue = new HashMap<>();//
+	 ConcurrentHashMap<String, String> GisNameValue = new ConcurrentHashMap<>();
 	 Manager owner;
 	 double tmpValueCell=0;// a changer
 	 protected Color color = Color.TRANSPARENT;
@@ -91,7 +90,7 @@ public class AbstractCell {
 		}
 
 
-		public HashMap<String, String> getGisNameValue() {
+		public ConcurrentHashMap<String, String> getGisNameValue() {
 			return GisNameValue;
 		}
 
@@ -99,7 +98,9 @@ public class AbstractCell {
 		public static int getSize() {
 			return size;
 		}
-
+		public static void setSize(int size) {
+			 AbstractCell.size=size;
+		}
 
 		public int getIndex() {
 			return index;

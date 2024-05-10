@@ -16,6 +16,8 @@ import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.PieChartTools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
+import dataLoader.CurvesLoader;
+import dataLoader.DemandModel;
 import dataLoader.Paths;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
@@ -65,27 +67,28 @@ public class SpatialDataController {
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
-		TabPaneController.M.loadCapitalsAndServiceList();
-		TabPaneController.M.loadMap();
-		TabPaneController.M.loadGisData();
-		CellsSet.setCellsSet(TabPaneController.M);
+		M.loadCapitalsAndServiceList();
+		CurvesLoader.loadcurves();
+		M.loadMap();
+		M.loadGisData();
+		CellsSet.setCellsSet(M);
 		CellsSet.plotCells();
-		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, CellsSet.getDemand());
-	//////
-				String ItemName = "Save as CSV";
-				Consumer<String> action = x -> {
-					SaveAs.exportLineChartDataToCSV(demandsChart);
-				};
-				HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
-				othersMenuItems.put(ItemName, action);
-				MousePressed.mouseControle((Pane)demandsChart.getParent(), demandsChart,othersMenuItems);
-	//////
-		
+
+		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, DemandModel.getDemand());
+		//////
+		String ItemName = "Save as CSV";
+		Consumer<String> action = x -> {
+			SaveAs.exportLineChartDataToCSV(demandsChart);
+		};
+		HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
+		othersMenuItems.put(ItemName, action);
+		MousePressed.mouseControle((Pane) demandsChart.getParent(), demandsChart, othersMenuItems);
+		//////
+
 		updatePieChartColorAFts(pieChartColor);
 		mapColorAndCapitalHistogrameInitialisation();
 		radioColor[0].fire();
 		isNotInitialsation = true;
-
 	}
 
 	private void mapColorAndCapitalHistogrameInitialisation() {
@@ -113,7 +116,7 @@ public class SpatialDataController {
 						histogrameCapitals(Paths.getCurrentYear() + "", CellsSet.getCapitalsName().get(k));
 					}
 					CellsSet.colorMap(CellsSet.getCapitalsName().get(k));
-					
+
 				}
 			});
 		}
@@ -136,7 +139,7 @@ public class SpatialDataController {
 	void histogrameCapitals(String year, String capitalName) {
 
 		Set<Double> dset = new HashSet<>();
-		CellsSet.getCells().forEach(c -> {
+		CellsLoader.hashCell.values().forEach(c -> {
 			dset.add(c.getCapitals().get(capitalName));
 		});
 
@@ -160,7 +163,6 @@ public class SpatialDataController {
 
 	public static List<Integer> countNumbersInIntervals(Set<Double> numbers, int intervalNBR) {
 		int[] counts = new int[intervalNBR];
-
 		for (Double number : numbers) {
 			if (number >= 0.0 && number <= 1.0) {
 				int index = (int) (number * intervalNBR);
@@ -180,10 +182,10 @@ public class SpatialDataController {
 	}
 
 	private void updatePieChartColorAFts(PieChart chart) {
-		ConcurrentHashMap<String, Double> convertedMap = new ConcurrentHashMap<>(AFTsLoader.hashAgentNbr().entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().doubleValue())));
+		ConcurrentHashMap<String, Double> convertedMap = new ConcurrentHashMap<>(AFTsLoader.hashAgentNbr.entrySet()
+				.stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().doubleValue())));
 		HashMap<String, Color> color = new HashMap<>();
-		M.AFtsSet.getAftHash().forEach((name, a) -> {
+		AFTsLoader.getAftHash().forEach((name, a) -> {
 			color.put(name, a.getColor());
 		});
 
