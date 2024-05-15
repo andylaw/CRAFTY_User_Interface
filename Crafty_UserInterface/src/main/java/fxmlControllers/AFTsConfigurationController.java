@@ -15,6 +15,7 @@ import UtilitiesFx.graphicalTools.Histogram;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
+import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import eu.hansolo.fx.charts.Category;
@@ -128,22 +129,22 @@ public class AFTsConfigurationController {
 		sensitivtyTable.setEditable(true);
 		productivityTable.setEditable(true);
 
-		Tools.choiceBox(AFTChoisButton, new ArrayList<>(M.AFtsSet.getAftHash().keySet()));
+		Tools.choiceBox(AFTChoisButton, new ArrayList<>(AFTsLoader.getAftHash().keySet()));
 
 		sensitivtyFire.setOnAction(e2 -> {
-			updateSensitivty(M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()), radarChartsGridPane,
+			updateSensitivty(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), radarChartsGridPane,
 					sensitivtyTable);
 		});
 		productionFire.setOnAction(e3 -> {
-			updateProduction(M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()), productivityTable);
+			updateProduction(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), productivityTable);
 			Histogram.histo((Pane) histogramePlevel.getParent(), "Productivity levels", histogramePlevel,
-					M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()).getProductivityLevel());
+					AFTsLoader.getAftHash().get(AFTChoisButton.getValue()).getProductivityLevel());
 
 		});
 
 		plotOptimalLandon.setOnAction(e2 -> {
 			plotInitialDistrebution.setSelected(false);
-			colorland(M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()));
+			colorland(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()));
 		});
 		isNotInitialsation = true;
 

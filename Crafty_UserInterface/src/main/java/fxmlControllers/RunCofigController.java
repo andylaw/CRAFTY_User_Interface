@@ -46,6 +46,11 @@ public class RunCofigController {
 	private TextField CSV_GapT;
 	@FXML
 	private Slider CSV_GapS;
+	@FXML
+	private Slider nbrOfSubSetS;
+	@FXML
+	private TextField nbrOfSubSetT;
+	
 
 	static public ModelRunnerController CA;
 
@@ -90,6 +95,12 @@ public class RunCofigController {
 		CSV_GapS.valueProperty().addListener((ov, oldval, newval) -> {
 			CA.R.writeCsvFilesGap = (int) CSV_GapS.getValue();
 			CSV_GapT.setText((int) CSV_GapS.getValue() + "");
+		});
+		nbrOfSubSetS.setValue(CA.R.nbrOfSubSet);
+		nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
+		nbrOfSubSetS.valueProperty().addListener((ov, oldval, newval) -> {
+			CA.R.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
+			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
 		});
 	}
 
@@ -158,7 +169,11 @@ public class RunCofigController {
 		CA.R.percentageCells = Tools.sToD(CellPersT.getText()) / 100;
 		cellsPersS.setValue((int) Tools.sToD(CellPersT.getText()));
 	}
-
+	@FXML 
+	public void nbrOfSubSetT(ActionEvent event) {
+		CA.R.nbrOfSubSet = (int)Tools.sToD(nbrOfSubSetT.getText()) / 100;
+		nbrOfSubSetS.setValue((int) Tools.sToD(nbrOfSubSetT.getText()));
+	}
 	@FXML
 	public void mapSync_GapAction(ActionEvent event) {
 		MapSync_GapS.setValue((int) Tools.sToD(MapSync_GapT.getText()));

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import javafx.scene.Node;
@@ -35,7 +36,7 @@ public class Histogram extends Node{
 
     }
 	
-	public static void histo (Pane box,String name,BarChart<String, Number> histogram ,HashMap<String,Double> hash) {      
+	public static void histo (Pane box,String name,BarChart<String, Number> histogram ,ConcurrentHashMap<String,Double> hash) {      
 		histogram.getData().clear();
 		
 	    XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -70,7 +71,7 @@ public class CellsSet {
 
 //		 FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
 //		 canvas.getHeight());
-//		 gc.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+//		 gc.setFill(Color.color(Math.random(), Math.random( ), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		
 		colorMap("FR");
@@ -83,34 +84,50 @@ public class CellsSet {
 		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
 		
 		MapControlerBymouse();
+		
 
 	}
 
-    public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> hashCell, double percentage) {
+    public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> cellsHash, double percentage) {
 
-        int numberOfElementsToSelect = (int) (hashCell.size() * (percentage));
+        int numberOfElementsToSelect = (int) (cellsHash.size() * (percentage));
 
         // Use parallel stream for better performance on large maps
-        List<String> keys = new ArrayList<>(hashCell.keySet());
+        List<String> keys = new ArrayList<>(cellsHash.keySet());
         ConcurrentHashMap<String, Cell> randomSubset = new ConcurrentHashMap<>();
      
         Collections.shuffle(keys, new Random()); // Shuffling the keys for randomness
         keys.parallelStream()
             .unordered() // This improve performance by eliminating the need for maintaining order
             .limit(numberOfElementsToSelect)
-            .forEach(key -> randomSubset.put(key, hashCell.get(key)));
+            .forEach(key -> randomSubset.put(key, cellsHash.get(key)));
         return randomSubset;
     }
     
-    public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> hashCell, double percentage) {
+    public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> cellsHash, double percentage) {
 
-        int numberOfElementsToSelect = (int) (hashCell.size() * (percentage));
+        int numberOfElementsToSelect = (int) (cellsHash.size() * (percentage));
         ConcurrentHashMap<String, Cell> subset = new ConcurrentHashMap<>();
-        hashCell.keySet().parallelStream()
+        cellsHash.keySet().parallelStream()
         	.unordered() 
             .limit(numberOfElementsToSelect)
-            .forEach(key -> subset.put(key, hashCell.get(key)));
+            .forEach(key -> subset.put(key, cellsHash.get(key)));
         return subset;
+    }
+    public static List<ConcurrentHashMap<String, Cell>> splitIntoSubsets(ConcurrentHashMap<String, Cell> cellsHash, int n) {
+        // Create a list to hold the n subsets
+        List<ConcurrentHashMap<String, Cell>> subsets = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            subsets.add(new ConcurrentHashMap<>());
+        }
+        
+        // Distribute keys randomly across the n subsets
+        cellsHash.keySet().parallelStream().forEach(key -> {
+            int subsetIndex = ThreadLocalRandom.current().nextInt(n);
+            subsets.get(subsetIndex).put(key, cellsHash.get(key));
+        });
+        
+        return subsets;
     }
 
 	public static void colorMap(String str) {

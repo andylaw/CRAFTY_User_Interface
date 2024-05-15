@@ -1,6 +1,8 @@
 package model;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +36,7 @@ public class ModelRunner implements Runnable {
 	public boolean isAveragedPerCellResidualDemand = false;
 	public boolean NeighboorEffect = false;
 	public double percentageCells = 0.015;
+	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;
 
 	public ConcurrentHashMap<String, Double> totalSupply;
@@ -46,7 +49,7 @@ public class ModelRunner implements Runnable {
 	public ModelRunner(CellsLoader cells) {
 		this.cells = cells;
 		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][cells.AFtsSet.size()];
-		servicedemand =  new String[Paths.getEndtYear() - Paths.getStartYear() + 2][CellsSet.getServicesNames().size()
+		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][CellsSet.getServicesNames().size()
 				* 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			servicedemand[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
@@ -56,14 +59,11 @@ public class ModelRunner implements Runnable {
 		AFTsLoader.getAftHash().keySet().forEach((label) -> {
 			compositionAFT[0][s.getAndIncrement()] = label;
 		});
+
 	}
 
 	void calculeSystemSupply() {
 
-		LOGGER.info("Services productivity calculation for all cells ");
-		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-			c.putservices();
-		});
 		LOGGER.info("Total Supply calculation");
 		totalSupply = new ConcurrentHashMap<>();
 		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
@@ -73,6 +73,22 @@ public class ModelRunner implements Runnable {
 		});
 
 		LOGGER.info("Total Supply = " + totalSupply);
+	}
+
+	void productivityForAll() {
+		LOGGER.info("Services productivity calculation for all cells ");
+//		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+//			c.putservices();
+//		});
+		int processors = Runtime.getRuntime().availableProcessors();
+		try (ForkJoinPool customThreadPool = new ForkJoinPool(processors * 10)) {
+			try {
+				customThreadPool.submit(() -> CellsLoader.hashCell.values().parallelStream().forEach(Cell::putservices))
+						.join();
+			} finally {
+				customThreadPool.shutdown();
+			}
+		}
 	}
 
 	void calculeDistributionMean() {
@@ -109,7 +125,8 @@ public class ModelRunner implements Runnable {
 		cells.updateCapitals(year);
 
 		// calcule supply
-		LOGGER.info("Supply Calculation...");
+		productivityForAll();
+
 		calculeSystemSupply();
 
 		// update demande & calcule marginal
@@ -126,27 +143,39 @@ public class ModelRunner implements Runnable {
 		MaskRestrictionDataLoader.updateCellsmask(year);
 		LOGGER.info("taking over unmanage cell...");
 		// take over unmanage cells
-		takeOverUmCells();
+		takeOverUnCells();
 		LOGGER.info("Launching the competition process...");
 		// Randomly select % of the land available for competition
 		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(CellsLoader.hashCell,
 				percentageCells);
-		randomCellsubSet.values().parallelStream().forEach(c -> {
-			// Abandonment of lands
-			if (usegiveUp) {
-				c.giveUp();
-			}
-			// set the competition
-			if (withBestAFT) {
-				c.CompetitionWithThebestAFt(isMutated, mutationIntval);
-			} else {
-				c.CompetitionWithRandomAFt(isMutated, mutationIntval);
-			}
+		if (randomCellsubSet != null) {
 
-//		if (NeighboorEffect) {
-//			CellsSubSets.actionInNeighboorSameLabel(c);
-//		}
-		});
+			List<ConcurrentHashMap<String, Cell>> subsubsets = CellsSet.splitIntoSubsets(randomCellsubSet, nbrOfSubSet);
+			ConcurrentHashMap<String, Double> servicesBeforeCompetition = new ConcurrentHashMap<>();
+			ConcurrentHashMap<String, Double> servicesAfterCompetition = new ConcurrentHashMap<>();
+
+			subsubsets.forEach(subsubset -> {
+				subsubset.values().parallelStream().forEach(c -> {
+					c.getServices().forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
+					if (usegiveUp) {
+						c.giveUp();
+					}
+					// set the competition
+					if (withBestAFT) {
+						c.CompetitionWithThebestAFt(isMutated, mutationIntval);
+					} else {
+						c.CompetitionWithRandomAFt(isMutated, mutationIntval);
+					}
+					c.getServices().forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
+				});
+
+				servicesBeforeCompetition.forEach((key, value) -> totalSupply.merge(key, -value, Double::sum));
+				servicesAfterCompetition.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
+				calculeMarginal(year, removeNegative);
+			});
+		} else {
+			LOGGER.error("Faild to select a random subset of cells");
+		}
 		LOGGER.info("Competition Process Completed");
 		// display Map
 		if (mapSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % mapSynchronisationGap == 0
@@ -158,12 +187,11 @@ public class ModelRunner implements Runnable {
 			// create .csv output files: services and AFT for each land
 			outPutChartsToCsv(year);
 			writOutPutMap(year);
-
 		}
 		AFTsLoader.hashAgentNbr();
 	}
 
-	void takeOverUmCells() {
+	void takeOverUnCells() {
 		CellsLoader.getUnmanageCells().parallelStream().forEach(c -> {
 			if (c.getOwner() == null) {
 				c.owner = c.mostCompetitiveAgent();

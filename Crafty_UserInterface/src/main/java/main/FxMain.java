@@ -4,7 +4,6 @@ package main;
 import java.io.InputStream;
 
 import UtilitiesFx.cameraTools.Camera;
-import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.application.Application;
 import javafx.application.Platform;

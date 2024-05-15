@@ -266,7 +266,6 @@ public class CsvTools {
 		} catch (IOException e) {
 			LOGGER.error("Unable to export file: " + filePath+"\n"+ e.getMessage());
 		}
-		LOGGER.info("Processing data to write a csv file...");
 	}
 
 

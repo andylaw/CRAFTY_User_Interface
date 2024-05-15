@@ -100,7 +100,7 @@ public class Cell extends AbstractCell {
 
 	Manager mostCompetitiveAgent() {
 		double uti = 0;
-		Manager theBestAFT = null;
+		Manager theBestAFT = AFTsLoader.getAftHash().values().iterator().next();
 		for (Manager agent : AFTsLoader.getAftHash().values()) {
 			double u = utility(agent);
 			if (u > uti) {

@@ -1,6 +1,8 @@
 package model;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javafx.scene.paint.Color;
 /**
  * @author Mohamed Byari
@@ -9,12 +11,12 @@ import javafx.scene.paint.Color;
 public abstract class AbstractManager {
 	String label;
 	String completeName;
-	HashMap<String, Double> sensitivity = new HashMap<>();
-	HashMap<String, Double> productivityLevel = new HashMap<>();
+	ConcurrentHashMap<String, Double> sensitivity = new ConcurrentHashMap<>();
+	ConcurrentHashMap<String, Double> productivityLevel = new ConcurrentHashMap<>();
 	double giveInMean = 0, giveInSD = 0, giveUpMean = 0, giveUpSD = 0, serviceLevelNoiseMin = 0,
 			serviceLevelNoiseMax = 0, giveUpProbabilty = 0;
 	Color color;
-	public HashMap<String, Double> getSensitivity() {
+	public ConcurrentHashMap<String, Double> getSensitivity() {
 		return sensitivity;
 	}
 
@@ -82,7 +84,7 @@ public abstract class AbstractManager {
 		this.color = color;
 	}
 
-	public HashMap<String, Double> getProductivityLevel() {
+	public ConcurrentHashMap<String, Double> getProductivityLevel() {
 		return productivityLevel;
 	}
 

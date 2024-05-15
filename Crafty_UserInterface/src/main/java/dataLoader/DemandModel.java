@@ -2,6 +2,7 @@ package dataLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +15,9 @@ import model.CellsSet;
 public class DemandModel {
 	private static final Logger LOGGER = LogManager.getLogger(DemandModel.class);
 
-	private static HashMap<String, ArrayList<Double>> demand = new HashMap<>();
+	private static ConcurrentHashMap<String, ArrayList<Double>> demand = new ConcurrentHashMap<>(); 
 
-	public static HashMap<String, ArrayList<Double>> getDemand() {
+	public static ConcurrentHashMap<String, ArrayList<Double>> getDemand() {
 		return demand;
 	}
 

@@ -3,6 +3,7 @@ package fxmlControllers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import UtilitiesFx.filesTools.ReaderFile;
@@ -107,9 +108,9 @@ public class OutPuterController {
 		HashMap<String, ArrayList<String>> reder = ReaderFile
 				.ReadAsaHash(PathTools.fileFilter(outputpath, "AggregateServiceDemand.csv").get(0));
 
-		ArrayList<HashMap<String, ArrayList<Double>>> has = new ArrayList<>();
+		ArrayList<ConcurrentHashMap<String, ArrayList<Double>>> has = new ArrayList<>();
 		CellsSet.getServicesNames().forEach(servicename -> {
-			HashMap<String, ArrayList<Double>> ha = new HashMap<>();
+			ConcurrentHashMap<String, ArrayList<Double>> ha = new ConcurrentHashMap<>();
 			reder.forEach((name, value) -> {
 				ArrayList<Double> tmp = new ArrayList<>();
 				for (int i = 0; i < value.size(); i++) {

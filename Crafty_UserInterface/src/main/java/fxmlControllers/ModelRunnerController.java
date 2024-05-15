@@ -2,6 +2,7 @@ package fxmlControllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -91,6 +92,9 @@ public class ModelRunnerController {
 		tickTxt.setText(tick.toString());
 
 		lineChart = new ArrayList<>();
+	//	lineChart = (ArrayList<LineChart<Number, Number>>) Collections.synchronizedList(lineChart);
+		
+		Collections.synchronizedList(lineChart);
 		outPutFolderName = Paths.getScenario();
 		runConfiguration = new NewWindow();
 		initilaseChart(lineChart);
