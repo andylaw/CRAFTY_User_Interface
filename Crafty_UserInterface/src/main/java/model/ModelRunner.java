@@ -210,11 +210,10 @@ public class ModelRunner implements Runnable {
 			m.getAndIncrement();
 		});
 //	A switch should be added here because it consumes a lot of calculations for large projects (EU-1km). and that could be produiced after simulation
-//		HashMap<String, Integer> AgentNbr = AFTsLoader.hashAgentNbr();
-//		AtomicInteger N = new AtomicInteger();
-//		AgentNbr.forEach((name, value) -> {
-//			compositionAFT[y][N.getAndIncrement()] = value + "";
-//		});
+		AtomicInteger N = new AtomicInteger();
+		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
+			compositionAFT[y][N.getAndIncrement()] = value + "";
+		});
 	}
 
 	private void writOutPutMap(int year) {

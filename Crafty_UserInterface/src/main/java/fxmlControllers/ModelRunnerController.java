@@ -206,13 +206,13 @@ public class ModelRunnerController {
 	private void scheduleIteravitveTicks(Duration delay) {
 		if (Paths.getCurrentYear() >= Paths.getEndtYear()-1) {
 			// Stop if max iterations reached
-			if (R.writeCsvFiles) {
-//				CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
-//						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
-				CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
-						+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
-			}
 			return;
+		}
+		if (R.writeCsvFiles) {
+			CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+					+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
+			CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario()
+					+ "\\" + outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
 		}
 		// Stop the old timeline if it's running
 		if (timeline != null) {
@@ -310,12 +310,18 @@ public class ModelRunnerController {
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setHeaderText("Please enter OutPut folder name and any comments");
-
-		String cofiguration = "Remove negative marginal utility values =   " + R.removeNegative + "\n"
-				+ "Land abondenmant (Give-up mechanism) =  " + R.usegiveUp + "\n" + "Considering mutation =  "
-				+ R.isMutated + "\n" + "Percentage of land use that could be changed =  "
-				+ (int) (R.percentageCells * 100) + "%" + "\n" + "Types of land mask restrictions considered =  "
-				+ MaskRestrictionDataLoader.ListOfMask.keySet() + "\n \n" + "Add your comments..";
+		String competitionType = (R.withBestAFT?"Select the best AFT for land competition":"Randomly select an AFT for land competition");
+		String cofiguration = "Remove negative marginal utility values:   " + R.removeNegative + "\n"
+				+ "Land abondenmant (Give-up mechanism):  " + R.usegiveUp + 
+				"\n" +"Averaged Per Cell Residual Demand: "+R.isAveragedPerCellResidualDemand+
+				"\n" + "Considering mutation:  "
+				+ R.isMutated +
+				"\n" + competitionType+
+				"\n" + "Percentage of land use that could be changed:  "
+				+ (int) (R.percentageCells * 100) + "%"
+				+ "\n" +"Number of sub-assemblies and residual demand update during the waiting period: "+R.nbrOfSubSet
+				+ "\n" + "Types of land mask restrictions considered:  "
+				+ MaskRestrictionDataLoader.listOfyears.keySet() + "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");

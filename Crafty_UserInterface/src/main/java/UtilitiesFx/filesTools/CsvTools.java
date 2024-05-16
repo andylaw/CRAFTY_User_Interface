@@ -178,9 +178,9 @@ public class CsvTools {
 
 			for (int i = 0; i < tabl.length; i++) {
 				for (int j = 0; j < tabl[0].length - 1; j++) {
-					bw.write(tabl[i][j] + ",");
+					bw.write(tabl[i][j]!=null?tabl[i][j] + ",":",");
 				}
-				bw.write(tabl[i][tabl[0].length - 1] != null ? tabl[i][tabl[0].length - 1] : 0 + "");
+				bw.write(tabl[i][tabl[0].length - 1] != null ? tabl[i][tabl[0].length - 1] :   "");
 				bw.newLine();
 			}
 			bw.close();

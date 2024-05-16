@@ -62,27 +62,26 @@ public class OutPuterController {
 			ArrayList<String> yearList = new ArrayList<>();
 			PathTools.findAllFiles(outputpath).forEach(str -> {
 				File file = new File(str);
-				String tmp =new File(file.getParent()).getName()+"\\"+ file.getName();
-				
+				String tmp = new File(file.getParent()).getName() + "\\" + file.getName();
+
 				if (tmp.contains("-Cell-"))
 					yearList.add(tmp/*
 									 * .replace(".csv", "").replace("-Cell-", "").replace(Paths.getScenario(), "")
 									 */);
 			});
-			System.out.println("yearList---> "+ yearList);
+			System.out.println("yearList---> " + yearList);
 			yearChoice.getItems().addAll(yearList);
 			yearChoice.setValue(yearList.get(0));
-			System.out.println("yearList---> "+ yearChoice.getValue());
+			System.out.println("yearList---> " + yearChoice.getValue());
+			OutPutTabController.radioColor[OutPutTabController.radioColor.length-1].setSelected(true);
 			newOutPut(yearChoice.getValue());
 			Graphs(gridChart);
 		}
 	}
 
-
-
 	@FXML
 	public void yearChoice() {
-	//	Paths.setCurrentYear((int) Tools.sToD(yearChoice.getValue()));
+		// Paths.setCurrentYear((int) Tools.sToD(yearChoice.getValue()));
 
 		if (outputpath.length() > 0) {
 			newOutPut(yearChoice.getValue()/* Paths.getCurrentYear() + "" */);
@@ -113,29 +112,27 @@ public class OutPuterController {
 			ConcurrentHashMap<String, ArrayList<Double>> ha = new ConcurrentHashMap<>();
 			reder.forEach((name, value) -> {
 				ArrayList<Double> tmp = new ArrayList<>();
-				for (int i = 0; i < value.size(); i++) {
+				for (int i = 0; i < value.size() - 2; i++) {
 					tmp.add(Tools.sToD(value.get(i)));
 				}
 				if (name.contains(servicename)) {
 					ha.put(name, tmp);
 				}
 			});
-			
+
 			has.add(ha);
 			lineChart.add(
 					new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
 		});
-		// this is for creating the chart for AFTs aggregationComoposition  // will move tho output analyse
-		//has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
-		//lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
+		has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
+		lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
 
-			
 			LineChart<Number, Number> Ch = lineChart.get(i);
-			
+
 			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, has.get(i));
-			
+
 			// this for coloring the Chart by the AFTs color after the creation of the chart
 //			if (i == has.size() - 1) {
 //				Ch.setCreateSymbols(false);
@@ -162,23 +159,28 @@ public class OutPuterController {
 			};
 			HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
 			othersMenuItems.put(ItemName, action);
-			MousePressed.mouseControle((Pane)Ch.getParent(), Ch,othersMenuItems);
+			MousePressed.mouseControle((Pane) Ch.getParent(), Ch, othersMenuItems);
 			//////
 		}
 	}
 
-	HashMap<String, double[]> updatComposition(String path, String nameFile) {
-		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
-		HashMap<String, double[]> has = new HashMap<>();
+	ConcurrentHashMap<String, ArrayList<Double>> updatComposition(String path, String nameFile) {
+		try {
+			HashMap<String, ArrayList<String>> reder = ReaderFile
+					.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
+			ConcurrentHashMap<String, ArrayList<Double>> has = new ConcurrentHashMap<>();
 
-		reder.forEach((name, value) -> {
-			double[] tmp = new double[value.size()];
-			for (int i = 0; i < value.size(); i++) {
-				tmp[i] = Tools.sToD(value.get(i));
-			}
-			has.put(name, tmp);
+			reder.forEach((name, value) -> {
+				ArrayList<Double> tmp = new ArrayList<>();
+				for (int i = 0; i < value.size() - 2; i++) {
+					tmp.add(Tools.sToD(value.get(i)));
+				}
+				has.put(name, tmp);
 
-		});
-		return has;
+			});
+			return has;
+		} catch (NullPointerException e) {
+			return null;
+		}
 	}
 }

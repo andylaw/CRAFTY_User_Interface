@@ -51,7 +51,6 @@ public class FxMain extends Application {
 		scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
 		primaryStage.setScene(scene);
-
 		primaryStage.setMaximized(true);
 		primaryStage.show();
 		primaryStage.setOnCloseRequest(event -> Platform.exit());

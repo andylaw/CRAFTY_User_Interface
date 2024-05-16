@@ -2,7 +2,6 @@ package UtilitiesFx.graphicalTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +28,7 @@ public class LineChartTools {
 
 	public void lineChart(CellsLoader M, Pane box, LineChart<Number, Number> lineChart,
 			ConcurrentHashMap<String, ArrayList<Double>> hash) {
+		if(hash==null) {return;}
 		configurexAxis(lineChart,Paths.getStartYear(),Paths.getEndtYear());
 		lineChart.getData().clear();
 		Series<Number, Number>[] series = new XYChart.Series[hash.size()];
