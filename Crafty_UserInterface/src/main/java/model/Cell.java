@@ -1,7 +1,12 @@
 package model;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
@@ -66,6 +71,9 @@ public class Cell extends AbstractCell {
 
 	void Competition(Manager competitor, boolean ismutated, double mutationInterval) {
 		// if this land is protected then check if the compeititvenese should happend.
+		if (competitor == null) {
+			return;
+		}
 		boolean makeCopetition = true;
 		if (getMaskType() != null) {
 			HashMap<String, Boolean> mask = MasksPaneController.restrictions.get(getMaskType());
@@ -99,9 +107,16 @@ public class Cell extends AbstractCell {
 	}
 
 	Manager mostCompetitiveAgent() {
+		return mostCompetitiveAgent(AFTsLoader.getAftHash().values());
+	}
+
+	Manager mostCompetitiveAgent(Collection<Manager> setAfts) {
+		if (setAfts.size() == 0) {
+			return owner;
+		}
 		double uti = 0;
-		Manager theBestAFT = AFTsLoader.getAftHash().values().iterator().next();
-		for (Manager agent : AFTsLoader.getAftHash().values()) {
+		Manager theBestAFT = setAfts.iterator().next();
+		for (Manager agent : setAfts) {
 			double u = utility(agent);
 			if (u > uti) {
 				uti = u;
@@ -111,12 +126,21 @@ public class Cell extends AbstractCell {
 		return theBestAFT;
 	}
 
-	void CompetitionWithRandomAFt(boolean ismutated, double mutationInterval) {
-		Competition(AFTsLoader.getRandomAFT(), ismutated, mutationInterval);
-	}
-
-	void CompetitionWithThebestAFt(boolean ismutated, double mutationInterval) {
-		Competition(mostCompetitiveAgent(), ismutated, mutationInterval);
+	void competition(boolean ismutated, double mutationInterval, boolean isTheBest, boolean neighbor) {
+		if (!neighbor) {
+			if (isTheBest) {
+				Competition(mostCompetitiveAgent(), ismutated, mutationInterval);
+			} else {
+				Competition(AFTsLoader.getRandomAFT(), ismutated, mutationInterval);
+			}
+		} else {
+			Collection<Manager> afts = CellsSubSets.detectNeighboringAFTs(this);
+			if (isTheBest) {
+				Competition(mostCompetitiveAgent(afts), ismutated, mutationInterval);
+			} else {
+				Competition(AFTsLoader.getRandomAFT(afts), ismutated, mutationInterval);
+			}
+		}
 	}
 
 	void putservices() {

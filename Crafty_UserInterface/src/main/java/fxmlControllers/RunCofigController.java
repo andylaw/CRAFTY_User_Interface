@@ -15,6 +15,8 @@ public class RunCofigController {
 	@FXML
 	private CheckBox gUP;
 	@FXML
+	private CheckBox neighbours;
+	@FXML
 	private CheckBox mutationM;
 	@FXML
 	private Slider cellsPersS;
@@ -63,6 +65,9 @@ public class RunCofigController {
 		System.out.println("initialize " + getClass().getSimpleName());
 		removeNegative.setSelected(CA.R.removeNegative);
 		MapSync.setSelected(CA.R.mapSynchronisation);
+		neighbours.setSelected(CA.R.NeighboorEffect);
+		withBestAFT.setSelected(CA.R.withBestAFT);
+		withRandomAFT.setSelected(!CA.R.withBestAFT);
 		creatCSV.setSelected(CA.R.writeCsvFiles);
 		gUP.setSelected(CA.R.usegiveUp);
 		mutationM.setSelected(CA.R.isMutated);
@@ -102,6 +107,8 @@ public class RunCofigController {
 			CA.R.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
 			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
 		});
+		
+		
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction
@@ -121,9 +128,10 @@ public class RunCofigController {
 	public void giveUpMechanisme(ActionEvent event) {
 		CA.R.usegiveUp = gUP.isSelected();
 
-		/***/
-		// CorrelationChiSquare.ceartCorelationMatrix(CA.M);
-		// System.out.println(Paths.getAllfilesPathInData());
+	}
+	@FXML
+	public void NeighboursAction(ActionEvent event) {
+		CA.R.NeighboorEffect = neighbours.isSelected();
 	}
 
 	@FXML

@@ -2,6 +2,7 @@ package main;
 
 
 import java.io.InputStream;
+import java.util.concurrent.ThreadLocalRandom;
 
 import UtilitiesFx.cameraTools.Camera;
 import UtilitiesFx.graphicalTools.Tools;
@@ -39,7 +40,6 @@ public class FxMain extends Application {
 		double h = Screen.getPrimary().getBounds().getHeight();
 		FxMain.primaryStage = primaryStage;
 		subScene = new SubScene(root, w * .45, h * .95);
-
 		InputStream imageStream = getClass().getResourceAsStream("/craftylogo.png");
 		imageView = Tools.logo(imageStream, w / 3, h / 3, 0.65);
 		anchor.getChildren().add(imageView);

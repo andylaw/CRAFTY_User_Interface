@@ -29,12 +29,12 @@ public class ModelRunner implements Runnable {
 	public int mapSynchronisationGap = 5;
 	public boolean writeCsvFiles = false;
 	public int writeCsvFilesGap = 5;
-	public boolean removeNegative = false;
+	public boolean removeNegative = true;
 	public boolean usegiveUp = false;
 	public boolean isMutated = false;
-	public boolean withBestAFT = false;
+	public boolean withBestAFT = true;
 	public boolean isAveragedPerCellResidualDemand = false;
-	public boolean NeighboorEffect = false;
+	public boolean NeighboorEffect = true;
 	public double percentageCells = 0.015;
 	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;
@@ -133,12 +133,11 @@ public class ModelRunner implements Runnable {
 		LOGGER.info("Marginal Utility Supply calculation");
 		calculeMarginal(year, removeNegative);
 
-		if (usegiveUp) {
+		//if (usegiveUp) {}
 			LOGGER.info("Calculating Distribution Mean");
 			calculeDistributionMean();
-			System.out.println("-->" + distributionMean);
 			LOGGER.info("Distribution Mean... done");
-		}
+		
 		// upDateMaskif needed
 		MaskRestrictionDataLoader.updateCellsmask(year);
 		LOGGER.info("taking over unmanage cell...");
@@ -160,12 +159,8 @@ public class ModelRunner implements Runnable {
 					if (usegiveUp) {
 						c.giveUp();
 					}
-					// set the competition
-					if (withBestAFT) {
-						c.CompetitionWithThebestAFt(isMutated, mutationIntval);
-					} else {
-						c.CompetitionWithRandomAFt(isMutated, mutationIntval);
-					}
+
+					c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect);
 					c.getServices().forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
 				});
 

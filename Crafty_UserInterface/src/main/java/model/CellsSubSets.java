@@ -1,11 +1,14 @@
 package model;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import controllers.NewRegion_Controller;
+import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import javafx.scene.paint.Color;
 
@@ -34,8 +37,17 @@ public class CellsSubSets {
 		});
 	}
 
+	static Collection<Manager> detectNeighboringAFTs(Cell c) {
+		Set<Manager> neighborhoodAFts = Collections.synchronizedSet(new HashSet<>());
+		Set<Cell> neighborhoodCells = getMooreNeighborhood(c);
+		neighborhoodCells.forEach(vc -> {
+			neighborhoodAFts.add(vc.owner);
+		});
+		return neighborhoodAFts;
+	}
+
 	static Set<Cell> getMooreNeighborhood(Cell c) {
-		Set<Cell> neighborhood = new HashSet<>();
+		Set<Cell> neighborhood = Collections.synchronizedSet(new HashSet<>());
 		for (int i = (c.x - 1); i <= c.x + 1; i++) {
 			for (int j = (c.y - 1); j <= (c.y) + 1; j++) {
 				if (CellsSet.getCellsSet().getCell(i, j) != null) {

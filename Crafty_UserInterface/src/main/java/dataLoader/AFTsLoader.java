@@ -2,11 +2,13 @@ package dataLoader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -191,9 +193,16 @@ public class AFTsLoader extends HashSet<Manager> {
 	public static ConcurrentHashMap<String, Manager> getAftHash() {
 		return hash;
 	}
+	
 	public static Manager getRandomAFT() {
-		 List<String> keys = new ArrayList<>(hash.keySet());
-		return hash.get(keys.get(new Random().nextInt(keys.size()))); 
+		return getRandomAFT(hash.values()) ;
+	}
+	public static Manager getRandomAFT(Collection<Manager> afts) {
+		if (afts.size() != 0) {
+			int index = ThreadLocalRandom.current().nextInt(afts.size());
+			Manager aft = afts.stream().skip(index).findFirst().orElse(null);
+			return aft;}
+		return null; 
 	}
 
 }

@@ -20,22 +20,22 @@
                               <CheckBox fx:id="removeNegative" mnemonicParsing="false" onAction="#removeNegativeMarginal" text="Remove negative Marginal utility" />
                               <CheckBox fx:id="gUP" mnemonicParsing="false" onAction="#giveUpMechanisme" text="Land abondenmant mechanism" />
                               <CheckBox fx:id="isAveragedPerCellResidualDemand" mnemonicParsing="false" onAction="#averagedPerCellResidualDemand" text="Averaged Per Cell Residual Demand" />
-                            <!--    <CheckBox fx:id="neighboursCollaboration" mnemonicParsing="false" onAction="#NeighboursCollaboration" text="Neighbours collaboration" /> -->
+                              <CheckBox fx:id="neighbours" mnemonicParsing="false" onAction="#NeighboursAction" text="Priority given to neighbouring AFTs for land competition" /> 
                               <CheckBox fx:id="mutationM" mnemonicParsing="false" onAction="#MutationMechanism" text="Mutation mechanism" />
                                <RadioButton fx:id="withBestAFT" mnemonicParsing="false" onAction="#bestAFT" text="Select the best AFT for land competition" />
                               <RadioButton fx:id="withRandomAFT" mnemonicParsing="false" onAction="#randomAFT" text="Randomly select an AFT for land competition" />
                               <HBox spacing="5.0">
                                  <children>
                                     <Label text="Percentage Cells  " />
-                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="1.0" max="5" minorTickCount="2"  showTickLabels="true" showTickMarks="true" />
+                                    <Slider fx:id="cellsPersS" blockIncrement="1.0" majorTickUnit="1.0" max="10" minorTickCount="2"  showTickLabels="true" showTickMarks="true" />
                                     <TextField fx:id="CellPersT" onAction="#cellspersT" prefHeight="25.0" prefWidth="58.0" />
                               <Label text="\%" />
                                  </children>
                               </HBox>
                               <HBox spacing="5.0">
                                  <children>
-                                    <Label text="Percentage Cells  " />
-                                    <Slider fx:id="nbrOfSubSetS" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                                    <Label text="Number of Sub-sets and Supply Update During a Single Iteration" />
+                                    <Slider fx:id="nbrOfSubSetS" blockIncrement="1.0" majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
                                     <TextField fx:id="nbrOfSubSetT" onAction="#nbrOfSubSetT" prefHeight="25.0" prefWidth="58.0" />
                                  </children>
                               </HBox>
