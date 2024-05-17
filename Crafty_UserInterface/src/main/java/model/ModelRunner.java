@@ -152,7 +152,7 @@ public class ModelRunner implements Runnable {
 			List<ConcurrentHashMap<String, Cell>> subsubsets = CellsSet.splitIntoSubsets(randomCellsubSet, nbrOfSubSet);
 			ConcurrentHashMap<String, Double> servicesBeforeCompetition = new ConcurrentHashMap<>();
 			ConcurrentHashMap<String, Double> servicesAfterCompetition = new ConcurrentHashMap<>();
-
+ 
 			subsubsets.forEach(subsubset -> {
 				subsubset.values().parallelStream().forEach(c -> {
 					c.getServices().forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
