@@ -107,7 +107,7 @@ public class Cell extends AbstractCell {
 	}
 
 	Manager mostCompetitiveAgent() {
-		return mostCompetitiveAgent(AFTsLoader.getAftHash().values());
+		return mostCompetitiveAgent(AFTsLoader.getActivateAFTsHash().values());
 	}
 
 	Manager mostCompetitiveAgent(Collection<Manager> setAfts) {
@@ -117,12 +117,10 @@ public class Cell extends AbstractCell {
 		double uti = 0;
 		Manager theBestAFT = setAfts.iterator().next();
 		for (Manager agent : setAfts) {
-			if (agent!=null && agent.isActive()) {
-				double u = utility(agent);
-				if (u > uti) {
-					uti = u;
-					theBestAFT = agent;
-				}
+			double u = utility(agent);
+			if (u > uti) {
+				uti = u;
+				theBestAFT = agent;
 			}
 		}
 		return theBestAFT;

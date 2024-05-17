@@ -41,7 +41,8 @@ public class CellsSubSets {
 		Set<Manager> neighborhoodAFts = Collections.synchronizedSet(new HashSet<>());
 		Set<Cell> neighborhoodCells = getMooreNeighborhood(c);
 		neighborhoodCells.forEach(vc -> {
-			neighborhoodAFts.add(vc.owner);
+			if(vc.owner.isActive())
+				neighborhoodAFts.add(vc.owner);
 		});
 		return neighborhoodAFts;
 	}

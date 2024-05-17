@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -34,12 +32,17 @@ public class AFTsLoader extends HashSet<Manager> {
 	private static final Logger LOGGER = LogManager.getLogger(AFTsLoader.class);
 	private static final long serialVersionUID = 1L;
 	private static ConcurrentHashMap<String, Manager> hash = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<String, Manager> activateAFTsHash = new ConcurrentHashMap<>();
+
 	public static ConcurrentHashMap<String, Integer> hashAgentNbr;
 
 	public AFTsLoader() {
 		initializeAFTs();
 		updateAftTypes();
 		addAll(hash.values());
+		hash.entrySet().stream().filter(entry -> entry.getValue().isActive())
+				.forEach(entry -> activateAFTsHash.put(entry.getKey(), entry.getValue()));
+
 		agentsColorinitialisation();
 	}
 
@@ -212,16 +215,21 @@ public class AFTsLoader extends HashSet<Manager> {
 	public static ConcurrentHashMap<String, Manager> getAftHash() {
 		return hash;
 	}
+	
+
+	public static ConcurrentHashMap<String, Manager> getActivateAFTsHash() {
+		return activateAFTsHash;
+	}
+
 
 	public static Manager getRandomAFT() {
-		return getRandomAFT(hash.values());
+		return getRandomAFT(activateAFTsHash.values());
 	}
 
 	public static Manager getRandomAFT(Collection<Manager> afts) {
 		if (afts.size() != 0) {
 			int index = ThreadLocalRandom.current().nextInt(afts.size());
 			Manager aft = afts.stream().skip(index).findFirst().orElse(null);
-			if (aft.isActive())
 				return aft;
 		}
 		return null;// select from outside "hash"
