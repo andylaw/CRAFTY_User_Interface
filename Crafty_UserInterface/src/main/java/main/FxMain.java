@@ -1,10 +1,10 @@
 package main;
 
-
 import java.io.InputStream;
-import java.util.concurrent.ThreadLocalRandom;
+
 
 import UtilitiesFx.cameraTools.Camera;
+import UtilitiesFx.graphicalTools.ImagesToPDF;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -32,10 +32,10 @@ public class FxMain extends Application {
 	public static AnchorPane anchor = new AnchorPane();
 	public static Scene scene = new Scene(anchor);
 
-
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		System.out.println(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/*+"\u001B[0m"*/);
+		System.out.println(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);
+
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 		FxMain.primaryStage = primaryStage;
@@ -57,8 +57,8 @@ public class FxMain extends Application {
 	}
 
 	public static void main(String[] args) {
+
 		launch(args);
 	}
-
 
 }

@@ -29,7 +29,7 @@ public class ModelRunner implements Runnable {
 	public int mapSynchronisationGap = 5;
 	public boolean writeCsvFiles = false;
 	public int writeCsvFilesGap = 5;
-	public boolean removeNegative = true;
+	public boolean removeNegative = false;
 	public boolean usegiveUp = false;
 	public boolean isMutated = false;
 	public boolean withBestAFT = true;

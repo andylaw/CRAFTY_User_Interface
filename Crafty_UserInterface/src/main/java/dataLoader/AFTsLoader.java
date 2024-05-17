@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,7 @@ import tech.tablesaw.api.Table;
  */
 
 public class AFTsLoader extends HashSet<Manager> {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(AFTsLoader.class);
 	private static final long serialVersionUID = 1L;
 	private static ConcurrentHashMap<String, Manager> hash = new ConcurrentHashMap<>();
@@ -37,6 +38,7 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public AFTsLoader() {
 		initializeAFTs();
+		updateAftTypes();
 		addAll(hash.values());
 		agentsColorinitialisation();
 	}
@@ -113,9 +115,9 @@ public class AFTsLoader extends HashSet<Manager> {
 		bFiles.forEach(f -> {
 			File file = new File(f);
 			try {
-			updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);}
-			catch(NullPointerException e) {
-				LOGGER.error("AFT Not in the List: "+ file );
+				updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
+			} catch (NullPointerException e) {
+				LOGGER.error("AFT Not in the List: " + file);
 			}
 		});
 		checkAFTsBehevoireParametres(bFiles);
@@ -126,16 +128,16 @@ public class AFTsLoader extends HashSet<Manager> {
 		Manager a = hash.get(file.getName().replace(".csv", "").replace("AftParams_", ""));
 		updateAFTBehevoir(a, file);
 	}
-	
+
 	void checkAFTsBehevoireParametres(List<String> bFiles) {
-	
-		List<String> bf= new ArrayList<>();
-		bFiles.forEach(f->{
+
+		List<String> bf = new ArrayList<>();
+		bFiles.forEach(f -> {
 			bf.add(new File(f).getName().replace(".csv", "").replace("AftParams_", ""));
 		});
-		hash.keySet().forEach(label->{
-			if(!bf.contains(label)) {
-				LOGGER.warn("no behevoir parametrs for the AFT:  "+ label );
+		hash.keySet().forEach(label -> {
+			if (!bf.contains(label)) {
+				LOGGER.warn("no behevoir parametrs for the AFT:  " + label);
 			}
 		});
 	}
@@ -160,6 +162,21 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	}
 
+	void updateAftTypes() {// mask or AFT
+		String aftsmetadataPath = PathTools.fileFilter("\\csv\\", "AFTsMetaData").iterator().next();
+		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(aftsmetadataPath);
+		if (matrix.get("Type") != null) {
+			for (int i = 0; i < matrix.get("Label").size(); i++) {
+				String label = matrix.get("Label").get(i);
+				hash.get(label).setActive(matrix.get("Type").get(i).equals("AFT"));
+			}
+
+			hash.values().forEach(a -> {
+				System.out.println(a.getLabel() + "-->" + a.isActive());
+			});
+		}
+	}
+
 	public static void updateSensitivty(Manager a, File file) {
 		Table T = Table.read().csv(file);
 		CellsSet.getCapitalsName().forEach((Cn) -> {
@@ -169,40 +186,45 @@ public class AFTsLoader extends HashSet<Manager> {
 		});
 	}
 
-	public static void 	updateAFTProduction(Manager a, File file) {
+	public static void updateAFTProduction(Manager a, File file) {
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(file.getAbsolutePath());
-		String c0= matrix.keySet().contains("C0")? "C0":"Unnamed: 0";
-		
+		String c0 = matrix.keySet().contains("C0") ? "C0" : "Unnamed: 0";
+
 		for (int i = 0; i < matrix.get(c0).size(); i++) {
-			if(CellsSet.getServicesNames().contains(matrix.get(c0).get(i))) {
-				a.getProductivityLevel().put(matrix.get(c0).get(i), Tools.sToD(matrix.get("Production").get(i)));}
-			else {LOGGER.warn(matrix.get(c0).get(i)+"  is not existe in Services List, will be ignored");}
+			if (CellsSet.getServicesNames().contains(matrix.get(c0).get(i))) {
+				a.getProductivityLevel().put(matrix.get(c0).get(i), Tools.sToD(matrix.get("Production").get(i)));
+			} else {
+				LOGGER.warn(matrix.get(c0).get(i) + "  is not existe in Services List, will be ignored");
+			}
 		}
-		LOGGER.info(a.getLabel()+ " -> ProductivityLevel= "+ a.getProductivityLevel());
-		updateSensitivty(a,file);
+		LOGGER.info(a.getLabel() + " -> ProductivityLevel= " + a.getProductivityLevel());
+		updateSensitivty(a, file);
 	}
 
 	public static void hashAgentNbr() {
-		 hashAgentNbr = new ConcurrentHashMap<>();
+		hashAgentNbr = new ConcurrentHashMap<>();
 		CellsLoader.hashCell.values().forEach(c -> {
 			if (c.getOwner() != null)
-			    hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
+				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 		});
 	}
 
 	public static ConcurrentHashMap<String, Manager> getAftHash() {
 		return hash;
 	}
-	
+
 	public static Manager getRandomAFT() {
-		return getRandomAFT(hash.values()) ;
+		return getRandomAFT(hash.values());
 	}
+
 	public static Manager getRandomAFT(Collection<Manager> afts) {
 		if (afts.size() != 0) {
 			int index = ThreadLocalRandom.current().nextInt(afts.size());
 			Manager aft = afts.stream().skip(index).findFirst().orElse(null);
-			return aft;}
-		return null; 
+			if (aft.isActive())
+				return aft;
+		}
+		return null;// select from outside "hash"
 	}
 
 }

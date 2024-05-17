@@ -51,6 +51,7 @@ public class OutPutTabController {
 				} else if (k == CellsSet.getServicesNames().size()) {
 					CellsSet.colorMap("FR");
 				}
+
 			});
 		}
 
@@ -59,7 +60,7 @@ public class OutPutTabController {
 			public void handle(Event t) {
 				if (addTab.isSelected()) {
 					try {
-						createNewTab("OutPut "+ tabpane.getTabs().size());
+						createNewTab("OutPut " + tabpane.getTabs().size());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

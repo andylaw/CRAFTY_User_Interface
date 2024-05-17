@@ -117,10 +117,12 @@ public class Cell extends AbstractCell {
 		double uti = 0;
 		Manager theBestAFT = setAfts.iterator().next();
 		for (Manager agent : setAfts) {
-			double u = utility(agent);
-			if (u > uti) {
-				uti = u;
-				theBestAFT = agent;
+			if (agent!=null && agent.isActive()) {
+				double u = utility(agent);
+				if (u > uti) {
+					uti = u;
+					theBestAFT = agent;
+				}
 			}
 		}
 		return theBestAFT;

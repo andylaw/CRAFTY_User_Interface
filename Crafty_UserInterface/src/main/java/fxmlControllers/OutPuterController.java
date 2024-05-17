@@ -3,12 +3,15 @@ package fxmlControllers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.filesTools.SaveAs;
+import UtilitiesFx.graphicalTools.ImageExporter;
+import UtilitiesFx.graphicalTools.ImagesToPDF;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.Tools;
@@ -20,6 +23,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import model.CellsSet;
 import javafx.scene.control.ChoiceBox;
@@ -31,6 +35,8 @@ public class OutPuterController {
 
 	@FXML
 	private Button selectoutPut;
+	@FXML
+	private Button saveAllFilAsPNG;
 	@FXML
 	private ChoiceBox<String> yearChoice;
 	@FXML
@@ -73,10 +79,42 @@ public class OutPuterController {
 			yearChoice.getItems().addAll(yearList);
 			yearChoice.setValue(yearList.get(0));
 			System.out.println("yearList---> " + yearChoice.getValue());
-			OutPutTabController.radioColor[OutPutTabController.radioColor.length-1].setSelected(true);
+			OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
 			newOutPut(yearChoice.getValue());
 			Graphs(gridChart);
+
 		}
+	}
+
+	@FXML
+	public void saveAllFilAsPNGAction() {
+	
+		for (int i = 0; i < OutPutTabController.radioColor.length; i++) {
+			int ii = i;
+			String newfolder = PathTools.makeDirectory(outputpath + "\\" + OutPutTabController.radioColor[ii].getText());
+			yearChoice.getItems().forEach(filepath -> {
+				M.servicesAndOwneroutPut(filepath, outputpath);
+				OutPutTabController.radioColor[ii].fire();
+				String fileyear = new File(filepath).getName().replace(".csv", "").replace("-Cell-", "");
+				for(String scenario: Paths.getScenariosList()) {
+					fileyear =fileyear.replace(scenario, "");
+				}
+				ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + "\\" + fileyear + ".PNG");
+			});
+		}
+		String newfolder = PathTools.makeDirectory(outputpath + "\\"  + "Charts");
+		gridChart.getChildren().forEach(chart -> {
+			VBox container = (VBox) chart;
+			@SuppressWarnings("unchecked")
+			LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
+			ImageExporter.NodeToImage(chart, newfolder + "\\" + ch.getTitle() + ".PNG");
+		});
+		List<File> foders = PathTools.detectFolders(outputpath);
+		for( File folder: foders) {
+			ImagesToPDF.createPDFWithImages(folder.getAbsolutePath(), folder.getName()+".pdf",4,4);
+		}
+		
+
 	}
 
 	@FXML
@@ -90,7 +128,6 @@ public class OutPuterController {
 
 	void newOutPut(String year) {
 		M.servicesAndOwneroutPut(year, outputpath);
-
 		for (int i = 0; i < OutPutTabController.radioColor.length; i++) {
 			if (OutPutTabController.radioColor[i].isSelected()) {
 				OutPutTabController.radioColor[i].fire();
@@ -121,11 +158,17 @@ public class OutPuterController {
 			});
 
 			has.add(ha);
-			lineChart.add(
-					new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
+			LineChart<Number, Number> chart = new LineChart<>(
+					new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis());
+			chart.setTitle(servicename);
+			lineChart.add(chart);
 		});
+
 		has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
-		lineChart.add(new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5), new NumberAxis()));
+		LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
+				new NumberAxis());
+		chart.setTitle("Land use trends");
+		lineChart.add(chart);
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
 

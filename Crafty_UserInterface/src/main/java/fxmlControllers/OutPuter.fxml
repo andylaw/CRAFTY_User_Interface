@@ -31,6 +31,16 @@
 						</Button>
 						<ChoiceBox fx:id="yearChoice" onAction="#yearChoice" />
 					</children>
+					<Button fx:id="saveAllFilAsPNG" onAction="#saveAllFilAsPNGAction"
+							mnemonicParsing="false" text="Capture a set of snapshots for all maps and nodes, each saved as a PNG image"
+							styleClass="button-icon">
+							<graphic>
+								<FontIcon iconLiteral="far-save" iconSize="15" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="Select Existing Model Result" />
+							</tooltip>
+						</Button>
 				</HBox>
 				<ScrollPane fx:id="scroll" prefHeight="700.0"
 					prefWidth="700.0">

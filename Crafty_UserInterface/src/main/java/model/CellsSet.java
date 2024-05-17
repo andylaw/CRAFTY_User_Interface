@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
+import UtilitiesFx.graphicalTools.ImageExporter;
 import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
@@ -47,10 +48,9 @@ public class CellsSet {
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
-	
-	private static List<String> capitalsName =  Collections.synchronizedList(new ArrayList<>()); 
-	private static List<String> servicesNames =  Collections.synchronizedList(new ArrayList<>()); 
-	
+
+	private static List<String> capitalsName = Collections.synchronizedList(new ArrayList<>());
+	private static List<String> servicesNames = Collections.synchronizedList(new ArrayList<>());
 
 	public static void plotCells() {
 		ArrayList<Integer> X = new ArrayList<>();
@@ -63,7 +63,7 @@ public class CellsSet {
 		maxY = Collections.max(Y) + 1;
 		int minX = Collections.min(X);
 		int minY = Collections.min(Y);
-		System.out.println("||"+(maxX - minX) +","+ (maxY - minY) );
+		System.out.println("||" + (maxX - minX) + "," + (maxY - minY));
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
 		writableImage = new WritableImage(maxX, maxY);
@@ -73,7 +73,7 @@ public class CellsSet {
 //		 canvas.getHeight());
 //		 gc.setFill(Color.color(Math.random(), Math.random( ), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		
+
 		colorMap("FR");
 
 		FxMain.root.getChildren().clear();
@@ -82,53 +82,51 @@ public class CellsSet {
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
 		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
-		
-		MapControlerBymouse();
-		
 
+		MapControlerBymouse();
 	}
 
-    public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> cellsHash, double percentage) {
+	public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> cellsHash,
+			double percentage) {
 
-        int numberOfElementsToSelect = (int) (cellsHash.size() * (percentage));
+		int numberOfElementsToSelect = (int) (cellsHash.size() * (percentage));
 
-        // Use parallel stream for better performance on large maps
-        List<String> keys = new ArrayList<>(cellsHash.keySet());
-        ConcurrentHashMap<String, Cell> randomSubset = new ConcurrentHashMap<>();
-     
-        Collections.shuffle(keys, new Random()); // Shuffling the keys for randomness
-        keys.parallelStream()
-            .unordered() // This improve performance by eliminating the need for maintaining order
-            .limit(numberOfElementsToSelect)
-            .forEach(key -> randomSubset.put(key, cellsHash.get(key)));
-        return randomSubset;
-    }
-    
-    public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> cellsHash, double percentage) {
+		// Use parallel stream for better performance on large maps
+		List<String> keys = new ArrayList<>(cellsHash.keySet());
+		ConcurrentHashMap<String, Cell> randomSubset = new ConcurrentHashMap<>();
 
-        int numberOfElementsToSelect = (int) (cellsHash.size() * (percentage));
-        ConcurrentHashMap<String, Cell> subset = new ConcurrentHashMap<>();
-        cellsHash.keySet().parallelStream()
-        	.unordered() 
-            .limit(numberOfElementsToSelect)
-            .forEach(key -> subset.put(key, cellsHash.get(key)));
-        return subset;
-    }
-    public static List<ConcurrentHashMap<String, Cell>> splitIntoSubsets(ConcurrentHashMap<String, Cell> cellsHash, int n) {
-        // Create a list to hold the n subsets
-        List<ConcurrentHashMap<String, Cell>> subsets = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            subsets.add(new ConcurrentHashMap<>());
-        }
-        
-        // Distribute keys randomly across the n subsets
-        cellsHash.keySet().parallelStream().forEach(key -> {
-            int subsetIndex = ThreadLocalRandom.current().nextInt(n);
-            subsets.get(subsetIndex).put(key, cellsHash.get(key));
-        });
-        
-        return subsets;
-    }
+		Collections.shuffle(keys, new Random()); // Shuffling the keys for randomness
+		keys.parallelStream().unordered() // This improve performance by eliminating the need for maintaining order
+				.limit(numberOfElementsToSelect).forEach(key -> randomSubset.put(key, cellsHash.get(key)));
+		return randomSubset;
+	}
+
+	public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> cellsHash,
+			double percentage) {
+
+		int numberOfElementsToSelect = (int) (cellsHash.size() * (percentage));
+		ConcurrentHashMap<String, Cell> subset = new ConcurrentHashMap<>();
+		cellsHash.keySet().parallelStream().unordered().limit(numberOfElementsToSelect)
+				.forEach(key -> subset.put(key, cellsHash.get(key)));
+		return subset;
+	}
+
+	public static List<ConcurrentHashMap<String, Cell>> splitIntoSubsets(ConcurrentHashMap<String, Cell> cellsHash,
+			int n) {
+		// Create a list to hold the n subsets
+		List<ConcurrentHashMap<String, Cell>> subsets = new ArrayList<>(n);
+		for (int i = 0; i < n; i++) {
+			subsets.add(new ConcurrentHashMap<>());
+		}
+
+		// Distribute keys randomly across the n subsets
+		cellsHash.keySet().parallelStream().forEach(key -> {
+			int subsetIndex = ThreadLocalRandom.current().nextInt(n);
+			subsets.get(subsetIndex).put(key, cellsHash.get(key));
+		});
+
+		return subsets;
+	}
 
 	public static void colorMap(String str) {
 		colortype = str;
@@ -153,8 +151,9 @@ public class CellsSet {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getOwner() != null) {
 					pixelWriter.setColor(c.getX(), maxY - c.getY(), c.getOwner().getColor());
+				} else {
+					pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.WHITE);
 				}
-				else {pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.WHITE);}
 			});
 		} else if (capitalsName.contains(colortype)) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
@@ -307,8 +306,6 @@ public class CellsSet {
 		CellsSet.regioneselected = regioneselected;
 	}
 
-	
-
 	public static List<String> getCapitalsName() {
 		return capitalsName;
 	}
@@ -324,6 +321,5 @@ public class CellsSet {
 	public static void setCanvas(Canvas canvas) {
 		CellsSet.canvas = canvas;
 	}
-
 
 }

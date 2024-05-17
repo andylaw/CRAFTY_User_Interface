@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 public abstract class AbstractManager {
 	String label;
 	String completeName;
+	boolean active=true;
 	ConcurrentHashMap<String, Double> sensitivity = new ConcurrentHashMap<>();
 	ConcurrentHashMap<String, Double> productivityLevel = new ConcurrentHashMap<>();
 	double giveInMean = 0, giveInSD = 0, giveUpMean = 0, giveUpSD = 0, serviceLevelNoiseMin = 0,
@@ -103,6 +104,16 @@ public abstract class AbstractManager {
 	public void setCompleteName(String name) {
 		this.completeName = name;
 	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+
 
 
 }
