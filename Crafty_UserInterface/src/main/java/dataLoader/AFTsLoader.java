@@ -34,7 +34,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	private static ConcurrentHashMap<String, Manager> hash = new ConcurrentHashMap<>();
 	private static ConcurrentHashMap<String, Manager> activateAFTsHash = new ConcurrentHashMap<>();
 
-	public static ConcurrentHashMap<String, Integer> hashAgentNbr;
+	public static ConcurrentHashMap<String, Integer> hashAgentNbr=new ConcurrentHashMap<>();
 
 	public AFTsLoader() {
 		initializeAFTs();
@@ -205,8 +205,8 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void hashAgentNbr() {
-		hashAgentNbr = new ConcurrentHashMap<>();
-		CellsLoader.hashCell.values().forEach(c -> {
+		hashAgentNbr.clear();
+		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 		});

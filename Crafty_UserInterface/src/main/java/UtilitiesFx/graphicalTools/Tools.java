@@ -2,6 +2,7 @@ package UtilitiesFx.graphicalTools;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -147,12 +148,14 @@ public class Tools {
 	}
 
 	public static int indexof(String s, String[] tmp) {
-		for (int i = 0; i < tmp.length; i++) {
-			if (tmp[i].equalsIgnoreCase(s)) {
-				return i;
-			}
-		}
-		return 0;
+		//ArrayList<String> list = Collection.
+		//
+//		for (int i = 0; i < tmp.length; i++) {
+//			if (tmp[i].equalsIgnoreCase(s)) {
+//				return i;
+//			}
+//		}
+		return Arrays.asList(tmp).indexOf(s);
 	}
 
 	public static ImageView logo (InputStream imageStream, double translateX,double translateY, double scale) {

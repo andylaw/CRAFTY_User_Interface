@@ -55,7 +55,7 @@ public class Curvelinear {
 
 	@Override
 	public String toString() {
-		return "Curvelinear [a=" + a + ", b=" + b + ", serviceName=" + serviceName + "]";
+		return "["+serviceName+ "=> y=" + a + "*x+" + b + "]";
 	}
 	
 

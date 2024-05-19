@@ -48,7 +48,6 @@ public class Cell extends AbstractCell {
 		double product = capitals.entrySet().stream()
 				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + serviceName)))
 				.reduce(1.0, (x, y) -> x * y);
-
 		return product * a.getProductivityLevel().get(serviceName);
 	}
 
@@ -126,19 +125,20 @@ public class Cell extends AbstractCell {
 		return theBestAFT;
 	}
 
-	void competition(boolean ismutated, double mutationInterval, boolean isTheBest, boolean neighbor) {
-		if (!neighbor) {
-			if (isTheBest) {
-				Competition(mostCompetitiveAgent(), ismutated, mutationInterval);
-			} else {
-				Competition(AFTsLoader.getRandomAFT(), ismutated, mutationInterval);
-			}
-		} else {
+	void competition(boolean ismutated, double mutationInterval, boolean isTheBest, boolean neighbor,
+			double probabilityOfNeighbor) {
+		if (neighbor && probabilityOfNeighbor > Math.random()) {
 			Collection<Manager> afts = CellsSubSets.detectNeighboringAFTs(this);
 			if (isTheBest) {
 				Competition(mostCompetitiveAgent(afts), ismutated, mutationInterval);
 			} else {
 				Competition(AFTsLoader.getRandomAFT(afts), ismutated, mutationInterval);
+			}
+		} else {
+			if (isTheBest) {
+				Competition(mostCompetitiveAgent(), ismutated, mutationInterval);
+			} else {
+				Competition(AFTsLoader.getRandomAFT(), ismutated, mutationInterval);
 			}
 		}
 	}

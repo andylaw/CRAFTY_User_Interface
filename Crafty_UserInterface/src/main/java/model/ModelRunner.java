@@ -2,12 +2,12 @@ package model;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
+import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.CurvesLoader;
@@ -35,6 +35,7 @@ public class ModelRunner implements Runnable {
 	public boolean withBestAFT = true;
 	public boolean isAveragedPerCellResidualDemand = false;
 	public boolean NeighboorEffect = true;
+	public double probabilityOfNeighbor=0.9;
 	public double percentageCells = 0.015;
 	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;
@@ -55,10 +56,11 @@ public class ModelRunner implements Runnable {
 			servicedemand[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
 			servicedemand[0][i + CellsSet.getServicesNames().size()] = "Demand:" + CellsSet.getServicesNames().get(i);
 		}
-		AtomicInteger s = new AtomicInteger();
-		AFTsLoader.getAftHash().keySet().forEach((label) -> {
-			compositionAFT[0][s.getAndIncrement()] = label;
-		});
+		int i=0;
+		for (String label : AFTsLoader.getAftHash().keySet()) {
+			compositionAFT[0][i++] = label;
+			
+		}
 
 	}
 
@@ -76,19 +78,8 @@ public class ModelRunner implements Runnable {
 	}
 
 	void productivityForAll() {
-		LOGGER.info("Services productivity calculation for all cells ");
-//		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-//			c.putservices();
-//		});
-		int processors = Runtime.getRuntime().availableProcessors();
-		try (ForkJoinPool customThreadPool = new ForkJoinPool(processors * 10)) {
-			try {
-				customThreadPool.submit(() -> CellsLoader.hashCell.values().parallelStream().forEach(Cell::putservices))
-						.join();
-			} finally {
-				customThreadPool.shutdown();
-			}
-		}
+		LOGGER.info("Productivity calculation for all cells ");
+		CellsLoader.hashCell.values().parallelStream().forEach(Cell::putservices);
 	}
 
 	void calculeDistributionMean() {
@@ -160,7 +151,7 @@ public class ModelRunner implements Runnable {
 						c.giveUp();
 					}
 
-					c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect);
+					c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect, probabilityOfNeighbor);
 					c.getServices().forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
 				});
 
@@ -204,10 +195,8 @@ public class ModelRunner implements Runnable {
 			servicedemand[y][m.get() + CellsSet.getServicesNames().size()] = DemandModel.getDemand(name, year) + "";
 			m.getAndIncrement();
 		});
-//	A switch should be added here because it consumes a lot of calculations for large projects (EU-1km). and that could be produiced after simulation
-		AtomicInteger N = new AtomicInteger();
 		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-			compositionAFT[y][N.getAndIncrement()] = value + "";
+			compositionAFT[y][Tools.indexof(name, compositionAFT[y])] = value + "";
 		});
 	}
 

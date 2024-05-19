@@ -2,9 +2,7 @@ package dataLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +34,7 @@ public class CurvesLoader {
 		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(path);
 		try {
 			ArrayList<String> eqs = hash.get("Equation");
-			System.out.println(eqs);
+			
 			for (int i = 0; i < eqs.size(); i++) {
 				String eq = eqs.get(i);		
 				String serviceName = hash.get("Service").get(i);
@@ -51,8 +49,8 @@ public class CurvesLoader {
 					curve.setAB(Tools.sToD(vec[0]), Tools.sToD(vec[1]));
 				}
 				hashServicesCurves.put(serviceName,curve);
-				
 			}
+			System.out.println(hashServicesCurves);
 		} catch (NullPointerException e) {
 			LOGGER.fatal("The file is not in the correct format:" + path);
 		}

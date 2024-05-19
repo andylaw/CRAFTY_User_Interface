@@ -318,7 +318,7 @@ public class ModelRunnerController {
 				+ R.isMutated +
 				"\n" + competitionType+
 				"\n" + "Percentage of land use that could be changed:  "
-				+ (int) (R.percentageCells * 100) + "%"
+				+  (R.percentageCells * 100) + "%"
 				+ "\n" +"Number of sub-assemblies and residual demand update during the waiting period: "+R.nbrOfSubSet
 				+ "\n" + "Types of land mask restrictions considered:  "
 				+ MaskRestrictionDataLoader.listOfyears.keySet() + "\n \n" + "Add your comments..";
