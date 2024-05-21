@@ -317,11 +317,12 @@ public class ModelRunnerController {
 				"\n" + "Considering mutation:  "
 				+ R.isMutated +
 				"\n" + competitionType+
+				"\n" + "Priority given to neighbouring AFTs for land competition: |"+ R.NeighboorEffect+"|   with probabilty "+ (R.probabilityOfNeighbor*100)+"%"+
 				"\n" + "Percentage of land use that could be changed:  "
 				+  (R.percentageCells * 100) + "%"
 				+ "\n" +"Number of sub-assemblies and residual demand update during the waiting period: "+R.nbrOfSubSet
 				+ "\n" + "Types of land mask restrictions considered:  "
-				+ MaskRestrictionDataLoader.listOfyears.keySet() + "\n \n" + "Add your comments..";
+				+ MaskRestrictionDataLoader.hashMasks.keySet() + "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");

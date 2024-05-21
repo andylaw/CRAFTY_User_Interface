@@ -3,8 +3,7 @@ package dataLoader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,106 +17,79 @@ import model.CellsSet;
 
 public class MaskRestrictionDataLoader {
 
-	// Set of cells will be Masked
-	// matrix repesent which AFTs could compite for this set
-	public static HashMap<String, String> ListOfMask;
-	public static HashMap<Cell, HashMap<Integer, String>> hash_cells_masks = new HashMap<>();
-	public static HashMap<String, ArrayList<String>> listOfyears = new HashMap<>();
+	public static HashMap<String, List<String>> hashMasks;
 
 	private static final Logger LOGGER = LogManager.getLogger(MaskRestrictionDataLoader.class);
 
-	public void MaskAndRistrictionLaoder() {
-		ListOfMask = new HashMap<>();
+	public static void MaskAndRistrictionLaoderUpdate() {
+		hashMasks = new HashMap<>();
+		List<File> LandUseControlFolder = PathTools.detectFolders(Paths.getProjectPath() + "\\worlds\\LandUseControl");
+		if (LandUseControlFolder != null) {
+			for (File folder : LandUseControlFolder) {
+				ArrayList<String> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath(),
+						Paths.getScenario());
+				if (listOfMaskFilesInScenario != null) {
+					List<String> maks = new ArrayList<>();
+					for (String file : listOfMaskFilesInScenario) {
+						maks.add(file);
+					}
+					hashMasks.put(folder.getName(), maks);
+				} else {
+					listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath());
 
-		ArrayList<String> listOfMaskFile = PathTools.fileFilter(true, "LandUseControl",Paths.getScenario(), "ProtectedAreaMask", ".csv");
-		if(listOfMaskFile == null) {
-			listOfMaskFile = PathTools.fileFilter(true, "LandUseControl", "ProtectedAreaMask", ".csv");
-		}
-		if (listOfMaskFile != null) {
-			listOfMaskFile.forEach(file -> {
-				if (!file.contains("Restriction")) {
-					String name = new File(file).getName().replaceAll(".csv", "");
-					ListOfMask.put(name, file);
-				}
-			});
-		}
-	}
-
-	private ArrayList<String> getlistOfYears(HashMap<String, ArrayList<String>> csv) {
-		ArrayList<String> yearList = new ArrayList<>();
-		for (int j = Paths.getStartYear(); j < Paths.getEndtYear(); j++) {
-			if (csv.keySet().contains("Year_" + j)) {
-				yearList.add(j + "");
-			}
-		}
-		return yearList;
-	}
-
-	public void cleanType(String maskType) {
-		Iterator<Map.Entry<Cell, HashMap<Integer, String>>> iterator = hash_cells_masks.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<Cell, HashMap<Integer, String>> entry = iterator.next();
-			if (entry.getValue().values().contains(maskType)) {
-				entry.getKey().setMaskType(null);
-				iterator.remove();
-			}
-		}
-	}
-
-	public static void updateCellsmask(String maskType, int year) {
-		if (listOfyears.get(maskType) != null) {
-			if (listOfyears.get(maskType).contains(year + "")) {
-				LOGGER.info("Masks used - Mask name = " + maskType + "  year = " + year);
-				hash_cells_masks.forEach((c, valueHash) -> {
-					if (c != null) {
-						if (c.getMaskType() != null) {
-							if (c.getMaskType().equals(maskType)) {
-								c.setMaskType(valueHash.get(year));
-							}
-						} else {
-							c.setMaskType(valueHash.get(year));
+					List<String> maks = new ArrayList<>();
+					for (String csv : listOfMaskFilesInScenario) {
+						if (!csv.contains("Restrictions")) {
+							maks.add(csv);
 						}
+						hashMasks.put(folder.getName(), maks);
 					}
-				});
-			} else {
-				System.out.println("No mask Update are used for " + maskType);
-			}
-		}
-	}
-
-	public static void updateCellsmask(int year) {
-		if (hash_cells_masks.size() > 0) {
-			ListOfMask.keySet().forEach(maskType -> {
-				updateCellsmask(maskType, year);
-			});
-		}
-	}
-
-	public void CellSetToMaskLoader(String maskType) {
-		HashMap<String, ArrayList<String>> csv = ReaderFile.ReadAsaHash(ListOfMask.get(maskType), true);
-		listOfyears.put(maskType, getlistOfYears(csv));
-
-		System.out.println("listOfyears--> " + listOfyears);
-
-		if (csv != null) {
-			for (int i = 0; i < csv.values().iterator().next().size(); i++) {
-				Cell c = CellsSet.getCellsSet().getCell((int) Tools.sToD(csv.get("X").get(i)),
-						(int) Tools.sToD(csv.get("Y").get(i)));
-				HashMap<Integer, String> year_value = new HashMap<>();
-				int ii = i;
-				csv.keySet().forEach(key -> {
-					if (key.contains("Year_") && csv.get(key).get(ii).contains("1")) {
-						year_value.put((int) Tools.sToD(key.replace("Year_", "")), maskType);
-					}
-				});
-				if (year_value.size() != 0) {
-					hash_cells_masks.put(c, year_value);
 				}
+			}
+
+		}
+	}
+
+	public void CellSetToMaskLoader(String maskType, int year) {
+		String path = hashMasks.get(maskType).stream().filter(filePath -> filePath.contains(String.valueOf(year)))
+				.findFirst().orElse(null);
+		if (path != null) {
+			HashMap<String, ArrayList<String>> csv = ReaderFile.ReadAsaHash(path, true);
+			if (csv != null) {
+				cleanMaskType(maskType);
+				for (int i = 0; i < csv.values().iterator().next().size(); i++) {
+					Cell c = CellsSet.getCellsSet().getCell((int) Tools.sToD(csv.get("X").get(i)),
+							(int) Tools.sToD(csv.get("Y").get(i)));
+					int ii = i;
+					csv.keySet().forEach(key -> {
+						if (key.contains("Year_") && csv.get(key).get(ii).contains("1")) {
+							c.setMaskType(maskType);
+						}
+					});
+				}
+				LOGGER.info("Update Mask: " + maskType + "[" + path + "]");
+			} else {
+				LOGGER.warn("Cannot find the mask files..." + path);
 			}
 		} else {
-			LOGGER.warn("Cannot find the mask files..." + ListOfMask.get(maskType));
+			LOGGER.info("Mask file not found for year ("+ year +")  use the latest year available");
 		}
 
+	}
+
+	public void CellSetToMaskLoader(int year) {
+		hashMasks.keySet().forEach(maskType -> {
+			CellSetToMaskLoader(maskType, year);
+		});
+
+	}
+
+	public void cleanMaskType(String maskType) {
+		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+			if (c.getMaskType() != null && c.getMaskType().equals(maskType)) {
+				c.setMaskType(null);
+			}
+		});
 	}
 
 	public HashMap<String, Boolean> restrictionsRulsUpload(String maskType) {

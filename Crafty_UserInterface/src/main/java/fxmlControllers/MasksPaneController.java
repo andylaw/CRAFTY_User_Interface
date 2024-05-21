@@ -9,6 +9,7 @@ import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.MaskRestrictionDataLoader;
+import dataLoader.Paths;
 import eu.hansolo.fx.charts.CircularPlot;
 import eu.hansolo.fx.charts.CircularPlotBuilder;
 import eu.hansolo.fx.charts.data.PlotItem;
@@ -29,17 +30,29 @@ public class MasksPaneController {
 	private VBox boxMaskTypes;
 	@FXML
 	ScrollPane scroll;
-	MaskRestrictionDataLoader Maskloader = new MaskRestrictionDataLoader();
-	ArrayList<CheckBox> radioListOfMasks = new ArrayList<>();
+	public static MaskRestrictionDataLoader Maskloader = new MaskRestrictionDataLoader();
+	 ArrayList<CheckBox> radioListOfMasks = new ArrayList<>();
 	// cell.getMaskTyp->hash(owner_competitor-> true or false)
 	public static HashMap<String, HashMap<String, Boolean>> restrictions = new HashMap<>();
 	CircularPlot[] circularPlot;
+	
+	
+	private static MasksPaneController instance;
+
+	public MasksPaneController() {
+		instance = this;
+	}
+
+	public static MasksPaneController getInstance() {
+		return instance;
+	}
 
 	@SuppressWarnings("unchecked")
 	public void initialize() {
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * .9);
-		Maskloader.MaskAndRistrictionLaoder();
-		MaskRestrictionDataLoader.ListOfMask.keySet().forEach(n -> {
+		// Maskloader.MaskAndRistrictionLaoder();
+		MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
+		MaskRestrictionDataLoader.hashMasks.keySet().forEach(n -> {
 			CheckBox r = new CheckBox(n);
 			radioListOfMasks.add(r);
 			boxMaskTypes.getChildren().add(r);
@@ -50,11 +63,11 @@ public class MasksPaneController {
 			r.setOnAction(e -> {
 				int i = radioListOfMasks.indexOf(r);
 				if (r.isSelected()) {
-					Maskloader.CellSetToMaskLoader(r.getText());
-					ChoiceBox<String> boxYears = Tools
-							.choiceBox(MaskRestrictionDataLoader.listOfyears.get(r.getText()));
+					List<String> listOfyears = filePathToYear(r.getText());
+					ChoiceBox<String> boxYears = Tools.choiceBox(listOfyears);
+					// boxYearslist.add(boxYears);
 					boxYears.setOnAction(e2 -> {
-						MaskRestrictionDataLoader.updateCellsmask(r.getText(), (int) Tools.sToD(boxYears.getValue()));
+						Maskloader.CellSetToMaskLoader(r.getText(), (int) Tools.sToD(boxYears.getValue()));
 						CellsSet.colorMap("Mask");
 					});
 
@@ -87,7 +100,6 @@ public class MasksPaneController {
 						rad.setOnAction(e2 -> {
 							circularPlot[i].setItems(
 									circularPlot(itemsList, restrictionsRul, rad.getText(), rad.isSelected()));
-
 						});
 					});
 
@@ -95,7 +107,7 @@ public class MasksPaneController {
 					int place = boxMaskTypes.getChildren().indexOf(r) + 1;
 					boxMaskTypes.getChildren().add(place, T[i]);
 				} else {
-					Maskloader.cleanType(r.getText());
+					Maskloader.cleanMaskType(r.getText());
 					restrictions.remove(r.getText());
 					boxMaskTypes.getChildren().removeAll(T[i]);
 
@@ -105,7 +117,23 @@ public class MasksPaneController {
 			});
 
 		});
+		
+		initialiseMask();
+		CellsSet.colorMap("FR");
+	}
 
+	private List<String> filePathToYear(String maskType) {
+
+		List<String> years = new ArrayList<>();
+		MaskRestrictionDataLoader.hashMasks.get(maskType).forEach(path -> {
+			for (int i = Paths.getStartYear(); i < Paths.getEndtYear(); i++) {
+				if (path.contains(i + "")) {
+					years.add(i + "");
+					break;
+				}
+			}
+		});
+		return years;
 	}
 
 	// Event Listener on Button[#handButton].onAction
@@ -116,7 +144,16 @@ public class MasksPaneController {
 			r.fireEvent(event);
 		});
 	}
+	
 
+
+	void initialiseMask() {
+		radioListOfMasks.forEach(r -> {
+			r.setSelected(true);
+			r.fireEvent(new ActionEvent());
+		});
+	}
+	
 	private ArrayList<PlotItem> initPlotItem() {
 		ArrayList<PlotItem> itemsList = new ArrayList<>();
 		TabPaneController.M.AFtsSet.forEach(a -> {

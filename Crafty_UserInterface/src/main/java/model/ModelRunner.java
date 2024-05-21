@@ -14,6 +14,7 @@ import dataLoader.CurvesLoader;
 import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.Paths;
+import fxmlControllers.MasksPaneController;
 import fxmlControllers.ModelRunnerController;
 
 /**
@@ -35,7 +36,7 @@ public class ModelRunner implements Runnable {
 	public boolean withBestAFT = true;
 	public boolean isAveragedPerCellResidualDemand = false;
 	public boolean NeighboorEffect = true;
-	public double probabilityOfNeighbor=0.9;
+	public double probabilityOfNeighbor = 0.9;
 	public double percentageCells = 0.015;
 	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;
@@ -56,10 +57,9 @@ public class ModelRunner implements Runnable {
 			servicedemand[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
 			servicedemand[0][i + CellsSet.getServicesNames().size()] = "Demand:" + CellsSet.getServicesNames().get(i);
 		}
-		int i=0;
+		int i = 0;
 		for (String label : AFTsLoader.getAftHash().keySet()) {
 			compositionAFT[0][i++] = label;
-			
 		}
 
 	}
@@ -129,8 +129,8 @@ public class ModelRunner implements Runnable {
 		calculeDistributionMean();
 		LOGGER.info("Distribution Mean... done");
 
-		// upDateMaskif needed
-		MaskRestrictionDataLoader.updateCellsmask(year);
+		// upDateMask if needed
+		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
 		LOGGER.info("taking over unmanage cell...");
 		// take over unmanage cells
 		takeOverUnCells();
@@ -145,16 +145,18 @@ public class ModelRunner implements Runnable {
 			ConcurrentHashMap<String, Double> servicesAfterCompetition = new ConcurrentHashMap<>();
 
 			subsubsets.forEach(subsubset -> {
-				subsubset.values().parallelStream().forEach(c -> {
-					c.getServices().forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
-					if (usegiveUp) {
-						c.giveUp();
-					}
-
-					c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect, probabilityOfNeighbor);
-					c.getServices().forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
-				});
-
+				if (subsubset != null) {
+					subsubset.values().parallelStream().forEach(c -> {
+						c.getServices()
+								.forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
+						if (usegiveUp) {
+							c.giveUp();
+						}
+						c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect, probabilityOfNeighbor);
+						c.getServices()
+								.forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
+					});
+				}
 				servicesBeforeCompetition.forEach((key, value) -> totalSupply.merge(key, -value, Double::sum));
 				servicesAfterCompetition.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
 				calculeMarginal(year, removeNegative);
@@ -196,7 +198,7 @@ public class ModelRunner implements Runnable {
 			m.getAndIncrement();
 		});
 		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-			compositionAFT[y][Tools.indexof(name, compositionAFT[y])] = value + "";
+			compositionAFT[y][Tools.indexof(name, compositionAFT[0])] = value + "";
 		});
 	}
 

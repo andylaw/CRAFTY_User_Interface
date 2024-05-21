@@ -2,11 +2,7 @@ package model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
@@ -45,6 +41,7 @@ public class Cell extends AbstractCell {
 	public double productivity(Manager a, String serviceName) {
 		if (a == null)
 			return 0;
+		if(a.getSensitivity()==null) {System.out.println("||||||"+a.label);}
 		double product = capitals.entrySet().stream()
 				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + serviceName)))
 				.reduce(1.0, (x, y) -> x * y);

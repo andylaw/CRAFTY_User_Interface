@@ -74,7 +74,7 @@ public class CellsSet {
 //		 gc.setFill(Color.color(Math.random(), Math.random( ), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-		colorMap("FR");
+	//	colorMap("FR");
 
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(canvas);
@@ -187,7 +187,7 @@ public class CellsSet {
 
 		} else if (colortype.equalsIgnoreCase("Mask")) {
 
-			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.ListOfMask.keySet());
+			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.hashMasks.keySet());
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getMaskType() != null) {

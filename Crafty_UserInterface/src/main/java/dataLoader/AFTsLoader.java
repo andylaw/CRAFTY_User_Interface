@@ -206,7 +206,7 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public static void hashAgentNbr() {
 		hashAgentNbr.clear();
-		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+		CellsLoader.hashCell.values().forEach(c -> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 		});

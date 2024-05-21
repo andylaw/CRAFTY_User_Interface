@@ -58,14 +58,14 @@ public class Tools {
 		return slider;
 	}
 
-	public static ChoiceBox<String> choiceBox(ArrayList<String> list) {
+	public static ChoiceBox<String> choiceBox(List<String> list) {
 		ChoiceBox<String> choice = new ChoiceBox<>();
 		choiceBox(choice, list);
 		return choice;
 	}
 
 
-	public static void choiceBox(ChoiceBox<String> choice, ArrayList<String> list) {
+	public static void choiceBox(ChoiceBox<String> choice, List<String> list) {
 		if (list.size() == 0) {
 			list.add("Empty");
 		}

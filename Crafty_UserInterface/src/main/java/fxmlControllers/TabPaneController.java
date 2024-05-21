@@ -7,7 +7,9 @@ import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
+import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.Paths;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
@@ -20,7 +22,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Tab;
 
 public class TabPaneController {
-	
+
 	@FXML
 	private ChoiceBox<String> scenarioschoice;
 	@FXML
@@ -50,7 +52,7 @@ public class TabPaneController {
 		yearchoice.getItems().addAll(listYears);
 		yearchoice.setValue(listYears.get(0));
 		isNotInitialsation = true;
-		tabpane.setPrefWidth(Screen.getPrimary().getBounds().getWidth()/1.5);
+		tabpane.setPrefWidth(Screen.getPrimary().getBounds().getWidth() / 1.5);
 //	    FxMain.subScene.setWidth(Screen.getPrimary().getBounds().getWidth()-tabpane.getWidth());
 //		mapTitelPane.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
 //          if (isNowExpanded) {
@@ -71,7 +73,8 @@ public class TabPaneController {
 			new LineChartTools().lineChart(M, (Pane) chart.getParent(), chart, DemandModel.getDemand());
 			yearchoice();
 			M.AFtsSet.updateAFTs();
-			// AFTsConfigurationController.choiceAgnetSetOnAction();
+			MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
+			MasksPaneController.getInstance().clear(new ActionEvent());
 		}
 	}
 
@@ -81,7 +84,7 @@ public class TabPaneController {
 			if (yearchoice.getValue() != null) {
 				Paths.setCurrentYear((int) Tools.sToD(yearchoice.getValue()));
 				M.updateCapitals(Paths.getCurrentYear());
-				
+
 				if (dataPane.isSelected()) {
 					for (int i = 0; i < CellsSet.getCapitalsName().size() + 1; i++) {
 						if (SpatialDataController.radioColor[i].isSelected()) {
