@@ -173,10 +173,6 @@ public class AFTsLoader extends HashSet<Manager> {
 				String label = matrix.get("Label").get(i);
 				hash.get(label).setActive(matrix.get("Type").get(i).equals("AFT"));
 			}
-
-			hash.values().forEach(a -> {
-				System.out.println(a.getLabel() + "-->" + a.isActive());
-			});
 		}
 	}
 
@@ -205,6 +201,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void hashAgentNbr() {
+		LOGGER.info("Calculating the number of agents for each type");
 		hashAgentNbr.clear();
 		CellsLoader.hashCell.values().forEach(c -> {
 			if (c.getOwner() != null)

@@ -44,7 +44,7 @@ public class CellsSet {
 	private static GraphicsContext gc;
 	static PixelWriter pixelWriter;
 	static WritableImage writableImage;
-	private static int maxX, maxY;
+	 static int maxX, maxY;
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
@@ -233,11 +233,12 @@ public class CellsSet {
 						CellWindow localData = new CellWindow(CellsLoader.hashCell.get(cx + "," + cy));
 						Consumer<String> creatWindos = (x) -> {
 							localData.windosLocalInfo();
+							
 						};
 						menu.put("Access to Cell (" + cx + "," + cy + ") information", creatWindos);
 
 						menu.put("Print Info into the Console", e -> {
-							System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
+						System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
 						});
 						menu.put("Save Map as PNG", e -> {
 							SaveAs.png(canvas);

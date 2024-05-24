@@ -69,26 +69,25 @@ public class ReaderFile {
 		return hash;
 	}
 
-
 	public static void processCSV(CellsLoader cells, String filePath, String type) {
-		LOGGER.info("Importing data for "+type+" from : " + filePath + "...");
+		LOGGER.info("Importing data for " + type + " from : " + filePath + "...");
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		ConcurrentHashMap<String, Integer> indexof = new ConcurrentHashMap<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			String[] line1 = br.readLine().split(",");
-				for (int i = 0; i < line1.length; i++) {
-					indexof.put(line1[i].replace("Service:", "").replace("\"", "").toUpperCase(), i);
-				}
-				
+			for (int i = 0; i < line1.length; i++) {
+				indexof.put(line1[i].replace("Service:", "").replace("\"", "").toUpperCase(), i);
+			}
+
 			String line;
 			while ((line = br.readLine()) != null) {
 				final String data = line;
-				
+
 				executor.submit(() -> {
-					
+
 					switch (type) {
 					case "Capitals":
-					//	System.out.println(type +"-->"+ data);
+						// System.out.println(type +"-->"+ data);
 						associateCapitalsToCells(indexof, data);
 						break;
 					case "Services":
@@ -118,7 +117,8 @@ public class ReaderFile {
 			}
 		}
 	}
-	
+
+
 
 	static void associateCapitalsToCells(ConcurrentHashMap<String, Integer> indexof, String data) {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
@@ -134,11 +134,11 @@ public class ReaderFile {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
 		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
-		
+
 		Cell c = new Cell(x, y);
 
 		if (c != null) {
-		//	if(AFTsLoader.getAftHash().contains(immutableList.get(indexof.get("FR")))){}
+			// if(AFTsLoader.getAftHash().contains(immutableList.get(indexof.get("FR")))){}
 			c.setOwner(AFTsLoader.getAftHash().get(immutableList.get(indexof.get("FR"))));
 
 			CellsLoader.hashCell.put(x + "," + y, c);

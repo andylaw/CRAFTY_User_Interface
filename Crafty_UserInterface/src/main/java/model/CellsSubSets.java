@@ -60,6 +60,30 @@ public class CellsSubSets {
 
 		return neighborhood;
 	}
+	static Collection<Manager> detectExtendedNeighboringAFTs(Cell c, int r) {
+		Set<Manager> neighborhoodAFts = Collections.synchronizedSet(new HashSet<>());
+		Set<Cell> neighborhoodCells = getExtendedMooreNeighborhood(c,r);
+		neighborhoodCells.forEach(vc -> {
+			if(vc.owner!=null &&vc.owner.isActive())
+				neighborhoodAFts.add(vc.owner);
+		});
+		return neighborhoodAFts;
+	}
+	public static Set<Cell> getExtendedMooreNeighborhood(Cell c, int r) {
+	    Set<Cell> neighborhood = Collections.synchronizedSet(new HashSet<>());
+	    for (int i = c.x - r; i <= c.x + r; i++) {
+	        for (int j = c.y - r; j <= c.y + r; j++) {
+	            if (i == c.x && j == c.y) {
+	                continue; 
+	            }
+	            Cell cell = CellsSet.getCellsSet().getCell(i, j);
+	            if (cell != null) {
+	                neighborhood.add(cell);
+	            }
+	        }
+	    }
+	    return neighborhood;
+	}
 
 	public static void selectZone(Cell patch, String zonetype) {
 

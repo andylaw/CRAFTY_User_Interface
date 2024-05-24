@@ -2,6 +2,7 @@ package model;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import dataLoader.AFTsLoader;
@@ -41,11 +42,27 @@ public class Cell extends AbstractCell {
 	public double productivity(Manager a, String serviceName) {
 		if (a == null)
 			return 0;
-		if(a.getSensitivity()==null) {System.out.println("||||||"+a.label);}
 		double product = capitals.entrySet().stream()
 				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + serviceName)))
 				.reduce(1.0, (x, y) -> x * y);
 		return product * a.getProductivityLevel().get(serviceName);
+	}
+
+	public void productivity(String serviceName) {
+		if (owner == null)
+			return;
+//		double product = capitals.entrySet().stream()
+//				.mapToDouble(e -> Math.pow(e.getValue(), owner.getSensitivity().get(e.getKey() + "_" + serviceName)))
+//				.reduce(1.0, (x, y) -> x * y);
+//		currentProductivity.put(serviceName, product * owner.getProductivityLevel().get(serviceName));
+
+		double product = 1.0;
+		for (Map.Entry<String, Double> entry : capitals.entrySet()) {
+			double value = Math.pow(entry.getValue(), owner.getSensitivity().get(entry.getKey() + "_" + serviceName));
+			product *= value;
+		}
+		double finalProduct = product * owner.getProductivityLevel().get(serviceName);
+		currentProductivity.put(serviceName, finalProduct);
 	}
 
 	double utility(Manager a) {
@@ -60,9 +77,12 @@ public class Cell extends AbstractCell {
 	double utility() {
 		if (owner == null) {
 			return 0;
-		}
+		}		
+		try {
 		return CellsSet.getServicesNames().stream().mapToDouble(sname -> ModelRunner.marginal.get(sname)
-				* services.get(sname) * owner.getProductivityLevel().get(sname)).sum();
+				* currentProductivity.get(sname) * owner.getProductivityLevel().get(sname)).sum();}
+		catch(NullPointerException e) {
+			return 0;}
 	}
 
 	void Competition(Manager competitor, boolean ismutated, double mutationInterval) {
@@ -125,7 +145,7 @@ public class Cell extends AbstractCell {
 	void competition(boolean ismutated, double mutationInterval, boolean isTheBest, boolean neighbor,
 			double probabilityOfNeighbor) {
 		if (neighbor && probabilityOfNeighbor > Math.random()) {
-			Collection<Manager> afts = CellsSubSets.detectNeighboringAFTs(this);
+			Collection<Manager> afts = CellsSubSets.detectExtendedNeighboringAFTs(this,5);
 			if (isTheBest) {
 				Competition(mostCompetitiveAgent(afts), ismutated, mutationInterval);
 			} else {
@@ -140,9 +160,9 @@ public class Cell extends AbstractCell {
 		}
 	}
 
-	void putservices() {
-		CellsSet.getServicesNames().forEach(sname -> {
-			services.put(sname, productivity(owner, sname));
+	public void getCurrentProductivity() {
+		CellsSet.getServicesNames().forEach(serviceName -> {
+			productivity(serviceName);
 		});
 	}
 

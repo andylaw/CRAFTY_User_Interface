@@ -1,7 +1,14 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +19,6 @@ import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.CurvesLoader;
 import dataLoader.DemandModel;
-import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.Paths;
 import fxmlControllers.MasksPaneController;
 import fxmlControllers.ModelRunnerController;
@@ -36,7 +42,7 @@ public class ModelRunner implements Runnable {
 	public boolean withBestAFT = true;
 	public boolean isAveragedPerCellResidualDemand = false;
 	public boolean NeighboorEffect = true;
-	public double probabilityOfNeighbor = 0.9;
+	public double probabilityOfNeighbor = 1;
 	public double percentageCells = 0.015;
 	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;
@@ -69,7 +75,7 @@ public class ModelRunner implements Runnable {
 		LOGGER.info("Total Supply calculation");
 		totalSupply = new ConcurrentHashMap<>();
 		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-			c.services.forEach((s, v) -> {
+			c.currentProductivity.forEach((s, v) -> {
 				totalSupply.merge(s, v, Double::sum);
 			});
 		});
@@ -79,7 +85,7 @@ public class ModelRunner implements Runnable {
 
 	void productivityForAll() {
 		LOGGER.info("Productivity calculation for all cells ");
-		CellsLoader.hashCell.values().parallelStream().forEach(Cell::putservices);
+		CellsLoader.hashCell.values().parallelStream().forEach(Cell::getCurrentProductivity);
 	}
 
 	void calculeDistributionMean() {
@@ -116,8 +122,16 @@ public class ModelRunner implements Runnable {
 		cells.updateCapitals(year);
 
 		// calcule supply
-		productivityForAll();
-
+//		long start1= System.currentTimeMillis();
+//		System.out.println("1...");
+//		productivityForAll();
+//		long end1= System.currentTimeMillis();
+//		System.out.println("||"+(end1-start1));
+		long start2 = System.currentTimeMillis();
+		System.out.println("2...");
+		main();
+		long end2 = System.currentTimeMillis();
+		System.out.println("||" + (end2 - start2));
 		calculeSystemSupply();
 
 		// update demande & calcule marginal
@@ -216,6 +230,39 @@ public class ModelRunner implements Runnable {
 	public void run() {
 		go();
 
+	}
+
+	public static void main() {
+		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		List<Map<String, Cell>> partitions = partitionMap(CellsLoader.hashCell, 10); // Partition into 10 sub-maps
+		try {
+			for (Map<String, Cell> subMap : partitions) {
+				executor.submit(() -> subMap.values().parallelStream().forEach(Cell::getCurrentProductivity));
+			}
+		} finally {
+			executor.shutdown();
+			try {
+				executor.awaitTermination(10, TimeUnit.MINUTES);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // Wait for all tasks to complete
+		}
+	}
+
+	private static List<Map<String, Cell>> partitionMap(Map<String, Cell> originalMap, int numberOfPartitions) {
+		List<Map<String, Cell>> partitions = new ArrayList<>();
+		int size = originalMap.size() / numberOfPartitions;
+		Iterator<Map.Entry<String, Cell>> iterator = originalMap.entrySet().iterator();
+		for (int i = 0; i < numberOfPartitions; i++) {
+			Map<String, Cell> part = new HashMap<>();
+			for (int j = 0; j < size && iterator.hasNext(); j++) {
+				Map.Entry<String, Cell> entry = iterator.next();
+				part.put(entry.getKey(), entry.getValue());
+			}
+			partitions.add(part);
+		}
+		return partitions;
 	}
 
 }

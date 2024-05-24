@@ -1,27 +1,29 @@
 package UtilitiesFx.filesTools;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import UtilitiesFx.graphicalTools.Tools;
 
 class CsvToolsTest {
 	List<File> list;
+	
+	
+	@Test
+	void CouplefilesbaselineEU() {}
 
-//	@BeforeEach
-	void setUp() throws Exception {
-		list = CsvTools.detectFiles("C:\\Users\\byari-m\\Desktop\\ssp126");
+	//@Test
+	void setUp() {
+		list = CsvTools.detectFiles("C:\\Users\\byari-m\\Downloads\\productivity_EU");
 		String[][] finalefile = CsvTools.csvReader(list.get(0).getAbsolutePath());
 
 		list.forEach(f -> {
 			if (f.getAbsolutePath().contains(".csv")) {
 				String[][] temp = CsvTools.csvReader(f.getAbsolutePath());
-				for (int j = 0; j < finalefile[0].length; j++) {
-					finalefile[0][j] = temp[0][j].replace("Manufactured", "manufactured");
+				for (int j = 0; j < finalefile.length; j++) {
+					finalefile[j][0] = temp[j][0].replace("Pasture ", "Pasture");
 				}
 
 				CsvTools.writeCSVfile(finalefile, f.getAbsolutePath());
@@ -30,9 +32,9 @@ class CsvToolsTest {
 
 	}
 
-	@Test
+	//@Test
 	void controlServiceProductivity() {
-		t2("ssp1a26", "C3pulses", 1);
+	//	t2("ssp1a26", "C3pulses", 1);
 	}
 
 	void t2(String scenario, String service, double p) {

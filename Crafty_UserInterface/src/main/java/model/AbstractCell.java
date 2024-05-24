@@ -12,7 +12,7 @@ public class AbstractCell {
 	 int index;
 	 int x, y;
 	 ConcurrentHashMap<String, Double> capitals = new ConcurrentHashMap<>();
-	 ConcurrentHashMap<String, Double> services = new ConcurrentHashMap<>();
+	 ConcurrentHashMap<String, Double> currentProductivity = new ConcurrentHashMap<>();
 	 ConcurrentHashMap<String, String> GisNameValue = new ConcurrentHashMap<>();
 	 Manager owner;
 	 double tmpValueCell=0;// a changer
@@ -86,7 +86,7 @@ public class AbstractCell {
 
 
 		public ConcurrentHashMap<String, Double> getServices() {
-			return services;
+			return currentProductivity;
 		}
 
 

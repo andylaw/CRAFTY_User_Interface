@@ -72,7 +72,7 @@ public class MaskRestrictionDataLoader {
 				LOGGER.warn("Cannot find the mask files..." + path);
 			}
 		} else {
-			LOGGER.info("Mask file not found for year ("+ year +")  use the latest year available");
+			LOGGER.info("Mask file not found for  ["+maskType+" for the year:"+ year +"]  use the latest year available");
 		}
 
 	}

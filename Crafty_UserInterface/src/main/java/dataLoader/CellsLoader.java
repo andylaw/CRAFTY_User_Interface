@@ -28,9 +28,8 @@ public class CellsLoader {
 
 //	public Set<Cell> cells = Collections.synchronizedSet(new HashSet<>());
 	public AFTsLoader AFtsSet;
-	
-	private static int nbrOfCells=0;
 
+	private static int nbrOfCells = 0;
 
 	public void loadMap() {
 
@@ -38,20 +37,18 @@ public class CellsLoader {
 		hashCell.clear();
 
 		String baseLindPath = PathTools.fileFilter("\\worlds\\", "Baseline_map").iterator().next();
-		
+
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
-		
-		nbrOfCells=hashCell.size();
-		if(nbrOfCells<1000) {
+
+		nbrOfCells = hashCell.size();
+		if (nbrOfCells < 1000) {
 			Cell.setSize(200);
 		}
 		AFTsLoader.hashAgentNbr();
-		LOGGER.info("Number of cells for each AFT: "+AFTsLoader.hashAgentNbr);
+		LOGGER.info("Number of cells for each AFT: " + AFTsLoader.hashAgentNbr);
 		DemandModel.updateDemand();
 
 	}
-
-
 
 	public void loadCapitalsAndServiceList() {
 		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Capitals.csv").get(0));
@@ -72,31 +69,32 @@ public class CellsLoader {
 
 	public void loadGisData() {
 		try {
-		String path = PathTools.fileFilter(true,"\\GIS\\").get(0);
-		Table T = Table.read().csv(path);
-		GISRegionsNames = T.columnNames();
-		String x = T.column("x") != null ? "x" : "X";
-		String y = T.column("y") != null ? "y" : "Y";
+			String path = PathTools.fileFilter(true, "\\GIS\\").get(0);
+			Table T = Table.read().csv(path);
+			GISRegionsNames = T.columnNames();
+			String x = T.column("x") != null ? "x" : "X";
+			String y = T.column("y") != null ? "y" : "Y";
 
-		for (int i = 0; i < T.columns().iterator().next().size(); i++) {
-			String coor = T.column(x).get(i) + "," + T.column(y).get(i);
-			int ii = i;
-			if (hashCell.get(coor) != null) {
-				GISRegionsNames.forEach(name -> {
-					if (T.column(name).get(ii) != null)
-						hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
-				});
+			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
+				String coor = T.column(x).get(i) + "," + T.column(y).get(i);
+				int ii = i;
+				if (hashCell.get(coor) != null) {
+					GISRegionsNames.forEach(name -> {
+						if (T.column(name).get(ii) != null)
+							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
+					});
+				}
 			}
-		}
-		}catch(NullPointerException e) {
-			LOGGER.warn("The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
+		} catch (NullPointerException e) {
+			LOGGER.warn(
+					"The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
 		}
 
 	}
 
 	public void updateCapitals(int year) {
 		year = Math.min(year, Paths.getEndtYear());
-		
+
 		if (!Paths.getScenario().equalsIgnoreCase("Baseline")) {
 			String path = PathTools.fileFilter(year + "", Paths.getScenario(), "\\capitals\\").get(0);
 			ReaderFile.processCSV(this, path, "Capitals");
@@ -105,25 +103,20 @@ public class CellsLoader {
 
 	public void servicesAndOwneroutPut(String year, String outputpath) {
 		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
-		String path = PathTools.fileFilter( year ).get(0);
+		String path = PathTools.fileFilter(year).get(0);
 		ReaderFile.processCSV(this, path, "Services");
 	}
 
 	public Cell getCell(int i, int j) {
 		return hashCell.get(i + "," + j);
 	}
-	
+
 	public static int getNbrOfCells() {
 		return nbrOfCells;
 	}
 
-
-
 	public static Set<Cell> getUnmanageCells() {
 		return unmanageCells;
 	}
-
-
-
 
 }
