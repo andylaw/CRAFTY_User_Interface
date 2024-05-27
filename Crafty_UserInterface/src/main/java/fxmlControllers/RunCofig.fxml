@@ -21,6 +21,13 @@
                               <CheckBox fx:id="gUP" mnemonicParsing="false" onAction="#giveUpMechanisme" text="Land abondenmant mechanism" />
                               <CheckBox fx:id="isAveragedPerCellResidualDemand" mnemonicParsing="false" onAction="#averagedPerCellResidualDemand" text="Averaged Per Cell Residual Demand" />
                               <CheckBox fx:id="neighbours" mnemonicParsing="false" onAction="#NeighboursAction" text="Priority given to neighbouring AFTs for land competition" /> 
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <Label text="Neighbour Radius" />
+                                    <Slider fx:id="NeighbourRadiusS" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="5"  showTickLabels="true" showTickMarks="true" />
+                                    <TextField fx:id="NeighbourRadiusT" onAction="#NeighbourRadiusT" prefHeight="25.0" prefWidth="58.0" />
+                                 </children>
+                              </HBox>
                               <CheckBox fx:id="mutationM" mnemonicParsing="false" onAction="#MutationMechanism" text="Mutation mechanism" />
                                <RadioButton fx:id="withBestAFT" mnemonicParsing="false" onAction="#bestAFT" text="Select the best AFT for land competition" />
                               <RadioButton fx:id="withRandomAFT" mnemonicParsing="false" onAction="#randomAFT" text="Randomly select an AFT for land competition" />

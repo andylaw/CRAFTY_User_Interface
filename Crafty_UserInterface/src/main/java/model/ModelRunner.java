@@ -43,6 +43,7 @@ public class ModelRunner implements Runnable {
 	public boolean isAveragedPerCellResidualDemand = false;
 	public boolean NeighboorEffect = true;
 	public double probabilityOfNeighbor = 1;
+	public int NeighborRaduis = 3;
 	public double percentageCells = 0.015;
 	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;

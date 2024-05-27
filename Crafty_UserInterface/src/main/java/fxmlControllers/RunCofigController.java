@@ -17,6 +17,11 @@ public class RunCofigController {
 	@FXML
 	private CheckBox neighbours;
 	@FXML
+	private Slider NeighbourRadiusS;
+	@FXML
+	private TextField NeighbourRadiusT;
+	
+	@FXML
 	private CheckBox mutationM;
 	@FXML
 	private Slider cellsPersS;
@@ -107,6 +112,12 @@ public class RunCofigController {
 			CA.R.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
 			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
 		});
+		NeighbourRadiusS.setValue(CA.R.NeighborRaduis);
+		NeighbourRadiusT.setText((int) NeighbourRadiusS.getValue() + "");
+		NeighbourRadiusS.valueProperty().addListener((ov, oldval, newval) -> {
+			CA.R.NeighborRaduis = (int) NeighbourRadiusS.getValue();
+			NeighbourRadiusT.setText((int) NeighbourRadiusS.getValue() + "");
+		});
 		
 		
 	}
@@ -137,6 +148,12 @@ public class RunCofigController {
 	@FXML
 	public void averagedPerCellResidualDemand(ActionEvent event) {
 		CA.R.isAveragedPerCellResidualDemand = isAveragedPerCellResidualDemand.isSelected();
+	}
+	
+	@FXML
+	public void NeighbourRadiusT(ActionEvent event) {
+		CA.R.NeighborRaduis = (int)Tools.sToD(NeighbourRadiusT.getText()) ;
+		NeighbourRadiusS.setValue((int) Tools.sToD(NeighbourRadiusT.getText()));
 	}
 
 	// Event Listener on CheckBox.onAction

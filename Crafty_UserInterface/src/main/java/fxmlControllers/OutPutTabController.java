@@ -54,7 +54,7 @@ public class OutPutTabController {
 
 			});
 		}
-
+		addTab.setClosable(false);
 		addTab.setOnSelectionChanged(new EventHandler<Event>() {
 			@Override
 			public void handle(Event t) {
@@ -84,5 +84,7 @@ public class OutPutTabController {
 		tab.setContent(FXMLLoader.load(getClass().getResource("/fxmlControllers/OutPuter.fxml")));
 		tabpane.getTabs().add(tabpane.getTabs().indexOf(addTab), tab);
 		tabpane.getSelectionModel().select(tab);
+		tabpane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+		
 	}
 }
