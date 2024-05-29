@@ -43,7 +43,7 @@ public class ModelRunner implements Runnable {
 	public boolean isAveragedPerCellResidualDemand = false;
 	public boolean NeighboorEffect = true;
 	public double probabilityOfNeighbor = 1;
-	public int NeighborRaduis = 3;
+	public static int NeighborRaduis = 3;
 	public double percentageCells = 0.015;
 	public int nbrOfSubSet = 10;
 	public double mutationIntval = 0.1;
@@ -167,13 +167,16 @@ public class ModelRunner implements Runnable {
 						if (usegiveUp) {
 							c.giveUp();
 						}
+					
 						c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect, probabilityOfNeighbor);
+						c.getCurrentProductivity();
 						c.getServices()
 								.forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
 					});
 				}
 				servicesBeforeCompetition.forEach((key, value) -> totalSupply.merge(key, -value, Double::sum));
 				servicesAfterCompetition.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
+
 				calculeMarginal(year, removeNegative);
 			});
 		} else {

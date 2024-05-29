@@ -113,9 +113,9 @@ public class Cell extends AbstractCell {
 						? (ModelRunner.distributionMean.get(owner.getLabel())
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
-				if (uO + nbr < uC) {
+				if ((uC - uO) > nbr) {
 
-					owner = ismutated ? new Manager(competitor, mutationInterval) : competitor;
+					owner = ismutated ? new Manager(competitor, mutationInterval) :competitor;
 				}
 
 			}
@@ -145,7 +145,7 @@ public class Cell extends AbstractCell {
 	void competition(boolean ismutated, double mutationInterval, boolean isTheBest, boolean neighbor,
 			double probabilityOfNeighbor) {
 		if (neighbor && probabilityOfNeighbor > Math.random()) {
-			Collection<Manager> afts = CellsSubSets.detectExtendedNeighboringAFTs(this,5);
+			Collection<Manager> afts = CellsSubSets.detectExtendedNeighboringAFTs(this,ModelRunner.NeighborRaduis);
 			if (isTheBest) {
 				Competition(mostCompetitiveAgent(afts), ismutated, mutationInterval);
 			} else {

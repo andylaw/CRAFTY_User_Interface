@@ -29,7 +29,7 @@
                                  </children>
                               </HBox>
                               <CheckBox fx:id="mutationM" mnemonicParsing="false" onAction="#MutationMechanism" text="Mutation mechanism" />
-                               <RadioButton fx:id="withBestAFT" mnemonicParsing="false" onAction="#bestAFT" text="Select the best AFT for land competition" />
+                               <RadioButton fx:id="withBestAFT" mnemonicParsing="false" onAction="#bestAFT" text="Select the most competitive AFT" />
                               <RadioButton fx:id="withRandomAFT" mnemonicParsing="false" onAction="#randomAFT" text="Randomly select an AFT for land competition" />
                               <HBox spacing="5.0">
                                  <children>

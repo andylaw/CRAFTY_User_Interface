@@ -3,6 +3,7 @@ package fxmlControllers;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.TextField;
+import model.ModelRunner;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
@@ -112,10 +113,10 @@ public class RunCofigController {
 			CA.R.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
 			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
 		});
-		NeighbourRadiusS.setValue(CA.R.NeighborRaduis);
+		NeighbourRadiusS.setValue(ModelRunner.NeighborRaduis);
 		NeighbourRadiusT.setText((int) NeighbourRadiusS.getValue() + "");
 		NeighbourRadiusS.valueProperty().addListener((ov, oldval, newval) -> {
-			CA.R.NeighborRaduis = (int) NeighbourRadiusS.getValue();
+			ModelRunner.NeighborRaduis = (int) NeighbourRadiusS.getValue();
 			NeighbourRadiusT.setText((int) NeighbourRadiusS.getValue() + "");
 		});
 		
@@ -152,7 +153,7 @@ public class RunCofigController {
 	
 	@FXML
 	public void NeighbourRadiusT(ActionEvent event) {
-		CA.R.NeighborRaduis = (int)Tools.sToD(NeighbourRadiusT.getText()) ;
+		ModelRunner.NeighborRaduis = (int)Tools.sToD(NeighbourRadiusT.getText()) ;
 		NeighbourRadiusS.setValue((int) Tools.sToD(NeighbourRadiusT.getText()));
 	}
 

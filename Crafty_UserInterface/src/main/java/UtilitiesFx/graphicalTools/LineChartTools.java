@@ -86,7 +86,7 @@ public class LineChartTools {
 		LineChartTools.addSeriesTooltips(lineChart);
 	}
 
-	private static void addSeriesTooltips(LineChart<Number, Number> lineChart) {
+	public static void addSeriesTooltips(LineChart<Number, Number> lineChart) {
 		for (XYChart.Series<Number, Number> series : lineChart.getData()) {
 			// Building the tooltip text
 			String tooltipText = "Series: " + series.getName() + "\nData Points: " + series.getData().size();
@@ -111,7 +111,7 @@ public class LineChartTools {
 		}
 	}
 
-	public void labelcolor(CellsLoader M, LineChart<Number, Number> lineChart) {
+	public static void labelcolor(CellsLoader M, LineChart<Number, Number> lineChart) {
 		int m = 0;
 		for (Node item : lineChart.lookupAll("Label.chart-legend-item")) {
 			Label label = (Label) item;
