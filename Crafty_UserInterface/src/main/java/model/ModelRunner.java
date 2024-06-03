@@ -32,21 +32,22 @@ public class ModelRunner implements Runnable {
 	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
 	public CellsLoader cells;
 	public String colorDisplay = "FR";
-	public boolean mapSynchronisation = true;
-	public int mapSynchronisationGap = 5;
-	public boolean writeCsvFiles = false;
-	public int writeCsvFilesGap = 5;
-	public boolean removeNegative = false;
-	public boolean usegiveUp = false;
-	public boolean isMutated = false;
-	public boolean withBestAFT = true;
-	public boolean isAveragedPerCellResidualDemand = false;
-	public boolean NeighboorEffect = true;
-	public double probabilityOfNeighbor = 1;
+	public static boolean mapSynchronisation = true;
+	public static int mapSynchronisationGap = 5;
+	public static boolean writeCsvFiles = true;
+	public static int writeCsvFilesGap = 10;
+	public static boolean removeNegative = false;
+	public static boolean usegiveUp = true;
+	public static boolean isMutated = false;
+	public static double MostCompetitorAFTProbability = 1;
+	public static boolean isAveragedPerCellResidualDemand = false;
+	public static boolean NeighboorEffect = true;
+	public static double probabilityOfNeighbor = 1;
 	public static int NeighborRaduis = 3;
-	public double percentageCells = 0.015;
-	public int nbrOfSubSet = 10;
-	public double mutationIntval = 0.1;
+	public static double percentageCells = 0.015;
+	public static int nbrOfSubSet = 10;
+	public static double mutationIntval = 0.1;
+	public static double percentageOfGiveUp = 0.15;
 
 	public ConcurrentHashMap<String, Double> totalSupply;
 	static ConcurrentHashMap<String, Double> marginal = new ConcurrentHashMap<>();
@@ -123,38 +124,42 @@ public class ModelRunner implements Runnable {
 		cells.updateCapitals(year);
 
 		// calcule supply
-//		long start1= System.currentTimeMillis();
-//		System.out.println("1...");
-//		productivityForAll();
-//		long end1= System.currentTimeMillis();
-//		System.out.println("||"+(end1-start1));
-		long start2 = System.currentTimeMillis();
-		System.out.println("2...");
+		// productivityForAll();
+		long staetTime = System.currentTimeMillis();
 		main();
-		long end2 = System.currentTimeMillis();
-		System.out.println("||" + (end2 - start2));
+		LOGGER.trace("Time taken to calculate supply for all cells " + (System.currentTimeMillis() - staetTime) + "ms");
 		calculeSystemSupply();
-
 		// update demande & calcule marginal
 		LOGGER.info("Marginal Utility Supply calculation");
 		calculeMarginal(year, removeNegative);
 
-		// if (usegiveUp) {}
 		LOGGER.info("Calculating Distribution Mean");
+		long staetTime2 = System.currentTimeMillis();
 		calculeDistributionMean();
-		LOGGER.info("Distribution Mean... done");
-
+		LOGGER.trace("Time taken to calculeDistributionMean " + (System.currentTimeMillis() - staetTime2) + "ms");
+//		totalSupply.forEach((serviceName, serviceVal) -> {
+//			System.out.println("demandFiles(\""+serviceName+"\","+(DemandModel.getDemand(serviceName, year)/serviceVal)+");");
+//		});
 		// upDateMask if needed
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
 		LOGGER.info("taking over unmanage cell...");
+
+		if (usegiveUp) {
+			ConcurrentHashMap<String, Cell> randomCellsubSetForGiveUp = CellsSet.getRandomSubset(CellsLoader.hashCell,
+					percentageOfGiveUp);
+			if (randomCellsubSetForGiveUp != null) {
+				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
+					c.giveUp();
+				});
+			}
+		}
 		// take over unmanage cells
-		takeOverUnCells();
+		takeOverUnmanageCells();
 		LOGGER.info("Launching the competition process...");
 		// Randomly select % of the land available for competition
 		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(CellsLoader.hashCell,
 				percentageCells);
 		if (randomCellsubSet != null) {
-
 			List<ConcurrentHashMap<String, Cell>> subsubsets = CellsSet.splitIntoSubsets(randomCellsubSet, nbrOfSubSet);
 			ConcurrentHashMap<String, Double> servicesBeforeCompetition = new ConcurrentHashMap<>();
 			ConcurrentHashMap<String, Double> servicesAfterCompetition = new ConcurrentHashMap<>();
@@ -167,8 +172,7 @@ public class ModelRunner implements Runnable {
 						if (usegiveUp) {
 							c.giveUp();
 						}
-					
-						c.competition(isMutated, mutationIntval, withBestAFT, NeighboorEffect, probabilityOfNeighbor);
+						c.competition();
 						c.getCurrentProductivity();
 						c.getServices()
 								.forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
@@ -176,7 +180,6 @@ public class ModelRunner implements Runnable {
 				}
 				servicesBeforeCompetition.forEach((key, value) -> totalSupply.merge(key, -value, Double::sum));
 				servicesAfterCompetition.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
-
 				calculeMarginal(year, removeNegative);
 			});
 		} else {
@@ -197,7 +200,7 @@ public class ModelRunner implements Runnable {
 		AFTsLoader.hashAgentNbr();
 	}
 
-	void takeOverUnCells() {
+	void takeOverUnmanageCells() {
 		CellsLoader.getUnmanageCells().parallelStream().forEach(c -> {
 			if (c.getOwner() == null) {
 				c.owner = c.mostCompetitiveAgent();
@@ -237,6 +240,7 @@ public class ModelRunner implements Runnable {
 	}
 
 	public static void main() {
+		LOGGER.info("Productivity calculation for all cells ");
 		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		List<Map<String, Cell>> partitions = partitionMap(CellsLoader.hashCell, 10); // Partition into 10 sub-maps
 		try {

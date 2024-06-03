@@ -47,7 +47,7 @@ public class DemandModel {
 	}
 
 	public static void updateDemand() {
-		String path = PathTools.fileFilter(Paths.getScenario(), "demand").get(0);
+		String path = PathTools.fileFilter(Paths.getScenario(), "\\worlds\\demand").get(0);
 		HashMap<String, ArrayList<String>> hashDemand = ReaderFile.ReadAsaHash(path);
 		LOGGER.info("Update Demand: " + path);
 		hashDemand.forEach((name, vect) -> {

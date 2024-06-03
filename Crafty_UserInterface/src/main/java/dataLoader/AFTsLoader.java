@@ -96,7 +96,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	void initializeAFTs() {
 		hash.clear();
 		System.out.println(Paths.getScenario());
-		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario());
+		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario(),".csv");
 		pFiles.forEach(f -> {
 			initializeAFTProduction(f);
 		});
@@ -109,12 +109,12 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void updateAFTs() {
-		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario());
+		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario(),".csv");
 		pFiles.forEach(f -> {
 			File file = new File(f);
 			updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
 		});
-		List<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario());
+		List<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario(),".csv");
 		bFiles.forEach(f -> {
 			File file = new File(f);
 			try {

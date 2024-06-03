@@ -27,20 +27,20 @@ public class Manager extends AbstractManager{
 		}
 	}
 
-	public Manager(Manager other, double intervale) {// shloud modefie 
+	public Manager(Manager other) {// shloud modefie 
 		if (other != null) {
 			this.label = other.label;
 			this.color = other.color;
 			other.sensitivity.forEach((n, v) -> {
-				this.sensitivity.put(n, v * (1 + intervale * (2*new Random().nextDouble() - 1)));
+				this.sensitivity.put(n, v * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1)));
 
 			});
 			other.productivityLevel.forEach((n, v) -> {
-				this.productivityLevel.put(n, v * (1 + intervale * (2*new Random().nextDouble() - 1)));
+				this.productivityLevel.put(n, v * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1)));
 			});
-			this.giveInMean = other.giveInMean * (1 + intervale * (2*new Random().nextDouble() - 1));
-			this.giveUpMean = other.giveUpMean * (1 + intervale * (2*new Random().nextDouble() - 1));
-			this.giveUpProbabilty = other.giveUpProbabilty * (1 + intervale * (2*new Random().nextDouble() - 1));
+			this.giveInMean = other.giveInMean * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1));
+			this.giveUpMean = other.giveUpMean * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1));
+			this.giveUpProbabilty = other.giveUpProbabilty * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1));
 		}
 
 	}

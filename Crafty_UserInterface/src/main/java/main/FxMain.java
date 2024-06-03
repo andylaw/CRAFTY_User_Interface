@@ -33,6 +33,7 @@ public class FxMain extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		System.out.println(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);
+
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 		FxMain.primaryStage = primaryStage;
@@ -40,6 +41,7 @@ public class FxMain extends Application {
 		InputStream imageStream = getClass().getResourceAsStream("/craftylogo.png");
 		imageView = Tools.logo(imageStream, w / 3, h / 3, 0.65);
 		anchor.getChildren().add(imageView);
+
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 

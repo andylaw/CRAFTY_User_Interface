@@ -78,7 +78,7 @@ public class ModelRunnerController {
 	Timeline timeline /* = new Timeline() */;
 	AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
-	NewWindow runConfiguration;
+
 	public static boolean chartSynchronisation = true;
 	public static int chartSynchronisationGap = 5;
 
@@ -86,6 +86,8 @@ public class ModelRunnerController {
 //	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
+
+	NewWindow runConfiguration;
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
@@ -210,7 +212,7 @@ public class ModelRunnerController {
 			// Stop if max iterations reached
 			return;
 		}
-		if (R.writeCsvFiles) {
+		if (ModelRunner.writeCsvFiles) {
 			CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
 					+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
 			CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
@@ -309,23 +311,28 @@ public class ModelRunnerController {
 	}
 
 	Alert simulationFolderName() {
-		if (!R.writeCsvFiles) {
+		if (!ModelRunner.writeCsvFiles) {
 			return null;
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setHeaderText("Please enter OutPut folder name and any comments");
-		String competitionType = (R.withBestAFT ? "Select the best AFT for land competition"
-				: "Randomly select an AFT for land competition");
-		String cofiguration = "Remove negative marginal utility values:   " + R.removeNegative + "\n"
-				+ "Land abondenmant (Give-up mechanism):  " + R.usegiveUp + "\n" + "Averaged Per Cell Residual Demand: "
-				+ R.isAveragedPerCellResidualDemand + "\n" + "Considering mutation:  " + R.isMutated + "\n"
-				+ competitionType + "\n" + "Priority given to neighbouring AFTs for land competition: |"
-				+ R.NeighboorEffect + "|   with probabilty " + (R.probabilityOfNeighbor * 100) + "%" + "\n"
-				+ "Neighborhood radius: " + ModelRunner.NeighborRaduis + "\n"
-				+ "Percentage of land use that could be changed:  " + (R.percentageCells * 100) + "%" + "\n"
-				+ "Number of sub-assemblies and residual demand update during the waiting period: " + R.nbrOfSubSet
-				+ "\n" + "Types of land mask restrictions considered:  " + MaskRestrictionDataLoader.hashMasks.keySet()
-				+ "\n \n" + "Add your comments..";
+		String competitionType =  "Select The most competitive AFT for land competition Percentage: "+ (ModelRunner.MostCompetitorAFTProbability*100 ) +"% \n"+
+				 "Randomly select an AFT for land competition Percentage: "+ (100-ModelRunner.MostCompetitorAFTProbability*100 )+"%";
+		
+		String neighbour = ModelRunner.NeighboorEffect
+				? "   with probabilty " + (ModelRunner.probabilityOfNeighbor * 100) + "%" 
+						+ "Neighborhood radius: " + ModelRunner.NeighborRaduis + "\n"
+				: "";
+
+		String cofiguration = "Remove negative marginal utility values:   " + ModelRunner.removeNegative + "\n"
+				+ "Land abondenmant (Give-up mechanism):  " + ModelRunner.usegiveUp + "\n"
+				+ "Averaged Per Cell Residual Demand: " + ModelRunner.isAveragedPerCellResidualDemand + "\n"
+				+ "Considering mutation:  " + ModelRunner.isMutated + "\n" + competitionType + "\n"
+				+ "Priority given to neighbouring AFTs for land competition: |" + ModelRunner.NeighboorEffect + "| \n"
+				+ neighbour + "Percentage of land use that could be changed:  " + (ModelRunner.percentageCells * 100)
+				+ "%" + "\n" + "Number of sub-assemblies and residual demand update during the waiting period: "
+				+ ModelRunner.nbrOfSubSet + "\n" + "Types of land mask restrictions considered:  "
+				+ MaskRestrictionDataLoader.hashMasks.keySet() + "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");

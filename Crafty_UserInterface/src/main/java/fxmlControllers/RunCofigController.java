@@ -21,7 +21,6 @@ public class RunCofigController {
 	private Slider NeighbourRadiusS;
 	@FXML
 	private TextField NeighbourRadiusT;
-	
 	@FXML
 	private CheckBox mutationM;
 	@FXML
@@ -37,9 +36,13 @@ public class RunCofigController {
 	@FXML
 	private CheckBox isAveragedPerCellResidualDemand;
 	@FXML
-	private RadioButton withBestAFT;
+	private Slider BestAftS;
 	@FXML
-	private RadioButton withRandomAFT;
+	private TextField BestAftT;
+	@FXML
+	private Slider RandomAftS;
+	@FXML
+	private TextField RandomAftT;
 //	@FXML
 //	private CheckBox neighboursCollaboration;
 	@FXML
@@ -58,7 +61,10 @@ public class RunCofigController {
 	private Slider nbrOfSubSetS;
 	@FXML
 	private TextField nbrOfSubSetT;
-	
+	@FXML
+	private Slider percentageOfGiveUpS;
+	@FXML
+	private TextField percentageOfGiveUpT;
 
 	static public ModelRunnerController CA;
 
@@ -69,29 +75,26 @@ public class RunCofigController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		removeNegative.setSelected(CA.R.removeNegative);
-		MapSync.setSelected(CA.R.mapSynchronisation);
-		neighbours.setSelected(CA.R.NeighboorEffect);
-		withBestAFT.setSelected(CA.R.withBestAFT);
-		withRandomAFT.setSelected(!CA.R.withBestAFT);
-		creatCSV.setSelected(CA.R.writeCsvFiles);
-		gUP.setSelected(CA.R.usegiveUp);
-		mutationM.setSelected(CA.R.isMutated);
+		removeNegative.setSelected(ModelRunner.removeNegative);
+		MapSync.setSelected(ModelRunner.mapSynchronisation);
+		neighbours.setSelected(ModelRunner.NeighboorEffect);
+		creatCSV.setSelected(ModelRunner.writeCsvFiles);
+		gUP.setSelected(ModelRunner.usegiveUp);
+		mutationM.setSelected(ModelRunner.isMutated);
 		// neighboursCollaboration.setSelected(CA.R.NeighboorEffect);
 		chartSync.setSelected(ModelRunnerController.chartSynchronisation);
-		cellsPersS.setValue(CA.R.percentageCells * 100);
-		CellPersT.setText( Math.round(cellsPersS.getValue() * 10) / 10.+ "");
+
+		cellsPersS.setValue(ModelRunner.percentageCells * 100);
+		CellPersT.setText(Math.round(cellsPersS.getValue() * 10) / 10. + "");
 		cellsPersS.valueProperty().addListener((ov, oldval, newval) -> {
-			CA.R.percentageCells = cellsPersS.getValue() / 100;
-			CellPersT.setText(Math.round(cellsPersS.getValue() * 10) / 10.  + ""); //  ;
-
-
+			ModelRunner.percentageCells = cellsPersS.getValue() / 100;
+			CellPersT.setText(Math.round(cellsPersS.getValue() * 10) / 10. + ""); // ;
 		});
 
-		MapSync_GapS.setValue(CA.R.mapSynchronisationGap);
+		MapSync_GapS.setValue(ModelRunner.mapSynchronisationGap);
 		MapSync_GapT.setText((int) MapSync_GapS.getValue() + "");
 		MapSync_GapS.valueProperty().addListener((ov, oldval, newval) -> {
-			CA.R.mapSynchronisationGap = (int) MapSync_GapS.getValue();
+			ModelRunner.mapSynchronisationGap = (int) MapSync_GapS.getValue();
 			MapSync_GapT.setText((int) MapSync_GapS.getValue() + "");
 		});
 
@@ -101,16 +104,16 @@ public class RunCofigController {
 			ModelRunnerController.chartSynchronisationGap = (int) chartSync_GapS.getValue();
 			chartSync_GapT.setText((int) chartSync_GapS.getValue() + "");
 		});
-		CSV_GapS.setValue(CA.R.writeCsvFilesGap);
+		CSV_GapS.setValue(ModelRunner.writeCsvFilesGap);
 		CSV_GapT.setText((int) CSV_GapS.getValue() + "");
 		CSV_GapS.valueProperty().addListener((ov, oldval, newval) -> {
-			CA.R.writeCsvFilesGap = (int) CSV_GapS.getValue();
+			ModelRunner.writeCsvFilesGap = (int) CSV_GapS.getValue();
 			CSV_GapT.setText((int) CSV_GapS.getValue() + "");
 		});
-		nbrOfSubSetS.setValue(CA.R.nbrOfSubSet);
+		nbrOfSubSetS.setValue(ModelRunner.nbrOfSubSet);
 		nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
 		nbrOfSubSetS.valueProperty().addListener((ov, oldval, newval) -> {
-			CA.R.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
+			ModelRunner.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
 			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
 		});
 		NeighbourRadiusS.setValue(ModelRunner.NeighborRaduis);
@@ -119,41 +122,77 @@ public class RunCofigController {
 			ModelRunner.NeighborRaduis = (int) NeighbourRadiusS.getValue();
 			NeighbourRadiusT.setText((int) NeighbourRadiusS.getValue() + "");
 		});
-		
-		
+
+		percentageOfGiveUpS.setValue(ModelRunner.percentageOfGiveUp * 100);
+		percentageOfGiveUpT.setText(Math.round(percentageOfGiveUpS.getValue() * 10) / 10. + "");
+		percentageOfGiveUpS.valueProperty().addListener((ov, oldval, newval) -> {
+			ModelRunner.percentageOfGiveUp = percentageOfGiveUpS.getValue() / 100;
+			percentageOfGiveUpT.setText(Math.round(percentageOfGiveUpS.getValue() * 10) / 10. + ""); // ;
+		});
+
+		BestAftS.setValue(ModelRunner.MostCompetitorAFTProbability * 100);
+		BestAftT.setText(Math.round(BestAftS.getValue() * 10) / 10. + "");
+		BestAftS.valueProperty().addListener((ov, oldval, newval) -> {
+			ModelRunner.MostCompetitorAFTProbability = BestAftS.getValue() / 100;
+			BestAftT.setText(Math.round(BestAftS.getValue() * 10) / 10. + "");
+			RandomAftT.setText(Math.round(1000 - BestAftS.getValue() * 10) / 10. + "");
+			RandomAftS.setValue(Tools.sToD(RandomAftT.getText()));
+		});
+
+		RandomAftS.setValue(100 - ModelRunner.MostCompetitorAFTProbability * 100);
+		RandomAftT.setText(100 - Math.round(BestAftS.getValue() * 10) / 10. + "");
+		RandomAftS.valueProperty().addListener((ov, oldval, newval) -> {
+			ModelRunner.MostCompetitorAFTProbability = 1 - RandomAftS.getValue() / 100;
+			RandomAftT.setText(Math.round(RandomAftS.getValue() * 10) / 10. + ""); // ;
+			BestAftT.setText(Math.round(1000 - RandomAftS.getValue() * 10) / 10. + "");
+			BestAftS.setValue(Tools.sToD(BestAftT.getText()));
+		});
+
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction
 	@FXML
 	public void removeNegativeMarginal(ActionEvent event) {
-		CA.R.removeNegative = removeNegative.isSelected();
+		ModelRunner.removeNegative = removeNegative.isSelected();
 	}
 
 	// Event Listener on CheckBox[#MapSync].onAction
 	@FXML
 	public void mapSyn(ActionEvent event) {
-		CA.R.mapSynchronisation = MapSync.isSelected();
+		ModelRunner.mapSynchronisation = MapSync.isSelected();
 	}
 
 	// Event Listener on CheckBox[#gUP].onAction
 	@FXML
 	public void giveUpMechanisme(ActionEvent event) {
-		CA.R.usegiveUp = gUP.isSelected();
+		ModelRunner.usegiveUp = gUP.isSelected();
 
 	}
+
+	@FXML
+	public void percentageOfGiveUpT(ActionEvent event) {
+		ModelRunner.percentageOfGiveUp = Tools.sToD(percentageOfGiveUpT.getText()) / 100;
+		percentageOfGiveUpS.setValue((int) Tools.sToD(percentageOfGiveUpT.getText()));
+
+	}
+
 	@FXML
 	public void NeighboursAction(ActionEvent event) {
-		CA.R.NeighboorEffect = neighbours.isSelected();
+		ModelRunner.NeighboorEffect = neighbours.isSelected();
+
+		NeighbourRadiusS.setDisable(!neighbours.isSelected());
+		NeighbourRadiusT.setDisable(!neighbours.isSelected());
+
 	}
 
 	@FXML
 	public void averagedPerCellResidualDemand(ActionEvent event) {
-		CA.R.isAveragedPerCellResidualDemand = isAveragedPerCellResidualDemand.isSelected();
+		ModelRunner.isAveragedPerCellResidualDemand = isAveragedPerCellResidualDemand.isSelected();
 	}
-	
+
 	@FXML
 	public void NeighbourRadiusT(ActionEvent event) {
-		ModelRunner.NeighborRaduis = (int)Tools.sToD(NeighbourRadiusT.getText()) ;
+		ModelRunner.NeighborRaduis = (int) Tools.sToD(NeighbourRadiusT.getText());
 		NeighbourRadiusS.setValue((int) Tools.sToD(NeighbourRadiusT.getText()));
 	}
 
@@ -165,41 +204,39 @@ public class RunCofigController {
 	// Event Listener on CheckBox[#mutationM].onAction
 	@FXML
 	public void MutationMechanism(ActionEvent event) {
-		CA.R.isMutated = mutationM.isSelected();
+		ModelRunner.isMutated = mutationM.isSelected();
+	}
+
+
+
+	@FXML
+	public void BestAftT(ActionEvent event) {
+		ModelRunner.MostCompetitorAFTProbability = Tools.sToD(BestAftT.getText())/100;
+		BestAftS.setValue(Tools.sToD(BestAftT.getText()));
+		RandomAftS.setValue(100 - Tools.sToD(BestAftT.getText()));
 	}
 
 	@FXML
-	public void bestAFT(ActionEvent event) {
-		CA.R.withBestAFT = withBestAFT.isSelected();
-		if (withBestAFT.isSelected()) {
-			withRandomAFT.setSelected(false);
-		} else {
-			withRandomAFT.setSelected(true);
-		}
+	public void RandomAftT(ActionEvent event) {
+		ModelRunner.MostCompetitorAFTProbability = 1 - Tools.sToD(RandomAftT.getText())/100;
+		RandomAftS.setValue(Tools.sToD(RandomAftT.getText()));
+		BestAftS.setValue(100 - Tools.sToD(RandomAftT.getText()));
 	}
 
-	@FXML
-	public void randomAFT(ActionEvent event) {
-		CA.R.withBestAFT = !withRandomAFT.isSelected();
-		if (withRandomAFT.isSelected()) {
-			withBestAFT.setSelected(false);
-		} else {
-			withBestAFT.setSelected(true);
-		}
-
-	}
 
 	// Event Listener on TextField[#CellPersT].onAction
 	@FXML
 	public void cellspersT(ActionEvent event) {
-		CA.R.percentageCells = Tools.sToD(CellPersT.getText()) / 100;
+		ModelRunner.percentageCells = Tools.sToD(CellPersT.getText()) / 100;
 		cellsPersS.setValue((int) Tools.sToD(CellPersT.getText()));
 	}
-	@FXML 
+
+	@FXML
 	public void nbrOfSubSetT(ActionEvent event) {
-		CA.R.nbrOfSubSet = (int)Tools.sToD(nbrOfSubSetT.getText()) / 100;
+		ModelRunner.nbrOfSubSet = (int) Tools.sToD(nbrOfSubSetT.getText()) / 100;
 		nbrOfSubSetS.setValue((int) Tools.sToD(nbrOfSubSetT.getText()));
 	}
+
 	@FXML
 	public void mapSync_GapAction(ActionEvent event) {
 		MapSync_GapS.setValue((int) Tools.sToD(MapSync_GapT.getText()));
@@ -224,7 +261,7 @@ public class RunCofigController {
 	// Event Listener on CheckBox[#creatCSV].onAction
 	@FXML
 	public void creatCSV(ActionEvent event) {
-		CA.R.writeCsvFiles = creatCSV.isSelected();
+		ModelRunner.writeCsvFiles = creatCSV.isSelected();
 
 	}
 }

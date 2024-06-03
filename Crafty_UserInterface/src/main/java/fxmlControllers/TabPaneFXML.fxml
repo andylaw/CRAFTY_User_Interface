@@ -34,45 +34,47 @@
 								<TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE">
 									<tabs>
 										<Tab text="General View">
-										<graphic>
-								<FontIcon iconLiteral="fas-home" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="Model General View" />
-							</tooltip>
+											<graphic>
+												<FontIcon iconLiteral="fas-home" iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip text="Model General View" />
+											</tooltip>
 											<content>
 												<fx:include
 													source="/fxmlControllers/GlobalView.fxml" /> <!---->
 											</content>
 										</Tab>
-										<Tab fx:id="dataPane" text="Spatial Data" >
-							<graphic>
-								<FontIcon iconLiteral="fas-layer-group" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="Input data: capital, AFT distribution and demand trends" />
-							</tooltip>
+										<Tab fx:id="dataPane" text="Spatial Data">
+											<graphic>
+												<FontIcon iconLiteral="fas-layer-group"
+													iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip
+													text="Input data: capital, AFT distribution and demand trends" />
+											</tooltip>
 											<content>
 												<fx:include
 													source="/fxmlControllers/SpatialData.fxml" /> <!---->
 											</content>
 										</Tab>
 										<Tab text="AFTs Configuration">
-										<graphic>
-								<FontIcon iconLiteral="fas-cogs" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="AFTs display and settings" />
-							</tooltip>
+											<graphic>
+												<FontIcon iconLiteral="fas-robot" iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip text="AFTs display and settings" />
+											</tooltip>
 											<content>
 												<fx:include
 													source="/fxmlControllers/AFTsConfiguration.fxml" /> <!---->
 											</content>
 										</Tab>
+
 										<Tab text="LandUseControl">
 											<graphic>
-												<FontIcon iconLiteral="far-file-alt"
-													iconSize="15" />
+												<FontIcon iconLiteral="far-file-alt" iconSize="15" />
 											</graphic>
 											<tooltip>
 												<Tooltip text="Model OutPut" />
@@ -82,27 +84,57 @@
 													source="/fxmlControllers/MasksPane.fxml" /> <!---->
 											</content>
 										</Tab>
-										
-										
 										<Tab text="Model runner">
-										<graphic>
-								<FontIcon iconLiteral="fas-play-circle" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="Configuring model running" />
-							</tooltip>
+											<graphic>
+												<FontIcon iconLiteral="fas-play-circle"
+													iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip text="Model configuration and running" />
+											</tooltip>
 											<content>
-												<fx:include
-													source="/fxmlControllers/ModelRunner.fxml" /> <!---->
+												<TabPane fx:id="subTabPane" minHeight="0.0"
+													minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+													<tabs>
+
+
+														<Tab text="Run configuration" style="-fx-background-color: #bddee9;">
+															<graphic>
+																<FontIcon iconLiteral="fas-cogs" iconSize="15" />
+															</graphic>
+															<tooltip>
+																<Tooltip text="Configuring model running" />
+															</tooltip>
+															<content>
+																<fx:include
+																	source="/fxmlControllers/RunCofig.fxml" /> <!---->
+															</content>
+														</Tab>
+
+
+														<Tab text="Simulation Run and follow-up" style="-fx-background-color: #bddee9;">
+															<graphic>
+																<FontIcon iconLiteral="far-chart-bar"
+																	iconSize="15" />
+															</graphic>
+															<tooltip>
+																<Tooltip text="Simulation Run and follow-up" />
+															</tooltip>
+															<content>
+																<fx:include
+																	source="/fxmlControllers/ModelRunner.fxml" /> <!---->
+															</content>
+														</Tab>
+
+													</tabs>
+												</TabPane>
 											</content>
 										</Tab>
-										
-						<!---->
-											
-												<fx:include
-													source="/fxmlControllers/outPutTab.fxml" /> <!---->
-											
-										
+
+										<fx:include
+											source="/fxmlControllers/outPutTab.fxml" /> <!---->
+
+
 									</tabs>
 								</TabPane>
 							</children>
@@ -110,8 +142,9 @@
 						<VBox>
 							<HBox spacing="15.0">
 								<children>
-									<VBox fx:id="mapBox" >
-										<fx:include source="/fxmlControllers/MapToolsBar.fxml" />
+									<VBox fx:id="mapBox">
+										<fx:include
+											source="/fxmlControllers/MapToolsBar.fxml" />
 									</VBox>
 								</children>
 							</HBox>

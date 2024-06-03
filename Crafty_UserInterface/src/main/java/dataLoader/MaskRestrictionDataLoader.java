@@ -14,6 +14,7 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import model.Cell;
 import model.CellsSet;
+import model.Manager;
 
 public class MaskRestrictionDataLoader {
 
@@ -64,6 +65,7 @@ public class MaskRestrictionDataLoader {
 					csv.keySet().forEach(key -> {
 						if (key.contains("Year_") && csv.get(key).get(ii).contains("1")) {
 							c.setMaskType(maskType);
+							maskToOwner(c, maskType);
 						}
 					});
 				}
@@ -72,9 +74,20 @@ public class MaskRestrictionDataLoader {
 				LOGGER.warn("Cannot find the mask files..." + path);
 			}
 		} else {
-			LOGGER.info("Mask file not found for  ["+maskType+" for the year:"+ year +"]  use the latest year available");
+			LOGGER.info("Mask file not found for  [" + maskType + " for the year:" + year
+					+ "]  use the latest year available");
 		}
 
+	}
+
+	void maskToOwner(Cell c, String maskType) {
+
+		for (Manager a : AFTsLoader.getAftHash().values()) {
+			if (maskType.contains(a.getLabel())) {
+				c.setOwner(a);
+				break;
+			}
+		}
 	}
 
 	public void CellSetToMaskLoader(int year) {

@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.ImageExporter;
 import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
@@ -40,6 +39,7 @@ import main.FxMain;
 
 public class CellsSet {
 	private static final Logger LOGGER = LogManager.getLogger(CellsSet.class);
+	public static boolean isPlotedMap=false;
 	private static Canvas canvas;
 	private static GraphicsContext gc;
 	static PixelWriter pixelWriter;
@@ -48,11 +48,11 @@ public class CellsSet {
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
-
 	private static List<String> capitalsName = Collections.synchronizedList(new ArrayList<>());
 	private static List<String> servicesNames = Collections.synchronizedList(new ArrayList<>());
 
 	public static void plotCells() {
+		isPlotedMap=true;
 		ArrayList<Integer> X = new ArrayList<>();
 		ArrayList<Integer> Y = new ArrayList<>();
 		CellsLoader.hashCell.values().forEach(c -> {
@@ -82,7 +82,7 @@ public class CellsSet {
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
 		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
-
+		
 		MapControlerBymouse();
 	}
 
@@ -145,6 +145,7 @@ public class CellsSet {
 	}
 
 	public static void colorMap() {
+		if(!isPlotedMap) {return;};
 		LOGGER.info("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {

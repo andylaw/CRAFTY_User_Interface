@@ -32,28 +32,31 @@ class CsvToolsTest {
 	@Test
 	void controlServiceProductivity() {
 		// t2("ssp1a26", "C3pulses", 1);
-//		demandFiles("C3pulses",0.17411478629169413);
-//		demandFiles("FloodRegulation",0.05872736788211139);
-//		demandFiles("C3fruitveg",5.600789910010002);
-//		demandFiles("Softwood",1.5638012361472122);
-//		demandFiles("Hardwood",2.8075134578677052);
-//		demandFiles("C3starchyroots",13.8142923064325);
-//		demandFiles("BioenergyG1",16.352715931392748);
-//		demandFiles("Biodiversity",0.00792640781599246);
-//		demandFiles("BioenergyG2",3.6550750958983254);
-//		demandFiles("Carbon",0.09659772461636172);
-//		demandFiles("SusProd",0.02395629989797935);
-//		demandFiles("GFmilk",0.6487095171004216);
-//		demandFiles("CES",0.03789603972622258);
-//		demandFiles("C4crops",0.2748456609722006);
-//		demandFiles("Ldiversity",0.09333813327586978);
-//		demandFiles("Foddercrops",3.6911578812927557);
-//		demandFiles("Recreation",0.008832711855247862);
-//		demandFiles("Employment",0.08355863071784266);
-//		demandFiles("SolarEnergy",67.74229808465881);
-//		demandFiles("C3cereals",0.3783071484981296);
-//		demandFiles("C3oilcrops",0.05684326979515055);
-//		demandFiles("GFmeat",0.026215836511517446);
+//		demandFiles("C3pulses",0.4420218624720767);
+//		demandFiles("FloodRegulation",1.2710805509458118);
+//		demandFiles("C3fruitveg",0.7207912724458584);
+//		demandFiles("Softwood",2.544589260243189);
+//		demandFiles("Hardwood",2.158342168749489);
+//		demandFiles("C3starchyroots",0.428763476691158);
+//		demandFiles("BioenergyG1",1.0000000000981601);
+//		demandFiles("Biodiversity",1.3827478623957956);
+//		demandFiles("BioenergyG2",0.9999999999918013);
+//		demandFiles("Carbon",1.1695837149661976);
+//		demandFiles("SusProd",2.228891912514655);
+//		demandFiles("GFmilk",1.9841795192630278);
+//		demandFiles("CES",1.2618978240497665);
+//		demandFiles("C4crops",0.7202804742142568);
+//		demandFiles("Ldiversity",1.5914447295337868);
+//		demandFiles("Foddercrops",1.2711607611942122);
+//		demandFiles("Recreation",1.6500570403055466);
+//		demandFiles("Employment",1.3391139486612418);
+////		demandFiles("SolarEnergy",10.000749136646766);
+//		demandFiles("C3cereals",1.1270248716655467);
+//		demandFiles("C3oilcrops",0.5146069571245985);
+//		demandFiles("C3pulses",1.1842971006584717);
+//		demandFiles("GFmilk",0.7533327304271545);
+//		demandFiles("C3cereals",0.7310635718933262);
+//		demandFiles("GFmeat",0.7283311230391097);
 	}
 
 	void demandFiles(String service, double p) {

@@ -155,7 +155,7 @@ public class AFTsConfigurationController {
 
 	@FXML
 	public void choiceAgnetSetOnAction() {
-		Manager a = M.AFtsSet.getAftHash().get(AFTChoisButton.getValue());
+		Manager a = AFTsLoader.getAftHash().get(AFTChoisButton.getValue());
 		AFTNameLabel.setText(a.getCompleteName());
 		rectangleColor.setFill(a.getColor());
 		if (isNotInitialsation) {
@@ -202,14 +202,14 @@ public class AFTsConfigurationController {
 
 	@FXML
 	public void removeBtnSetOnAction() {
-		M.AFtsSet.getAftHash().remove(AFTChoisButton.getValue());
+		AFTsLoader.getAftHash().remove(AFTChoisButton.getValue());
 		AFTChoisButton.getItems().remove(AFTChoisButton.getValue());
-		AFTChoisButton.setValue(M.AFtsSet.getAftHash().keySet().iterator().next());
+		AFTChoisButton.setValue(AFTsLoader.getAftHash().keySet().iterator().next());
 	}
 
 	@FXML
 	public void saveModefication() {
-		creatCsvFiles(M.AFtsSet.getAftHash().get(AFTChoisButton.getValue()), "");
+		creatCsvFiles(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), "");
 	}
 
 	@FXML
@@ -409,7 +409,7 @@ public class AFTsConfigurationController {
 	public void updaChoisButton() {
 		// AFTChoisButton.getItems().clear();
 		Set<String> set = new HashSet<>();
-		M.AFtsSet.getAftHash().keySet().forEach(name -> {
+		AFTsLoader.getAftHash().keySet().forEach(name -> {
 			if (!AFTChoisButton.getItems().contains(name)) {
 				set.add(name);
 			}

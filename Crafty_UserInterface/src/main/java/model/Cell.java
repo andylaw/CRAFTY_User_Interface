@@ -51,10 +51,6 @@ public class Cell extends AbstractCell {
 	public void productivity(String serviceName) {
 		if (owner == null)
 			return;
-//		double product = capitals.entrySet().stream()
-//				.mapToDouble(e -> Math.pow(e.getValue(), owner.getSensitivity().get(e.getKey() + "_" + serviceName)))
-//				.reduce(1.0, (x, y) -> x * y);
-//		currentProductivity.put(serviceName, product * owner.getProductivityLevel().get(serviceName));
 
 		double product = 1.0;
 		for (Map.Entry<String, Double> entry : capitals.entrySet()) {
@@ -63,6 +59,7 @@ public class Cell extends AbstractCell {
 		}
 		double finalProduct = product * owner.getProductivityLevel().get(serviceName);
 		currentProductivity.put(serviceName, finalProduct);
+//		currentProductivity.put(serviceName, new Random().nextDouble(5));
 	}
 
 	double utility(Manager a) {
@@ -77,15 +74,16 @@ public class Cell extends AbstractCell {
 	double utility() {
 		if (owner == null) {
 			return 0;
-		}		
+		}
 		try {
-		return CellsSet.getServicesNames().stream().mapToDouble(sname -> ModelRunner.marginal.get(sname)
-				* currentProductivity.get(sname) * owner.getProductivityLevel().get(sname)).sum();}
-		catch(NullPointerException e) {
-			return 0;}
+			return CellsSet.getServicesNames().stream().mapToDouble(sname -> ModelRunner.marginal.get(sname)
+					* currentProductivity.get(sname) * owner.getProductivityLevel().get(sname)).sum();
+		} catch (NullPointerException e) {
+			return 0;
+		}
 	}
 
-	void Competition(Manager competitor, boolean ismutated, double mutationInterval) {
+	private void Competition(Manager competitor) {
 		// if this land is protected then check if the compeititvenese should happend.
 		if (competitor == null) {
 			return;
@@ -107,7 +105,7 @@ public class Cell extends AbstractCell {
 				if (uC > 0)
 					// here should uC> average(competitor utility).
 
-					owner = ismutated ? new Manager(competitor, mutationInterval) : competitor;
+					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 			} else {
 				double nbr = ModelRunner.distributionMean != null
 						? (ModelRunner.distributionMean.get(owner.getLabel())
@@ -115,7 +113,7 @@ public class Cell extends AbstractCell {
 						: 0;
 				if ((uC - uO) > nbr) {
 
-					owner = ismutated ? new Manager(competitor, mutationInterval) :competitor;
+					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 				}
 
 			}
@@ -142,21 +140,16 @@ public class Cell extends AbstractCell {
 		return theBestAFT;
 	}
 
-	void competition(boolean ismutated, double mutationInterval, boolean isTheBest, boolean neighbor,
-			double probabilityOfNeighbor) {
-		if (neighbor && probabilityOfNeighbor > Math.random()) {
-			Collection<Manager> afts = CellsSubSets.detectExtendedNeighboringAFTs(this,ModelRunner.NeighborRaduis);
-			if (isTheBest) {
-				Competition(mostCompetitiveAgent(afts), ismutated, mutationInterval);
-			} else {
-				Competition(AFTsLoader.getRandomAFT(afts), ismutated, mutationInterval);
-			}
+	void competition() {
+		boolean Neighboor = ModelRunner.NeighboorEffect && ModelRunner.probabilityOfNeighbor > Math.random();
+		Collection<Manager> afts = Neighboor
+				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.NeighborRaduis)
+				: AFTsLoader.getActivateAFTsHash().values();
+
+		if (Math.random()<ModelRunner.MostCompetitorAFTProbability) {
+			Competition(mostCompetitiveAgent(afts));
 		} else {
-			if (isTheBest) {
-				Competition(mostCompetitiveAgent(), ismutated, mutationInterval);
-			} else {
-				Competition(AFTsLoader.getRandomAFT(), ismutated, mutationInterval);
-			}
+			Competition(AFTsLoader.getRandomAFT(afts));
 		}
 	}
 

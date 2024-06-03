@@ -14,6 +14,7 @@ import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.PieChartTools;
+import UtilitiesFx.graphicalTools.SankeyPlotGraph;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.CurvesLoader;

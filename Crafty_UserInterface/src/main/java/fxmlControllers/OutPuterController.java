@@ -14,6 +14,8 @@ import UtilitiesFx.graphicalTools.ImageExporter;
 import UtilitiesFx.graphicalTools.ImagesToPDF;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
+import UtilitiesFx.graphicalTools.NewWindow;
+import UtilitiesFx.graphicalTools.SankeyPlotGraph;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
@@ -24,6 +26,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import model.CellsSet;
@@ -50,14 +53,63 @@ public class OutPuterController {
 
 	String outputpath = "";
 
+	NewWindow sankeyPlotWindow;
+
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
-
 		yearChoice.setValue(Paths.getCurrentYear() + "");
-
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 		gridChart.prefWidthProperty().bind(scroll.widthProperty());
+		sankeyPlotWindow = new NewWindow();
+	}
+
+	HashMap<Manager, HashMap<Manager, Integer>> stateToHashSankey(int startYear, int lastYear) {
+		HashMap<String, ArrayList<String>> startYearFile = new HashMap<>();
+		HashMap<String, ArrayList<String>> lastYearFile = new HashMap<>();
+
+		for (String str : PathTools.findAllFiles(outputpath)) {
+			if (str.contains(startYear + "")) {
+				startYearFile = ReaderFile.ReadAsaHash(str);
+			}
+			if (str.contains(lastYear + "")) {
+				lastYearFile = ReaderFile.ReadAsaHash(str);
+			}
+		}
+
+		HashMap<String, String> startCellToOwner = new HashMap<>();
+		HashMap<String, String> lastCellToOwner = new HashMap<>();
+
+		for (int i = 0; i < startYearFile.values().iterator().next().size(); i++) {
+			startCellToOwner.put(startYearFile.get("X").get(i) + "," + startYearFile.get("Y").get(i),
+					startYearFile.get("Agent").get(i));
+		}
+		for (int i = 0; i < lastYearFile.values().iterator().next().size(); i++) {
+			lastCellToOwner.put(lastYearFile.get("X").get(i) + "," + lastYearFile.get("Y").get(i),
+					lastYearFile.get("Agent").get(i));
+		}
+
+		HashMap<String, Integer> h = new HashMap<>();
+
+		lastCellToOwner.forEach((coor, label) -> {
+			h.merge(startCellToOwner.get(coor) + "," + label, 1, Integer::sum);
+		});
+		HashMap<Manager, HashMap<Manager, Integer>> hash = new HashMap<>();
+
+		AFTsLoader.getActivateAFTsHash().keySet().forEach(label -> {
+			HashMap<Manager, Integer> h1 = new HashMap<>();
+			h.forEach((k, v) -> {
+				if (k.split(",")[0].equals(label)) {
+					Manager reciver = AFTsLoader.getActivateAFTsHash().get(k.split(",")[1]);
+					if (reciver != null)
+						h1.put(reciver, v);
+				}
+			});
+			hash.put(AFTsLoader.getActivateAFTsHash().get(label), h1);
+		});
+
+		return hash;
+
 	}
 
 	@FXML
@@ -93,17 +145,19 @@ public class OutPuterController {
 
 		for (int i = 0; i < OutPutTabController.radioColor.length; i++) {
 			int ii = i;
-			String newfolder = PathTools
-					.makeDirectory(outputpath + "\\" + OutPutTabController.radioColor[ii].getText());
-			yearChoice.getItems().forEach(filepath -> {
-				M.servicesAndOwneroutPut(filepath, outputpath);
-				OutPutTabController.radioColor[ii].fire();
-				String fileyear = new File(filepath).getName().replace(".csv", "").replace("-Cell-", "");
-				for (String scenario : Paths.getScenariosList()) {
-					fileyear = fileyear.replace(scenario, "");
-				}
-				ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + "\\" + fileyear + ".PNG");
-			});
+			if (OutPutTabController.radioColor[i].getText().contains("Agent")) {
+				String newfolder = PathTools
+						.makeDirectory(outputpath + "\\" + OutPutTabController.radioColor[ii].getText());
+				yearChoice.getItems().forEach(filepath -> {
+					M.servicesAndOwneroutPut(filepath, outputpath);
+					OutPutTabController.radioColor[ii].fire();
+					String fileyear = new File(filepath).getName().replace(".csv", "").replace("-Cell-", "");
+					for (String scenario : Paths.getScenariosList()) {
+						fileyear = fileyear.replace(scenario, "");
+					}
+					ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + "\\" + fileyear + ".PNG");
+				});
+			}
 		}
 		String newfolder = PathTools.makeDirectory(outputpath + "\\" + "Charts");
 		gridChart.getChildren().forEach(chart -> {
@@ -125,6 +179,15 @@ public class OutPuterController {
 
 		if (outputpath.length() > 0) {
 			newOutPut(yearChoice.getValue()/* Paths.getCurrentYear() + "" */);
+		}
+	}
+
+	@FXML
+	public void sankeyPlot() {
+		if (outputpath.length() > 0) {
+			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(Paths.getStartYear(),Paths.getEndtYear());
+			SankeyPlotGraph.AFtsToSankeyPlot(h, 0);
+			sankeyPlotWindow.creatwindows("Sankey Plot", new StackPane(SankeyPlotGraph.sankey));
 		}
 	}
 
@@ -158,11 +221,9 @@ public class OutPuterController {
 					ha.put(name, tmp);
 				}
 			});
-		
 
 			has.add(ha);
-			LineChart<Number, Number> chart = new LineChart<>(
-					new NumberAxis(), new NumberAxis());
+			LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(), new NumberAxis());
 			chart.setTitle(servicename);
 			lineChart.add(chart);
 		});
@@ -176,12 +237,13 @@ public class OutPuterController {
 		for (int i = 0; i < has.size(); i++) {
 
 			LineChart<Number, Number> Ch = lineChart.get(i);
-			
+
 			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, has.get(i));
-			
+
 			// this for coloring the Chart by the AFTs color after the creation of the chart
 			if (i == has.size() - 1) {
-				coloringCartByAFts(Ch);			}
+				coloringCartByAFts(Ch);
+			}
 			gridPane.add(Tools.vBox(Ch), j++, k);
 			MousePressed.mouseControle((Pane) Ch.getParent(), Ch);
 			if (j % 3 == 0) {
@@ -189,20 +251,16 @@ public class OutPuterController {
 				j = 0;
 			}
 
-			//////
 			String ItemName = "Save as CSV";
 			Consumer<String> action = x -> {
 				SaveAs.exportLineChartDataToCSV(Ch);
 			};
 			HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
 			othersMenuItems.put(ItemName, action);
-			
 			MousePressed.mouseControle((Pane) Ch.getParent(), Ch, othersMenuItems);
-			//////
-			
 		}
 	}
-	
+
 	void coloringCartByAFts(LineChart<Number, Number> Ch) {
 		Ch.setCreateSymbols(false);
 		for (int k2 = 0; k2 < Ch.getData().size(); k2++) {
@@ -211,9 +269,8 @@ public class OutPuterController {
 					.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
 		}
 
-		new LineChartTools().labelcolor(M, Ch);
+		LineChartTools.labelcolor(M, Ch);
 	}
-	
 
 	HashMap<String, ArrayList<Double>> updatComposition(String path, String nameFile) {
 		try {
