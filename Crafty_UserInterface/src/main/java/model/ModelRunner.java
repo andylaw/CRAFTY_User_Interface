@@ -202,9 +202,7 @@ public class ModelRunner implements Runnable {
 
 	void takeOverUnmanageCells() {
 		CellsLoader.getUnmanageCells().parallelStream().forEach(c -> {
-			if (c.getOwner() == null) {
-				c.owner = c.mostCompetitiveAgent();
-			}
+			c.competition();
 			CellsLoader.getUnmanageCells().remove(c);
 		});
 	}

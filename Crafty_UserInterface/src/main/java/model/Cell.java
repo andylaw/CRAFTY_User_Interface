@@ -84,7 +84,6 @@ public class Cell extends AbstractCell {
 	}
 
 	private void Competition(Manager competitor) {
-		// if this land is protected then check if the compeititvenese should happend.
 		if (competitor == null) {
 			return;
 		}
@@ -103,8 +102,6 @@ public class Cell extends AbstractCell {
 
 			if (owner == null) {
 				if (uC > 0)
-					// here should uC> average(competitor utility).
-
 					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 			} else {
 				double nbr = ModelRunner.distributionMean != null
@@ -112,16 +109,10 @@ public class Cell extends AbstractCell {
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
 				if ((uC - uO) > nbr) {
-
 					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 				}
-
 			}
 		}
-	}
-
-	Manager mostCompetitiveAgent() {
-		return mostCompetitiveAgent(AFTsLoader.getActivateAFTsHash().values());
 	}
 
 	Manager mostCompetitiveAgent(Collection<Manager> setAfts) {
@@ -146,7 +137,7 @@ public class Cell extends AbstractCell {
 				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.NeighborRaduis)
 				: AFTsLoader.getActivateAFTsHash().values();
 
-		if (Math.random()<ModelRunner.MostCompetitorAFTProbability) {
+		if (Math.random() < ModelRunner.MostCompetitorAFTProbability) {
 			Competition(mostCompetitiveAgent(afts));
 		} else {
 			Competition(AFTsLoader.getRandomAFT(afts));

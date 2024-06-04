@@ -8,7 +8,6 @@ import UtilitiesFx.graphicalTools.Tools;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.RadioButton;
 
 public class RunCofigController {
 	@FXML

@@ -69,10 +69,10 @@ public class OutPuterController {
 		HashMap<String, ArrayList<String>> lastYearFile = new HashMap<>();
 
 		for (String str : PathTools.findAllFiles(outputpath)) {
-			if (str.contains(startYear + "")) {
+			if (str.contains(startYear + "") && str.contains(".csv")) {
 				startYearFile = ReaderFile.ReadAsaHash(str);
 			}
-			if (str.contains(lastYear + "")) {
+			if (str.contains(lastYear + "") && str.contains(".csv")) {
 				lastYearFile = ReaderFile.ReadAsaHash(str);
 			}
 		}
@@ -99,10 +99,13 @@ public class OutPuterController {
 		AFTsLoader.getActivateAFTsHash().keySet().forEach(label -> {
 			HashMap<Manager, Integer> h1 = new HashMap<>();
 			h.forEach((k, v) -> {
-				if (k.split(",")[0].equals(label)) {
-					Manager reciver = AFTsLoader.getActivateAFTsHash().get(k.split(",")[1]);
-					if (reciver != null)
-						h1.put(reciver, v);
+				String[] vect = k.split(",");
+				if (vect.length == 2) {
+					if (vect[0].equals(label)) {
+						Manager reciver = AFTsLoader.getActivateAFTsHash().get(vect[1]);
+						if (reciver != null)
+							h1.put(reciver, v);
+					}
 				}
 			});
 			hash.put(AFTsLoader.getActivateAFTsHash().get(label), h1);
@@ -185,7 +188,8 @@ public class OutPuterController {
 	@FXML
 	public void sankeyPlot() {
 		if (outputpath.length() > 0) {
-			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(Paths.getStartYear(),Paths.getEndtYear());
+			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(Paths.getStartYear(),
+					Paths.getEndtYear());
 			SankeyPlotGraph.AFtsToSankeyPlot(h, 0);
 			sankeyPlotWindow.creatwindows("Sankey Plot", new StackPane(SankeyPlotGraph.sankey));
 		}
