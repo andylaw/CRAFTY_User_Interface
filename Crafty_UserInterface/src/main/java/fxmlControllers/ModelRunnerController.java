@@ -320,12 +320,13 @@ public class ModelRunnerController {
 				 "Randomly select an AFT for land competition Percentage: "+ (100-ModelRunner.MostCompetitorAFTProbability*100 )+"%";
 		
 		String neighbour = ModelRunner.NeighboorEffect
-				? "   with probabilty " + (ModelRunner.probabilityOfNeighbor * 100) + "%" 
+				? "   with probabilty " + (ModelRunner.probabilityOfNeighbor * 100) + "% " 
 						+ "Neighborhood radius: " + ModelRunner.NeighborRaduis + "\n"
 				: "";
 
 		String cofiguration = "Remove negative marginal utility values:   " + ModelRunner.removeNegative + "\n"
 				+ "Land abondenmant (Give-up mechanism):  " + ModelRunner.usegiveUp + "\n"
+				+ "Land abondenmant percentage: "+(ModelRunner.percentageOfGiveUp*100 )+ "\n"
 				+ "Averaged Per Cell Residual Demand: " + ModelRunner.isAveragedPerCellResidualDemand + "\n"
 				+ "Considering mutation:  " + ModelRunner.isMutated + "\n" + competitionType + "\n"
 				+ "Priority given to neighbouring AFTs for land competition: |" + ModelRunner.NeighboorEffect + "| \n"

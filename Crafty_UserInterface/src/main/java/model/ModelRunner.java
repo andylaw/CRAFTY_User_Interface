@@ -142,6 +142,7 @@ public class ModelRunner implements Runnable {
 //		});
 		// upDateMask if needed
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
+		
 		LOGGER.info("taking over unmanage cell...");
 
 		if (usegiveUp) {
@@ -202,8 +203,8 @@ public class ModelRunner implements Runnable {
 
 	void takeOverUnmanageCells() {
 		CellsLoader.getUnmanageCells().parallelStream().forEach(c -> {
-			c.competition();
-			CellsLoader.getUnmanageCells().remove(c);
+				c.competition();
+				CellsLoader.getUnmanageCells().remove(c);	
 		});
 	}
 

@@ -31,12 +31,12 @@ public class MasksPaneController {
 	@FXML
 	ScrollPane scroll;
 	public static MaskRestrictionDataLoader Maskloader = new MaskRestrictionDataLoader();
-	 ArrayList<CheckBox> radioListOfMasks = new ArrayList<>();
+	static ArrayList<CheckBox> radioListOfMasks = new ArrayList<>();
 	// cell.getMaskTyp->hash(owner_competitor-> true or false)
 	public static HashMap<String, HashMap<String, Boolean>> restrictions = new HashMap<>();
 	CircularPlot[] circularPlot;
-	
-	
+	private static boolean iscolored = false;
+
 	private static MasksPaneController instance;
 
 	public MasksPaneController() {
@@ -60,7 +60,7 @@ public class MasksPaneController {
 		circularPlot = new CircularPlot[radioListOfMasks.size()];
 		TitledPane[] T = new TitledPane[radioListOfMasks.size()];
 		radioListOfMasks.forEach(r -> {
-			r.setOnAction(e -> {
+			r.setOnAction(e -> { 
 				int i = radioListOfMasks.indexOf(r);
 				if (r.isSelected()) {
 					List<String> listOfyears = filePathToYear(r.getText());
@@ -112,14 +112,12 @@ public class MasksPaneController {
 					boxMaskTypes.getChildren().removeAll(T[i]);
 
 				}
-				CellsSet.colorMap("Mask");
-				// System.out.println(restrictions.keySet());
+				if (iscolored)
+					CellsSet.colorMap("Mask");
 			});
-
 		});
-		
 		initialiseMask();
-		CellsSet.colorMap("FR");
+		
 	}
 
 	private List<String> filePathToYear(String maskType) {
@@ -144,16 +142,17 @@ public class MasksPaneController {
 			r.fireEvent(event);
 		});
 	}
-	
 
-
-	void initialiseMask() {
+	static void initialiseMask() {
+		iscolored=false;
 		radioListOfMasks.forEach(r -> {
 			r.setSelected(true);
 			r.fireEvent(new ActionEvent());
 		});
+		iscolored=true;
+		CellsSet.colorMap("FR");
 	}
-	
+
 	private ArrayList<PlotItem> initPlotItem() {
 		ArrayList<PlotItem> itemsList = new ArrayList<>();
 		TabPaneController.M.AFtsSet.forEach(a -> {

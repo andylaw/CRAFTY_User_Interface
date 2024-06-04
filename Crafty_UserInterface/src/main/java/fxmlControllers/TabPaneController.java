@@ -67,6 +67,7 @@ public class TabPaneController {
 	@FXML
 	public void scenarioschoice() {
 		if (isNotInitialsation) {
+			M.loadMap();
 			Paths.setScenario(scenarioschoice.getValue());
 			DemandModel.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
@@ -75,6 +76,7 @@ public class TabPaneController {
 			M.AFtsSet.updateAFTs();
 			MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
 			MasksPaneController.getInstance().clear(new ActionEvent());
+			MasksPaneController.initialiseMask();
 		}
 	}
 

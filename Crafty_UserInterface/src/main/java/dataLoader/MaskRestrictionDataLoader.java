@@ -101,6 +101,9 @@ public class MaskRestrictionDataLoader {
 		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 			if (c.getMaskType() != null && c.getMaskType().equals(maskType)) {
 				c.setMaskType(null);
+				if (c.getOwner() != null && maskType.contains(c.getOwner().getLabel())) {
+					c.setOwner(null);
+				}
 			}
 		});
 	}
