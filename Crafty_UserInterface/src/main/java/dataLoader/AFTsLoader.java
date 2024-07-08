@@ -19,6 +19,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.scene.paint.Color;
 import model.Manager;
+import model.Cell;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
 
@@ -207,6 +208,16 @@ public class AFTsLoader extends HashSet<Manager> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 		});
+	}
+	
+	public static ConcurrentHashMap<String, Integer> hashAgentNbr(ConcurrentHashMap<String, Cell> hash) {
+		LOGGER.info("Calculating the number of agents for each type");
+		ConcurrentHashMap<String, Integer> hashAgentNbr=new ConcurrentHashMap<>();
+		hash.values().forEach(c -> {
+			if (c.getOwner() != null)
+				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
+		});
+		return hashAgentNbr;
 	}
 
 	public static ConcurrentHashMap<String, Manager> getAftHash() {

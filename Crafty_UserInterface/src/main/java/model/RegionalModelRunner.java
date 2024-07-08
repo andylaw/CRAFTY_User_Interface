@@ -1,19 +1,10 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.analysis.Tracker;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
@@ -30,8 +21,8 @@ import fxmlControllers.ModelRunnerController;
  *
  */
 
-public class ModelRunner {
-	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
+public class RegionalModelRunner {
+	private static final Logger LOGGER = LogManager.getLogger(RegionalModelRunner.class);
 	public CellsLoader cells;
 	public String colorDisplay = "FR";
 	public static boolean mapSynchronisation = true;
@@ -54,11 +45,14 @@ public class ModelRunner {
 	public ConcurrentHashMap<String, Double> totalSupply;
 	static ConcurrentHashMap<String, Double> marginal = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<String, Double> distributionMean;
-
 	public String[][] compositionAFT;
 	public String[][] servicedemand;
+	
+	ConcurrentHashMap<String, Cell> hashRegionCell = new ConcurrentHashMap<>();
 
-	public ModelRunner(CellsLoader cells) {
+	
+
+	public RegionalModelRunner(CellsLoader cells, String regionName) {
 		this.cells = cells;
 		compositionAFT = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][cells.AFtsSet.size()];
 		servicedemand = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][CellsSet.getServicesNames().size()
@@ -71,42 +65,42 @@ public class ModelRunner {
 		for (String label : AFTsLoader.getAftHash().keySet()) {
 			compositionAFT[0][i++] = label;
 		}
-
+//		hashRegionCell=	ModelRunner.regions.get(regionName);
+//		System.out.println(hashRegionCell.size());
 	}
 
 	void calculeSystemSupply() {
 
 		LOGGER.info("Total Supply calculation");
 		totalSupply = new ConcurrentHashMap<>();
-		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-			c.currentProductivity.forEach((s, v) -> {
-				totalSupply.merge(s, v, Double::sum);
-			});
+		hashRegionCell.values().parallelStream().forEach(c -> {
+//			c.getCurrentProductivity().forEach((s, v) -> {
+//				totalSupply.merge(s, v, Double::sum);
+//			});
 		});
-
 		LOGGER.info("Total Supply = " + totalSupply);
 	}
 
+
 	void productivityForAll() {
 		LOGGER.info("Productivity calculation for all cells ");
-		CellsLoader.hashCell.values().parallelStream().forEach(Cell::getCurrentProductivity);
+		hashRegionCell.values().parallelStream().forEach(Cell::getCurrentProductivity);
 	}
 
 	void calculeDistributionMean() {
 		distributionMean = new ConcurrentHashMap<>();
-		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+		hashRegionCell.values().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
 				distributionMean.merge(c.getOwner().getLabel(), c.utility(), Double::sum);
 			}
 		});
-
 		// Calculate the mean distribution
 		distributionMean.forEach((aftName, total) -> {
-			distributionMean.put(aftName, total / AFTsLoader.hashAgentNbr.get(aftName));
+			distributionMean.put(aftName, total / AFTsLoader.hashAgentNbr.get(aftName));//++
 		});
 	}
 
-	void calculeMarginal(int year, boolean removeNegative) {
+	void calculeMarginal(int year) {
 
 		totalSupply.forEach((serviceName, serviceVal) -> {
 			double demand = DemandModel.getDemand(serviceName, year);
@@ -121,52 +115,35 @@ public class ModelRunner {
 
 	public void go() {
 		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
-
 		LOGGER.info("Cells.updateCapitals");
 		cells.updateCapitals(year);
+		productivityForAll();
 
-		// calcule supply
-		// productivityForAll();
-		long staetTime = System.currentTimeMillis();
-		main();
-		LOGGER.trace("Time taken to calculate supply for all cells " + (System.currentTimeMillis() - staetTime) + "ms");
 		calculeSystemSupply();
-		
-		if (writeCsvFiles) {
-			outPutservicedemandToCsv(year);
-			Tracker.trackSupply(year);
-		}
-
-		// update demande & calcule marginal
+		outPutservicedemandToCsv(year);
 		LOGGER.info("Marginal Utility Supply calculation");
-		calculeMarginal(year, removeNegative);
-
+		calculeMarginal(year);
 		LOGGER.info("Calculating Distribution Mean");
-		long staetTime2 = System.currentTimeMillis();
 		calculeDistributionMean();
-		LOGGER.trace("Time taken to calculeDistributionMean " + (System.currentTimeMillis() - staetTime2) + "ms");
-//		totalSupply.forEach((serviceName, serviceVal) -> {
-//			System.out.println("demandFiles(\""+serviceName+"\","+(DemandModel.getDemand(serviceName, year)/serviceVal)+");");
-//		});
-		// upDateMask if needed
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
-
 		LOGGER.info("taking over unmanage cell...");
 
-		if (usegiveUp) {
-			ConcurrentHashMap<String, Cell> randomCellsubSetForGiveUp = CellsSet.getRandomSubset(CellsLoader.hashCell,
-					percentageOfGiveUp);
-			if (randomCellsubSetForGiveUp != null) {
-				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
-					c.giveUp();
-				});
-			}
-		}
-		// take over unmanage cells
+//		if (usegiveUp) {
+//			ConcurrentHashMap<String, Cell> randomCellsubSetForGiveUp = CellsSet.getRandomSubset(hashRegionCell,
+//					percentageOfGiveUp);
+//			if (randomCellsubSetForGiveUp != null) {
+//				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
+//					c.giveUp();
+//				});
+//			}
+//		}
+
+		LOGGER.info("Take over unmanage cells");
 		takeOverUnmanageCells();
 		LOGGER.info("Launching the competition process...");
+
 		// Randomly select % of the land available for competition
-		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(CellsLoader.hashCell,
+		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(hashRegionCell,
 				percentageCells);
 		if (randomCellsubSet != null) {
 			List<ConcurrentHashMap<String, Cell>> subsubsets = CellsSet.splitIntoSubsets(randomCellsubSet, nbrOfSubSet);
@@ -178,9 +155,9 @@ public class ModelRunner {
 					subsubset.values().parallelStream().forEach(c -> {
 						c.getServices()
 								.forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
-						if (usegiveUp) {
-							c.giveUp();
-						}
+//						if (usegiveUp) {
+//							c.giveUp();
+//						}
 						c.competition();
 						c.getCurrentProductivity();
 						c.getServices()
@@ -189,7 +166,7 @@ public class ModelRunner {
 				}
 				servicesBeforeCompetition.forEach((key, value) -> totalSupply.merge(key, -value, Double::sum));
 				servicesAfterCompetition.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
-				calculeMarginal(year, removeNegative);
+				calculeMarginal(year);
 			});
 		} else {
 			LOGGER.error("Faild to select a random subset of cells");
@@ -200,13 +177,13 @@ public class ModelRunner {
 				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
 			CellsSet.colorMap(colorDisplay);
 		}
+		AFTsLoader.hashAgentNbr();
 
 		if (writeCsvFiles) {
 			compositionAFT(year);
 			writOutPutMap(year);
-			
 		}
-		AFTsLoader.hashAgentNbr();
+
 	}
 
 	void takeOverUnmanageCells() {
@@ -244,39 +221,4 @@ public class ModelRunner {
 		}
 	}
 
-	public static void main() {
-		LOGGER.info("Productivity calculation for all cells ");
-		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		List<Map<String, Cell>> partitions = partitionMap(CellsLoader.hashCell, 10); // Partition into 10 sub-maps
-		try {
-			for (Map<String, Cell> subMap : partitions) {
-				executor.submit(() -> subMap.values().parallelStream().forEach(Cell::getCurrentProductivity));
-			}
-		} finally {
-			executor.shutdown();
-			try {
-				executor.awaitTermination(10, TimeUnit.MINUTES);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} // Wait for all tasks to complete
-		}
-	}
-
-	private static List<Map<String, Cell>> partitionMap(Map<String, Cell> originalMap, int numberOfPartitions) {
-		List<Map<String, Cell>> partitions = new ArrayList<>();
-		int size = originalMap.size() / numberOfPartitions;
-		Iterator<Map.Entry<String, Cell>> iterator = originalMap.entrySet().iterator();
-		for (int i = 0; i < numberOfPartitions; i++) {
-			Map<String, Cell> part = new HashMap<>();
-			for (int j = 0; j < size && iterator.hasNext(); j++) {
-				Map.Entry<String, Cell> entry = iterator.next();
-				part.put(entry.getKey(), entry.getValue());
-			}
-			partitions.add(part);
-		}
-		return partitions;
-	}
-
 }
-

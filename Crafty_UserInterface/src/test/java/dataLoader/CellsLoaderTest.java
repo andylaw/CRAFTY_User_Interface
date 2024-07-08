@@ -1,13 +1,14 @@
 package dataLoader;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import UtilitiesFx.filesTools.CsvTools;
+import UtilitiesFx.graphicalTools.Tools;
 import model.Cell;
 import model.CellsSet;
 
@@ -17,14 +18,14 @@ public class CellsLoaderTest {
 	public CellsLoader M = new CellsLoader();
 	Cell c = mock(Cell.class);
 
-	@BeforeEach
+//	@BeforeEach
 	public void setUp() throws Exception {
 		Paths.initialisation("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv");
 		M.loadCapitalsAndServiceList();
 		afTets.setUp();
 		M.loadMap();
 		CellsSet.setCellsSet(M);
-		
+
 	}
 
 //	@Test
@@ -50,10 +51,30 @@ public class CellsLoaderTest {
 //		
 //	}
 
+	double[] sumCSVboxs(String path, int firstYear, int lastYear) {
+		double[] SUM = new double[lastYear - firstYear];
+		for (int k = 0; k < SUM.length; k++) {
+			String[][] svct = CsvTools.csvReader(path + (firstYear + k) + ".csv");
+			double sum = 0;
+			for (int i = 0; i < svct.length; i++) {
+				for (int j = 0; j < svct[0].length; j++) {
+					sum = sum + Tools.sToD(svct[i][j]);
+				}
+			}
+			SUM[k] = sum;
+		}
+		return SUM;
+	}
+
 	@Test
 	void test() {
 		// afTets.test();
 		// fail("Not yet implemented");
+		double[] sum = sumCSVboxs(
+				"C:\\Users\\byari-m\\Desktop\\CRAFTY-Cobra-Code-compareson\\data_for_UI\\worlds\\capitals\\RCP4_5-SSP5\\",
+				2020, 2030);
+		System.out.println(Arrays.toString(sum));
+
 	}
 
 }

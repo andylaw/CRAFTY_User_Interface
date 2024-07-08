@@ -62,6 +62,8 @@ public class TabPaneController {
 //          }
 //      });
 //		 GraphicConsol.start(consoleArea);
+		
+		
 	}
 
 	@FXML

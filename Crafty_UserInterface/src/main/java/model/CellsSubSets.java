@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import controllers.NewRegion_Controller;
-import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import javafx.scene.paint.Color;
 

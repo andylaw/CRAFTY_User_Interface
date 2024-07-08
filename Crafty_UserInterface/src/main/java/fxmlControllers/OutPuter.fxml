@@ -10,53 +10,71 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import javafx.scene.control.Tooltip?>
-
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
 <VBox xmlns="http://javafx.com/javafx/21"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="fxmlControllers.OutPuterController">
 	<children>
-		<VBox spacing="15.0">
+		<VBox spacing="5.0">
 			<children>
-				<HBox spacing="15.0">
-					<children>
-						<Button fx:id="selectoutPut" onAction="#selectoutPut"
-							mnemonicParsing="false" text="Select outPut Folder"
-							styleClass="button-icon">
+				<ChoiceBox fx:id="yearChoice" onAction="#yearChoice" />
+				<TabPane minHeight="0.0" minWidth="0.0">
+					<tabs>
+						<Tab text="Supply and Demand Evolution "
+							style="-fx-background-color: #bddee9;">
 							<graphic>
-								<FontIcon iconLiteral="far-folder-open" iconSize="15" />
+								<FontIcon iconLiteral="fas-chart-pie" iconSize="15" />
 							</graphic>
 							<tooltip>
-								<Tooltip text="Select Existing Model Result" />
+								<Tooltip text="Supply and Demand Evolution" />
 							</tooltip>
-						</Button>
-						<ChoiceBox fx:id="yearChoice" onAction="#yearChoice" />
-					</children>
-					<Button onAction="#sankeyPlot" mnemonicParsing="false" text="Create Sankey Diagram"
-						styleClass="button-icon">
-						<graphic>
-							<FontIcon iconLiteral="fas-project-diagram"
-								iconSize="15" />
-						</graphic>
-						<tooltip>
-							<Tooltip text="Select Existing Model Result" />
-						</tooltip>
-					</Button>
-					<Button fx:id="saveAllFilAsPNG"
-						onAction="#saveAllFilAsPNGAction" mnemonicParsing="false"
-						text="Capture a set of snapshots for all maps and nodes, each saved as a PNG image"
-						styleClass="button-icon">
-						<graphic>
-							<FontIcon iconLiteral="far-save" iconSize="15" />
-						</graphic>
-						<tooltip>
-							<Tooltip text="Select Existing Model Result" />
-						</tooltip>
-					</Button>
-				</HBox>
-				<ScrollPane fx:id="scroll" prefHeight="700.0"
-					prefWidth="700.0">
-					<GridPane fx:id="gridChart" />
-				</ScrollPane>
+							<content>
+								<ScrollPane fx:id="scroll" prefHeight="700.0"
+									prefWidth="700.0">
+									<GridPane fx:id="gridChart" />
+								</ScrollPane>
+							</content>
+						</Tab>
+						<Tab text="Results analysis"
+							style="-fx-background-color: #bddee9;">
+							<graphic>
+								<FontIcon iconLiteral="fas-chart-line" iconSize="15" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="Results analysis" />
+							</tooltip>
+							<content>
+								<VBox spacing="5.0">
+									<HBox spacing="15.0">
+										<Label text="generate a Sankey graph"
+											style="-fx-text-fill: blue;" />
+										<ChoiceBox fx:id="sankeyBox" onAction="#sankeyPlot">
+											<tooltip>
+												<Tooltip
+													text="Create a sankyPlot corresponding to the current year file  and the selected file" />
+											</tooltip>
+										</ChoiceBox>
+										<Button fx:id="saveAllFilAsPNG"
+											onAction="#saveAllFilAsPNGAction" mnemonicParsing="false"
+											text="Snapshots maps and charts as a PNG"
+											styleClass="button-icon">
+											<graphic>
+												<FontIcon iconLiteral="far-save" iconSize="15" />
+											</graphic>
+											<tooltip>
+												<Tooltip text="Select Existing Model Result" />
+											</tooltip>
+										</Button>
+									</HBox>
+									<VBox fx:id="borderPane" />
+								</VBox>
+							</content>
+						</Tab>
+					</tabs>
+				</TabPane>
 			</children>
 		</VBox>
 	</children>

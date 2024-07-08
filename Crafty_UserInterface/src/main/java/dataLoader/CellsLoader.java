@@ -72,24 +72,23 @@ public class CellsLoader {
 			String path = PathTools.fileFilter(true, "\\GIS\\").get(0);
 			Table T = Table.read().csv(path);
 			GISRegionsNames = T.columnNames();
-			String x = T.column("x") != null ? "x" : "X";
-			String y = T.column("y") != null ? "y" : "Y";
-
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
-				String coor = T.column(x).get(i) + "," + T.column(y).get(i);
+				String coor = T.column("X").get(i) + "," + T.column("Y").get(i);
 				int ii = i;
 				if (hashCell.get(coor) != null) {
 					GISRegionsNames.forEach(name -> {
-						if (T.column(name).get(ii) != null)
+						if (T.column(name).get(ii) != null && name.contains("Region_Code"))
 							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
 					});
 				}
 			}
+			hashCell.values().forEach(c->{
+				c.setCurrentRegion(c.getGisNameValue().values().iterator().next());
+			});
 		} catch (NullPointerException e) {
 			LOGGER.warn(
 					"The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
 		}
-
 	}
 
 	public void updateCapitals(int year) {
@@ -103,7 +102,8 @@ public class CellsLoader {
 
 	public void servicesAndOwneroutPut(String year, String outputpath) {
 		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
-		String path = PathTools.fileFilter(year).get(0);
+		String path = PathTools.fileFilter(year,".csv").get(0);
+		
 		ReaderFile.processCSV(this, path, "Services");
 	}
 

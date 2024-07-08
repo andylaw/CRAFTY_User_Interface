@@ -3,8 +3,13 @@ package fxmlControllers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
@@ -14,86 +19,82 @@ import UtilitiesFx.graphicalTools.ImageExporter;
 import UtilitiesFx.graphicalTools.ImagesToPDF;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
-import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.SankeyPlotGraph;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
-
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import model.CellsSet;
 import model.Manager;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 public class OutPuterController {
 	CellsLoader M;
 
 	@FXML
-	private Button selectoutPut;
-	@FXML
 	private Button saveAllFilAsPNG;
 	@FXML
 	private ChoiceBox<String> yearChoice;
+	@FXML
+	private ChoiceBox<String> sankeyBox;
 	@FXML
 	private GridPane gridChart;
 	@FXML
 	private ScrollPane scroll;
 	@FXML
 	private Button selecserivce;
-
+	@FXML
+	private VBox borderPane;
 	String outputpath = "";
 
-	NewWindow sankeyPlotWindow;
+	ArrayList<CheckBox> radioListOfAFTs = new ArrayList<>();
+	private static final Logger LOGGER = LogManager.getLogger(OutPuterController.class);
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
-		yearChoice.setValue(Paths.getCurrentYear() + "");
+		selectoutPut();
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 		gridChart.prefWidthProperty().bind(scroll.widthProperty());
-		sankeyPlotWindow = new NewWindow();
 	}
 
-	HashMap<Manager, HashMap<Manager, Integer>> stateToHashSankey(int startYear, int lastYear) {
-		HashMap<String, ArrayList<String>> startYearFile = new HashMap<>();
-		HashMap<String, ArrayList<String>> lastYearFile = new HashMap<>();
+	HashMap<Manager, HashMap<Manager, Integer>> stateToHashSankey(String lastYear) {
 
-		for (String str : PathTools.findAllFiles(outputpath)) {
-			if (str.contains(startYear + "") && str.contains(".csv")) {
-				startYearFile = ReaderFile.ReadAsaHash(str);
-			}
-			if (str.contains(lastYear + "") && str.contains(".csv")) {
-				lastYearFile = ReaderFile.ReadAsaHash(str);
-			}
-		}
+		HashMap<String, String> copyfirstYearHash = new HashMap<>();
+		CellsLoader.hashCell.forEach((coor, c) -> {
+			if (c.getOwner() != null)
+				copyfirstYearHash.put(coor, c.getOwner().getLabel());
+		});
+		// Find file in the correct folder and update hashCell
 
-		HashMap<String, String> startCellToOwner = new HashMap<>();
-		HashMap<String, String> lastCellToOwner = new HashMap<>();
-
-		for (int i = 0; i < startYearFile.values().iterator().next().size(); i++) {
-			startCellToOwner.put(startYearFile.get("X").get(i) + "," + startYearFile.get("Y").get(i),
-					startYearFile.get("Agent").get(i));
-		}
-		for (int i = 0; i < lastYearFile.values().iterator().next().size(); i++) {
-			lastCellToOwner.put(lastYearFile.get("X").get(i) + "," + lastYearFile.get("Y").get(i),
-					lastYearFile.get("Agent").get(i));
-		}
+		yearChoice.getItems().stream().filter(str -> str.contains(lastYear)).findFirst().ifPresent(this::newOutPut);
 
 		HashMap<String, Integer> h = new HashMap<>();
-
-		lastCellToOwner.forEach((coor, label) -> {
-			h.merge(startCellToOwner.get(coor) + "," + label, 1, Integer::sum);
+		copyfirstYearHash.forEach((coor, label) -> {
+			Manager owner = CellsLoader.hashCell.get(coor).getOwner();
+			if (owner != null) {
+				h.merge(label + "," + owner.getLabel(), 1, Integer::sum);
+			}
 		});
+
+		copyfirstYearHash.clear();
 		HashMap<Manager, HashMap<Manager, Integer>> hash = new HashMap<>();
 
 		AFTsLoader.getActivateAFTsHash().keySet().forEach(label -> {
@@ -110,15 +111,11 @@ public class OutPuterController {
 			});
 			hash.put(AFTsLoader.getActivateAFTsHash().get(label), h1);
 		});
-
 		return hash;
-
 	}
 
-	@FXML
 	public void selectoutPut() {
 		File selectedDirectory = PathTools.selectFolder(Paths.getProjectPath() + "\\output");
-
 		if (selectedDirectory != null) {
 			outputpath = selectedDirectory.getAbsolutePath();
 
@@ -128,14 +125,13 @@ public class OutPuterController {
 				String tmp = new File(file.getParent()).getName() + "\\" + file.getName();
 
 				if (tmp.contains("-Cell-"))
-					yearList.add(tmp/*
-									 * .replace(".csv", "").replace("-Cell-", "").replace(Paths.getScenario(), "")
-									 */);
+					yearList.add(tmp);
 			});
-			System.out.println("yearList---> " + yearList);
+			LOGGER.info("output files List---> " + yearList);
 			yearChoice.getItems().addAll(yearList);
 			yearChoice.setValue(yearList.get(0));
-			System.out.println("yearList---> " + yearChoice.getValue());
+			sankeyBox.getItems().addAll(yearList);
+			sankeyBox.setValue(yearList.get(yearList.size() - 1));
 			OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
 			newOutPut(yearChoice.getValue());
 			Graphs(gridChart);
@@ -178,21 +174,50 @@ public class OutPuterController {
 
 	@FXML
 	public void yearChoice() {
-		// Paths.setCurrentYear((int) Tools.sToD(yearChoice.getValue()));
-
 		if (outputpath.length() > 0) {
-			newOutPut(yearChoice.getValue()/* Paths.getCurrentYear() + "" */);
+			newOutPut(yearChoice.getValue());
 		}
 	}
 
 	@FXML
 	public void sankeyPlot() {
 		if (outputpath.length() > 0) {
-			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(Paths.getStartYear(),
-					Paths.getEndtYear());
-			SankeyPlotGraph.AFtsToSankeyPlot(h, 0);
-			sankeyPlotWindow.creatwindows("Sankey Plot", new StackPane(SankeyPlotGraph.sankey));
+			Text txt2 = Tools.text(new File(yearChoice.getValue()).getName(), Color.BLUE);
+			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(sankeyBox.getValue());
+			Set<Manager> setManagers = new HashSet<>();
+			VBox boxOfAftRadios = new VBox();
+			AFTsLoader.getActivateAFTsHash().keySet().forEach(n -> {
+				CheckBox radio = new CheckBox(n);
+				radioListOfAFTs.add(radio);
+				boxOfAftRadios.getChildren().add(radio);
+				radio.setSelected(true);
+				setManagers.add(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
+				radio.setOnAction(e->{
+					if(radio.isSelected()) {
+						setManagers.add(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
+					}
+					else {
+						setManagers.remove(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
+					}
+					updateSankeyPlot( txt2,boxOfAftRadios, h, setManagers);
+				});
+			});
+			
+			updateSankeyPlot( txt2,boxOfAftRadios, h, setManagers);
+
 		}
+	}
+	
+	void updateSankeyPlot(Text txt2,VBox boxOfAftRadios,HashMap<Manager, HashMap<Manager, Integer>> h, Set<Manager> setManagers) {
+		Text txt = new Text("Create a Sankey diagram for  ");
+		Text txt3 = new Text("  To  ");
+		Text txt4 = Tools.text(new File(sankeyBox.getValue()).getName(), Color.RED);
+		SankeyPlotGraph.AFtsToSankeyPlot(h, setManagers);
+		MousePressed.mouseControle(borderPane, SankeyPlotGraph.sankey);
+		borderPane.getChildren().clear();
+		borderPane.getChildren().addAll(Tools.hBox(txt, txt2, txt3, txt4),
+				Tools.hBox(boxOfAftRadios , SankeyPlotGraph.sankey));
+		SankeyPlotGraph.sankey.setPrefWidth(scroll.getPrefWidth());
 	}
 
 	void newOutPut(String year) {
@@ -203,6 +228,7 @@ public class OutPuterController {
 				OutPutTabController.radioColor[i].setSelected(true);
 			}
 		}
+		yearChoice.setValue(year);
 	}
 
 	void Graphs(GridPane gridPane) {

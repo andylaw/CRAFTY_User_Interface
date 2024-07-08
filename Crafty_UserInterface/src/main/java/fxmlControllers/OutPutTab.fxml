@@ -4,7 +4,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -29,29 +28,21 @@
 	<content>
 		<VBox spacing="15.0">
 			<children>
+			
 				<Button fx:id="selecserivce" onAction="#selecserivce"
 					text="Display a serivce" styleClass="button-icon">
 					<graphic>
 						<FontIcon iconLiteral="fas-list-ul" iconSize="15" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="Configuring model running" />
+						<Tooltip text="Display a serivce" />
 					</tooltip>
 				</Button>
+				
 				<TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE">
-					<tabs>
-						<Tab fx:id="initialOutPut" text="OutPut">
-							<graphic>
-								<FontIcon iconLiteral="fas-folder-open" iconSize="15" />
-							</graphic>
-							<tooltip>
-								<Tooltip text="Model OutPut" />
-							</tooltip>
-							<content>
-								<fx:include source="/fxmlControllers/OutPuter.fxml" /> <!-- -->
-							</content>
-						</Tab>
-						<Tab fx:id="addTab">
+					<tabs><!--  -->
+						<Tab fx:id="tmp"/>
+						<Tab fx:id="addTab" text="Import Simulation Results">
 							<graphic>
 								<FontIcon iconLiteral="fas-plus" iconSize="15" />
 							</graphic>

@@ -39,12 +39,12 @@ import main.FxMain;
 
 public class CellsSet {
 	private static final Logger LOGGER = LogManager.getLogger(CellsSet.class);
-	public static boolean isPlotedMap=false;
+	public static boolean isPlotedMap = false;
 	private static Canvas canvas;
 	private static GraphicsContext gc;
 	static PixelWriter pixelWriter;
 	static WritableImage writableImage;
-	 static int maxX, maxY;
+	static int maxX, maxY;
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
@@ -52,7 +52,7 @@ public class CellsSet {
 	private static List<String> servicesNames = Collections.synchronizedList(new ArrayList<>());
 
 	public static void plotCells() {
-		isPlotedMap=true;
+		isPlotedMap = true;
 		ArrayList<Integer> X = new ArrayList<>();
 		ArrayList<Integer> Y = new ArrayList<>();
 		CellsLoader.hashCell.values().forEach(c -> {
@@ -73,8 +73,7 @@ public class CellsSet {
 //		 canvas.getHeight());
 //		 gc.setFill(Color.color(Math.random(), Math.random( ), Math.random()));
 //		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-	//	colorMap("FR");
+//		 colorMap("FR");
 
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(canvas);
@@ -82,8 +81,9 @@ public class CellsSet {
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
 		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
 		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
-		
+
 		MapControlerBymouse();
+		
 	}
 
 	public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> cellsHash,
@@ -100,6 +100,8 @@ public class CellsSet {
 				.limit(numberOfElementsToSelect).forEach(key -> randomSubset.put(key, cellsHash.get(key)));
 		return randomSubset;
 	}
+
+
 
 	public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> cellsHash,
 			double percentage) {
@@ -145,7 +147,10 @@ public class CellsSet {
 	}
 
 	public static void colorMap() {
-		if(!isPlotedMap) {return;};
+		if (!isPlotedMap) {
+			return;
+		}
+		;
 		LOGGER.info("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
@@ -187,9 +192,7 @@ public class CellsSet {
 			});
 
 		} else if (colortype.equalsIgnoreCase("Mask")) {
-
 			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.hashMasks.keySet());
-
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getMaskType() != null) {
 					pixelWriter.setColor(c.getX(), maxY - c.getY(),
@@ -198,20 +201,15 @@ public class CellsSet {
 					pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.gray(0.75));
 				}
 			});
-
-		} else /* if (name.equals("LAD19NM") || name.equals("nuts318nm")) */ {
+		} else {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-
 				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
 			});
-
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				pixelWriter.setColor(c.getX(), maxY - c.getY(),
-						c.getColor().interpolate(colorGis.get(c.getGisNameValue().get(colortype)), 0.3));
+				pixelWriter.setColor(c.getX(), maxY - c.getY(), colorGis.get(c.getGisNameValue().get(colortype)));
 			});
-
 		}
 		gc.drawImage(writableImage, 0, 0);
 	}
@@ -234,12 +232,12 @@ public class CellsSet {
 						CellWindow localData = new CellWindow(CellsLoader.hashCell.get(cx + "," + cy));
 						Consumer<String> creatWindos = (x) -> {
 							localData.windosLocalInfo();
-							
+
 						};
 						menu.put("Access to Cell (" + cx + "," + cy + ") information", creatWindos);
 
 						menu.put("Print Info into the Console", e -> {
-						System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
+							System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
 						});
 						menu.put("Save Map as PNG", e -> {
 							SaveAs.png(canvas);
@@ -296,16 +294,8 @@ public class CellsSet {
 		return cellsSet;
 	}
 
-//	public static Set<Cell> getCells() {
-//		return cellsSet.cells;
-//	}
-
 	public static void setCellsSet(CellsLoader cellsSet) {
 		CellsSet.cellsSet = cellsSet;
-	}
-
-	public static void setRegioneselected(String regioneselected) {
-		CellsSet.regioneselected = regioneselected;
 	}
 
 	public static List<String> getCapitalsName() {

@@ -32,23 +32,33 @@ class CsvToolsTest {
 	@Test
 	void controlServiceProductivity() {
 		// t2("ssp1a26", "C3pulses", 1);
-		demandFiles("C3pulses",0.6312626400185641);
-		demandFiles("C3fruitveg",0.7031029243240946);
-		demandFiles("C3starchyroots",0.8064344251488258);
-		demandFiles("Biodiversity",1.1911344742567131);
-		demandFiles("BioenergyG2",0.9766911661761388);
-		demandFiles("SusProd",1.061803405468365);
-		demandFiles("CES",1.2140453267954205);
-		demandFiles("C4crops",0.7592241446877476);
-		demandFiles("SolarEnergy",10.000749136646759);
-		demandFiles("C3cereals",1.1154909267879662);
-		demandFiles("C3oilcrops",0.7836146862113621);
-		demandFiles("GFmeat",0.987244853937179);
+		demandFiles("C3pulses",0.7545605706742814);
+		demandFiles("FloodRegulation",1.0677543393140123);
+		demandFiles("C3fruitveg",0.7031029225165317);
+		demandFiles("Softwood",1.1536441960057078);
+		demandFiles("Hardwood",0.8374950663837557);
+		demandFiles("C3starchyroots",0.8026867101636447);
+		demandFiles("BioenergyG1",1.0013731659740428);
+		demandFiles("Biodiversity",1.2080541392569362);
+		demandFiles("BioenergyG2",1.0135783123879236);
+		demandFiles("Carbon",1.118732229221252);
+		demandFiles("SusProd",1.084645381399369);
+		demandFiles("GFmilk",0.7751260964712033);
+		demandFiles("CES",1.2251113755256033);
+		demandFiles("C4crops",0.7692765571554557);
+		demandFiles("Ldiversity",1.066253567419019);
+		demandFiles("Foddercrops",1.0183519139372335);
+		demandFiles("Recreation",1.0937051021643414);
+		demandFiles("Employment",1.0741005392195255);
+		demandFiles("SolarEnergy",10.000749113895752);
+		demandFiles("C3cereals",0.8254766751480239);
+		demandFiles("C3oilcrops",0.7831016629404571);
+		demandFiles("GFmeat",0.7487046520917289);
 	}
 
 	void demandFiles(String service, double p) {
 		System.out.println(service);
-		String path = "C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\demand\\ssp1a26_demands_DE.csv";
+		String path = "C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\demand\\ssp585_demands_DE.csv";
 		String[][] filereder = CsvTools.csvReader(path);
 		int index = Tools.indexof(service, filereder[0]);
 		for (int i = 1; i < filereder.length; i++) {

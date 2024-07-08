@@ -75,7 +75,7 @@ public class ModelRunnerController {
 	CellsLoader M;
 	public static String outPutFolderName;
 	public ModelRunner R;
-	Timeline timeline /* = new Timeline() */;
+	Timeline timeline;
 	AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
 
@@ -86,8 +86,6 @@ public class ModelRunnerController {
 //	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
-
-	NewWindow runConfiguration;
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
@@ -102,7 +100,6 @@ public class ModelRunnerController {
 
 		Collections.synchronizedList(lineChart);
 		outPutFolderName = Paths.getScenario();
-		runConfiguration = new NewWindow();
 		initilaseChart(lineChart);
 		initialzeRadioColorBox();
 
@@ -158,25 +155,10 @@ public class ModelRunnerController {
 	}
 
 	@FXML
-	public void configuration() {
-		RunCofigController.CA = this;
-		if (!runConfiguration.isShowing()) {
-			try {
-				Group g = new Group();
-				g.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/RunCofig.fxml")));
-				runConfiguration.creatwindows("Run Configuration", g);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@FXML
 	public void oneStep() {
 		System.out.println("------------------- Start of Tick  |" + tick.get() + "| -------------------");
 		Paths.setCurrentYear(tick.get());
-		R.run();
+		R.go();
 		tickTxt.setText(tick.toString());
 		if (chartSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % chartSynchronisationGap == 0
 				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
@@ -316,17 +298,19 @@ public class ModelRunnerController {
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setHeaderText("Please enter OutPut folder name and any comments");
-		String competitionType =  "Select The most competitive AFT for land competition Percentage: "+ (ModelRunner.MostCompetitorAFTProbability*100 ) +"% \n"+
-				 "Randomly select an AFT for land competition Percentage: "+ (100-ModelRunner.MostCompetitorAFTProbability*100 )+"%";
-		
+		String competitionType = "Select The most competitive AFT for land competition Percentage: "
+				+ (ModelRunner.MostCompetitorAFTProbability * 100) + "% \n"
+				+ "Randomly select an AFT for land competition Percentage: "
+				+ (100 - ModelRunner.MostCompetitorAFTProbability * 100) + "%";
+
 		String neighbour = ModelRunner.NeighboorEffect
-				? "   with probabilty " + (ModelRunner.probabilityOfNeighbor * 100) + "% " 
-						+ "Neighborhood radius: " + ModelRunner.NeighborRaduis + "\n"
+				? "   with probabilty " + (ModelRunner.probabilityOfNeighbor * 100) + "% " + "Neighborhood radius: "
+						+ ModelRunner.NeighborRaduis + "\n"
 				: "";
 
 		String cofiguration = "Remove negative marginal utility values:   " + ModelRunner.removeNegative + "\n"
 				+ "Land abondenmant (Give-up mechanism):  " + ModelRunner.usegiveUp + "\n"
-				+ "Land abondenmant percentage: "+(ModelRunner.percentageOfGiveUp*100 )+ "\n"
+				+ "Land abondenmant percentage: " + (ModelRunner.percentageOfGiveUp * 100) + "\n"
 				+ "Averaged Per Cell Residual Demand: " + ModelRunner.isAveragedPerCellResidualDemand + "\n"
 				+ "Considering mutation:  " + ModelRunner.isMutated + "\n" + competitionType + "\n"
 				+ "Priority given to neighbouring AFTs for land competition: |" + ModelRunner.NeighboorEffect + "| \n"

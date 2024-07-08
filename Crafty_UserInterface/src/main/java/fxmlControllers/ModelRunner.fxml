@@ -13,13 +13,6 @@
 	<children>
 		<HBox spacing="15.0">
 			<children>
-				<Button  mnemonicParsing="false"
-					onAction="#configuration" text="Configuration"
-					styleClass="button-icon">
-					<graphic>
-						<FontIcon iconLiteral="fas-sliders-h" iconSize="20" />
-					</graphic>
-				</Button>
 				<Button fx:id="oneStep" mnemonicParsing="false"
 					onAction="#oneStep" text="One Step" styleClass="button-icon">
 					<graphic>

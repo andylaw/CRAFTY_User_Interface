@@ -37,7 +37,7 @@ public class Cell extends AbstractCell {
 		gc.fillRect(x * Cell.size, (CellsSet.getMaxY() - y) * Cell.size, Cell.size, Cell.size);
 	}
 
-	// ----------------------------------
+	// ----------------------------------//
 
 	public double productivity(Manager a, String serviceName) {
 		if (a == null)
@@ -52,14 +52,14 @@ public class Cell extends AbstractCell {
 		if (owner == null)
 			return;
 
-		double product = 1.0;
+		double pr = 1.0;
 		for (Map.Entry<String, Double> entry : capitals.entrySet()) {
 			double value = Math.pow(entry.getValue(), owner.getSensitivity().get(entry.getKey() + "_" + serviceName));
-			product *= value;
+			pr *= value;
 		}
-		double finalProduct = product * owner.getProductivityLevel().get(serviceName);
-		currentProductivity.put(serviceName, finalProduct);
-//		currentProductivity.put(serviceName, new Random().nextDouble(5));
+		pr = pr * owner.getProductivityLevel().get(serviceName);
+
+		currentProductivity.put(serviceName, pr);
 	}
 
 	double utility(Manager a) {
@@ -145,6 +145,7 @@ public class Cell extends AbstractCell {
 	}
 
 	public void getCurrentProductivity() {
+		currentProductivity.clear();
 		CellsSet.getServicesNames().forEach(serviceName -> {
 			productivity(serviceName);
 		});
