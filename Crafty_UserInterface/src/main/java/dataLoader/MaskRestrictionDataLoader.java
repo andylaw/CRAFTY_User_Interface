@@ -64,8 +64,10 @@ public class MaskRestrictionDataLoader {
 					int ii = i;
 					csv.keySet().forEach(key -> {
 						if (key.contains("Year_") && csv.get(key).get(ii).contains("1")) {
+							if(c!=null) {
 							c.setMaskType(maskType);
 							maskToOwner(c, maskType);
+							}
 						}
 					});
 				}
