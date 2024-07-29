@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import dataLoader.AFTsLoader;
-import dataLoader.CellsLoader;
 import fxmlControllers.MasksPaneController;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -33,14 +33,16 @@ public class Cell extends AbstractCell {
 	}
 
 	public void ColorP(GraphicsContext gc, Color color) {
-		gc.setFill(color);
-		gc.fillRect(x * Cell.size, (CellsSet.getMaxY() - y) * Cell.size, Cell.size, Cell.size);
+		// gc.setFill(color);
+		// gc.fillRect(x * Cell.size, (CellsSet.getMaxY() - y) * Cell.size, Cell.size,
+		// Cell.size);
+		CellsSet.pixelWriter.setColor(getX(), /* CellsSet.getMaxY() - */getY(), color);
 	}
 
 	// ----------------------------------//
 
 	public double productivity(Manager a, String serviceName) {
-		if (a == null)
+		if (a == null || !a.isActive())
 			return 0;
 		double product = capitals.entrySet().stream()
 				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + serviceName)))
@@ -49,7 +51,7 @@ public class Cell extends AbstractCell {
 	}
 
 	public void productivity(String serviceName) {
-		if (owner == null)
+		if (owner == null || !owner.isActive())
 			return;
 
 		double pr = 1.0;
@@ -62,29 +64,34 @@ public class Cell extends AbstractCell {
 		currentProductivity.put(serviceName, pr);
 	}
 
-	double utility(Manager a) {
-		if (a == null) {
+	double utility(Manager a, ConcurrentHashMap<String, Double> marginal) {
+		if (a == null || !a.isActive()) {
 			return 0;
 		}
-		return CellsSet.getServicesNames().stream().mapToDouble(
-				sname -> ModelRunner.marginal.get(sname) * productivity(a, sname) * a.getProductivityLevel().get(sname))
+		return CellsSet.getServicesNames().stream()
+				.mapToDouble(
+						sname -> marginal.get(sname) * productivity(a, sname) * a.getProductivityLevel().get(sname))
 				.sum();
 	}
 
-	double utility() {
+	double utility(ConcurrentHashMap<String, Double> marginal) {
 		if (owner == null) {
 			return 0;
 		}
 		try {
-			return CellsSet.getServicesNames().stream().mapToDouble(sname -> ModelRunner.marginal.get(sname)
+			return CellsSet.getServicesNames().stream().mapToDouble(sname -> marginal.get(sname)
 					* currentProductivity.get(sname) * owner.getProductivityLevel().get(sname)).sum();
 		} catch (NullPointerException e) {
 			return 0;
 		}
 	}
 
-	private void Competition(Manager competitor) {
-		if (competitor == null) {
+	private void Competition(Manager competitor, ConcurrentHashMap<String, Double> marginal,
+			ConcurrentHashMap<Manager, Double> distributionMean) {
+		if (competitor == null || !competitor.isActive()) {
+			return;
+		}
+		if (owner != null && !owner.isActive()) {
 			return;
 		}
 		boolean makeCopetition = true;
@@ -96,16 +103,17 @@ public class Cell extends AbstractCell {
 				makeCopetition = mask.get(owner.getLabel() + "_" + competitor.getLabel());
 			}
 		}
+
 		if (makeCopetition) {
-			double uC = utility(competitor);
-			double uO = utility();
+			double uC = utility(competitor, marginal);
+			double uO = utility(marginal);
 
 			if (owner == null) {
 				if (uC > 0)
 					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 			} else {
-				double nbr = ModelRunner.distributionMean != null
-						? (ModelRunner.distributionMean.get(owner.getLabel())
+				double nbr = distributionMean != null
+						? (distributionMean.get(owner)
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
 				if ((uC - uO) > nbr) {
@@ -115,14 +123,14 @@ public class Cell extends AbstractCell {
 		}
 	}
 
-	Manager mostCompetitiveAgent(Collection<Manager> setAfts) {
+	Manager mostCompetitiveAgent(Collection<Manager> setAfts, ConcurrentHashMap<String, Double> marginal) {
 		if (setAfts.size() == 0) {
 			return owner;
 		}
 		double uti = 0;
 		Manager theBestAFT = setAfts.iterator().next();
 		for (Manager agent : setAfts) {
-			double u = utility(agent);
+			double u = utility(agent, marginal);
 			if (u > uti) {
 				uti = u;
 				theBestAFT = agent;
@@ -131,16 +139,16 @@ public class Cell extends AbstractCell {
 		return theBestAFT;
 	}
 
-	void competition() {
+	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean) {
 		boolean Neighboor = ModelRunner.NeighboorEffect && ModelRunner.probabilityOfNeighbor > Math.random();
 		Collection<Manager> afts = Neighboor
 				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.NeighborRaduis)
 				: AFTsLoader.getActivateAFTsHash().values();
 
 		if (Math.random() < ModelRunner.MostCompetitorAFTProbability) {
-			Competition(mostCompetitiveAgent(afts));
+			Competition(mostCompetitiveAgent(afts, marginal), marginal, distributionMean);
 		} else {
-			Competition(AFTsLoader.getRandomAFT(afts));
+			Competition(AFTsLoader.getRandomAFT(afts), marginal, distributionMean);
 		}
 	}
 
@@ -151,16 +159,18 @@ public class Cell extends AbstractCell {
 		});
 	}
 
-	void giveUp() {
-		if (owner != null) {
-			double cUtility = utility();
-			double averageutility = ModelRunner.distributionMean.get(getOwner().getLabel());
+	void giveUp(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
+			String region) {
+		if (owner != null && owner.isActive()) {
+			double cUtility = utility(marginal);
+
+			double averageutility = distributionMean.get(getOwner());
 
 			if ((cUtility < averageutility
 					* (getOwner().getGiveUpMean() + getOwner().getGiveUpSD() * new Random().nextGaussian())
 					&& getOwner().getGiveUpProbabilty() > Math.random()) /* || (cUtility < 0) */) {
 				setOwner(null);
-				CellsLoader.getUnmanageCells().add(this);
+				RegionClassifier.unmanageCellsR.get(region).add(this);
 			}
 		}
 	}

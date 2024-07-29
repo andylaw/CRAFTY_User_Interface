@@ -7,10 +7,10 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.CellsSet;
 
+import java.io.File;
 import java.io.IOException;
 
 import UtilitiesFx.graphicalTools.NewWindow;
@@ -20,7 +20,6 @@ import javafx.event.EventHandler;
 public class OutPutTabController {
 	@FXML
 	private TabPane tabpane;
-
 	@FXML
 	private Tab addTab;
 	@FXML
@@ -30,6 +29,16 @@ public class OutPutTabController {
 
 	NewWindow colorbox = new NewWindow();
 	public static RadioButton[] radioColor;
+
+	private static OutPutTabController instance;
+
+	public OutPutTabController() {
+		instance = this;
+	}
+
+	public static OutPutTabController getInstance() {
+		return instance;
+	}
 
 	public void initialize() {
 		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
@@ -63,7 +72,7 @@ public class OutPutTabController {
 			@Override
 			public void handle(Event t) {
 				if (addTab.isSelected()) {
-					createNewTab("OutPut " + (tabpane.getTabs().size() - 1));
+					createNewTab( "OutPut " + (tabpane.getTabs().size() - 1));
 				}
 			}
 		});
@@ -79,7 +88,7 @@ public class OutPutTabController {
 
 	}
 
-	private void createNewTab(String name) {
+	public void createNewTab(String name) {
 		Tab tab = new Tab(name);
 		try {
 			tab.setContent(FXMLLoader.load(getClass().getResource("/fxmlControllers/OutPuter.fxml")));
@@ -91,17 +100,18 @@ public class OutPutTabController {
 		removeTabIfIsEmpty(tab);
 	}
 
-	void removeTabIfIsEmpty(Tab tab) {
-		((VBox) ((VBox) tab.getContent()).getChildren().iterator().next()).getChildren().forEach(s -> {
-			if (s.getClass().getSimpleName().equals("HBox"))
-				((HBox) s).getChildren().forEach(n -> {
-					if (n.getId() != null && n.getId().equals("yearChoice")) {
-						if (((ChoiceBox<?>) n).getItems().size() == 0) {
-							tabpane.getTabs().remove(tabpane.getTabs().indexOf(addTab) - 1);
-						}
+	private void removeTabIfIsEmpty(Tab tab) {
+		try {
+			((VBox) ((VBox) tab.getContent()).getChildren().iterator().next()).getChildren().forEach(s -> {
+				if (s instanceof ChoiceBox) {
+					if (((ChoiceBox<?>) s).getItems().size() == 0) {
+						tabpane.getTabs().remove(tabpane.getTabs().indexOf(addTab) - 1);
 					}
-				});
-		});
+				}
+			});
+		} catch (NullPointerException e) {
+			tabpane.getTabs().remove(tabpane.getTabs().indexOf(addTab) - 1);
+		}
 	}
 
 }

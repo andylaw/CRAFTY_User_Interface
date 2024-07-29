@@ -2,13 +2,21 @@ package UtilitiesFx.graphicalTools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.control.Separator;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 public class ImageExporter {
@@ -23,10 +31,14 @@ public class ImageExporter {
 	}
 
 	public static void NodeToImage(Node node, String path) {
-//		Pane pane = (Pane) node.getParent();
-//		if (node.getParent() == null) {
-//			pane = new Pane();
-//			pane.getChildren().add(node);
+//		Pane box = null;
+//		List<Integer> findpath = null;
+//		NewWindow win = new NewWindow();
+//		if (!(node instanceof Canvas)) {
+//			box = (Pane) node.getParent();
+//			findpath = Tools.findIndexPath(node, (Pane) node.getParent());
+//			Tools.reInsertChildAtIndexPath(new Separator(), box, findpath);
+//			//win.creatwindows("", node);
 //		}
 
 		// Take a snapshot without showing the stage
@@ -39,8 +51,9 @@ public class ImageExporter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		// Normally you would call primaryStage.show() to display the UI, but it's not
-		// necessary here
+//		if (!(node instanceof Canvas)) {
+//			Tools.reInsertChildAtIndexPath(node, box, findpath);
+//			win.close();
+//		}
 	}
 }

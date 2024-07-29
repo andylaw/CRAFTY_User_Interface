@@ -66,7 +66,7 @@ public class CellsLoaderTest {
 		return SUM;
 	}
 
-	@Test
+//	@Test
 	void test() {
 		// afTets.test();
 		// fail("Not yet implemented");

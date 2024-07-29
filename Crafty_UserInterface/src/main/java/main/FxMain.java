@@ -42,10 +42,12 @@ public class FxMain extends Application {
 		imageView = Tools.logo(imageStream, w / 3, h / 3, 0.65);
 		anchor.getChildren().add(imageView);
 
-
 		primaryStage.setTitle(" CRAFTY User Interface ");
 
-		VBox vbox = new VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")), anchor);
+		//VBox vbox = new VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")), anchor);
+		VBox vbox = new VBox();
+		vbox.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")));
+		vbox.getChildren().add(anchor);
 		scene = new Scene(vbox, w * .8, h * .8);
 		scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
@@ -56,7 +58,6 @@ public class FxMain extends Application {
 	}
 
 	public static void main(String[] args) {
-
 		launch(args);
 	}
 

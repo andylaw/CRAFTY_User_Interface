@@ -129,7 +129,7 @@ public class AFTsConfigurationController {
 		sensitivtyTable.setEditable(true);
 		productivityTable.setEditable(true);
 
-		Tools.choiceBox(AFTChoisButton, new ArrayList<>(AFTsLoader.getAftHash().keySet()));
+		Tools.choiceBox(AFTChoisButton, new ArrayList<>(AFTsLoader.getActivateAFTsHash().keySet()));
 
 		sensitivtyFire.setOnAction(e2 -> {
 			updateSensitivty(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), radarChartsGridPane,
@@ -203,8 +203,9 @@ public class AFTsConfigurationController {
 	@FXML
 	public void removeBtnSetOnAction() {
 		AFTsLoader.getAftHash().remove(AFTChoisButton.getValue());
+		AFTsLoader.getActivateAFTsHash().remove(AFTChoisButton.getValue());
 		AFTChoisButton.getItems().remove(AFTChoisButton.getValue());
-		AFTChoisButton.setValue(AFTsLoader.getAftHash().keySet().iterator().next());
+		AFTChoisButton.setValue(AFTsLoader.getActivateAFTsHash().keySet().iterator().next());
 	}
 
 	@FXML

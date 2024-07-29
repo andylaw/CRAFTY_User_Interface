@@ -1,6 +1,5 @@
 package fxmlControllers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,8 +26,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -40,6 +37,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -165,11 +163,11 @@ public class ModelRunnerController {
 			AtomicInteger m = new AtomicInteger();
 			CellsSet.getServicesNames().forEach(name -> {
 				lineChart.get(m.get()).getData().get(0).getData()
-						.add(new XYChart.Data<>(tick.get(), DemandModel.getDemand(name, tick.get())));
+						.add(new XYChart.Data<>(tick.get(), DemandModel.getGolbalDemand(name, tick.get())));
 				lineChart.get(m.get()).getData().get(1).getData()
 						.add(new XYChart.Data<>(tick.get(), R.totalSupply.get(name)));
 				m.getAndIncrement();
-			});
+			 });
 			ObservableList<Series<Number, Number>> observable = lineChart.get(lineChart.size() - 1).getData();
 			List<String> listofNames = observable.stream().map(Series::getName).collect(Collectors.toList());
 			AFTsLoader.hashAgentNbr.forEach((name, value) -> {
@@ -186,19 +184,25 @@ public class ModelRunnerController {
 		run.setDisable(true);
 		simulationFolderName();
 		DemandModel.updateDemand();
+		DemandModel.updateRegionsDemand();
 		scheduleIteravitveTicks(Duration.millis(1000));
+	}
+	private void displayRunAsOutput() {
+		OutPuterController.isCurrentResult=true;
+		OutPutTabController.getInstance().createNewTab("Current simulation");
+		TabPane tab = TabPaneController.getInstance().getTabpane();
+		tab.getSelectionModel().select(tab.getTabs().size()-1);
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {
 		if (Paths.getCurrentYear() >= Paths.getEndtYear() - 1) {
 			// Stop if max iterations reached
+			displayRunAsOutput();
 			return;
 		}
 		if (ModelRunner.writeCsvFiles) {
-			CsvTools.writeCSVfile(R.compositionAFT, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-					+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(R.servicedemand, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-					+ outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
+			CsvTools.writeCSVfile(R.compositionAftListener, outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
+			CsvTools.writeCSVfile(R.servicedemandListener, outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
 		}
 		// Stop the old timeline if it's running
 		if (timeline != null) {
@@ -334,8 +338,8 @@ public class ModelRunnerController {
 			String dir = PathTools.makeDirectory(Paths.getProjectPath() + "\\output\\");
 			dir = PathTools.makeDirectory(dir + Paths.getScenario());
 			dir = PathTools.makeDirectory(dir + "\\" + outPutFolderName);
-			PathTools.writeFile(Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\" + outPutFolderName
-					+ "\\readme.txt", textArea.getText(), false);
+			outPutFolderName=dir;
+			PathTools.writeFile(outPutFolderName+ "\\readme.txt", textArea.getText(), false);
 		});
 
 		return alert;

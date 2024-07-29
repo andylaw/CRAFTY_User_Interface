@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
@@ -24,6 +25,8 @@
 							<children>
 								<HBox spacing="15.0">
 									<children>
+									<CheckBox fx:id="regionalBox" mnemonicParsing="false"
+									onAction="#regionalization" text="Regionalization" />
 										<Label text="Scenario" />
 										<ChoiceBox fx:id="scenarioschoice"
 											onAction="#scenarioschoice" />
@@ -33,6 +36,7 @@
 								</HBox>
 								<TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE">
 									<tabs>
+									<!---->
 										<Tab text="General View">
 											<graphic>
 												<FontIcon iconLiteral="fas-home" iconSize="15" />
@@ -42,9 +46,10 @@
 											</tooltip>
 											<content>
 												<fx:include
-													source="/fxmlControllers/GlobalView.fxml" /> <!---->
+													source="/fxmlControllers/GlobalView.fxml" /> 
 											</content>
 										</Tab>
+										
 										<Tab fx:id="dataPane" text="Spatial Data">
 											<graphic>
 												<FontIcon iconLiteral="fas-layer-group"

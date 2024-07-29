@@ -35,19 +35,23 @@
 		</TitledPane>
 		<TitledPane animated="true" text="AFTs Distribution">
 			<content>
-				<PieChart fx:id="pieChartColor" />
+				<VBox>
+					<PieChart fx:id="pieChartColor" />
+				</VBox>
 			</content>
 		</TitledPane>
 		<TitledPane animated="true" text="Demands">
 			<content>
-				<LineChart fx:id="demandsChart">
-					<xAxis>
-						<NumberAxis side="BOTTOM" />
-					</xAxis>
-					<yAxis>
-						<NumberAxis side="LEFT" />
-					</yAxis>
-				</LineChart>
+				<VBox>
+					<LineChart fx:id="demandsChart">
+						<xAxis>
+							<NumberAxis side="BOTTOM" />
+						</xAxis>
+						<yAxis>
+							<NumberAxis side="LEFT" />
+						</yAxis>
+					</LineChart>
+				</VBox>
 			</content>
 		</TitledPane>
 	</children>

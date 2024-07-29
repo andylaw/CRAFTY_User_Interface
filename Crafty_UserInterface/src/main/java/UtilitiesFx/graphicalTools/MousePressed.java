@@ -44,11 +44,11 @@ public class MousePressed {
 //		});
 		hashAction.put("Detach", (x) -> {
 			List<Integer> findpath = Tools.findIndexPath(node, box);
-			Tools.reinsertChildAtIndexPath(new Separator(), box, findpath);
+			Tools.reInsertChildAtIndexPath(new Separator(), box, findpath);
 			NewWindow win = new NewWindow();
 			win.creatwindows("", node);
 			win.setOnCloseRequest(event -> {
-				Tools.reinsertChildAtIndexPath(node, box, findpath);
+				Tools.reInsertChildAtIndexPath(node, box, findpath);
 			});
 		});
 		MousePressed.smartMenu(node, hashAction);

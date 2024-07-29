@@ -79,7 +79,7 @@ public class PathTools {
 
 		if (turn.size() == 0) {
 			if (ignoreIfFileNotExists) {
-				LOGGER.warn(" File ignored because there is no file in its path with these key worlds : "
+				LOGGER.warn(" File ignored because there is no file in its path with all these key worlds : "
 						+ Arrays.toString(condition));
 				return null;
 			}

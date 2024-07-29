@@ -14,6 +14,18 @@
 	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.fxml</include>
+					<include>**/*.css</include>
+					<include>**/*.png</include>
+					<!-- Include any other types of resource files as needed -->
+				</includes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -33,7 +45,23 @@
 					<mainClass>main.FxMain</mainClass>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>main.FxMain</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
 		</plugins>
+
 
 	</build>
 
@@ -45,18 +73,19 @@
 			<version>0.9.511</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>
-				javafx-controls</artifactId>
-			<version>20</version>
-		</dependency>
 
 		<dependency>
 			<groupId>
 				org.openjfx</groupId>
 			<artifactId>javafx-swing</artifactId>
 			<version>17</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>21.0.2</version> <!-- Ensure this version matches your
+			JavaFX SDK version -->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-web -->
@@ -66,12 +95,17 @@
 			<version>17.0.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>
+				javafx-controls</artifactId>
+			<version>17.0.1</version>
+		</dependency>
 
 		<dependency>
-			<groupId>
-				eu.hansolo.fx</groupId>
+			<groupId>eu.hansolo.fx</groupId>
 			<artifactId>charts</artifactId>
-			<version>17.1.27</version>
+			<version>17.0.1</version>
 		</dependency>
 
 		<!--
@@ -86,7 +120,7 @@
 		<dependency>
 			<groupId>tech.tablesaw</groupId>
 			<artifactId>tablesaw-core</artifactId>
-			<version>LATEST</version>
+			<version>0.41.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -111,11 +145,7 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-controls</artifactId>
-			<version>15.0.1</version>
-		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/net.sf.py4j/py4j -->
 		<dependency>
 			<groupId>net.sf.py4j</groupId>
@@ -150,6 +180,22 @@
 			<version>5.10.0</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.9.0</version> <!-- You can adjust this version as needed -->
+			<scope>test</scope>
+		</dependency>
+
+		<!-- JUnit Jupiter Engine for running tests -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.9.0</version>
+			<scope>test</scope>
+		</dependency>
+
 		<!--
 		https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<dependency>
@@ -163,12 +209,12 @@
 			<artifactId>pdfbox</artifactId>
 			<version>2.0.24</version>
 		</dependency>
-<!-- PLUM data-->
+		<!-- PLUM data-->
 		<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-csv</artifactId>
-    <version>1.8</version>
-</dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.8</version>
+		</dependency>
 
 	</dependencies>
 

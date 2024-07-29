@@ -1,6 +1,5 @@
 package model;
 
-import java.util.HashMap;
 import java.util.Random;
 
 import javafx.scene.paint.Color;
@@ -11,8 +10,6 @@ import javafx.scene.paint.Color;
  */
 
 public class Manager extends AbstractManager{
-	
-
 
 	public Manager() {
 		label = "";
@@ -27,7 +24,7 @@ public class Manager extends AbstractManager{
 		}
 	}
 
-	public Manager(Manager other) {// shloud modefie 
+	public Manager(Manager other) {
 		if (other != null) {
 			this.label = other.label;
 			this.color = other.color;

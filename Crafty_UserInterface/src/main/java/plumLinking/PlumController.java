@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.GraphicConsol;
 import UtilitiesFx.graphicalTools.Tools;
-import ac.ed.lurg.ModelConfig;
-import ac.ed.lurg.ModelMain;
+//import ac.ed.lurg.ModelConfig;
+//import ac.ed.lurg.ModelMain;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
@@ -130,85 +130,85 @@ public class PlumController {
 
 	@FXML
 	void link() {
-		if (!isPlumInitialized) {
-			progressBarFunction(" Initialisation ", x -> {
-				ModelMain.main(new String[] {});
-			}, y -> {
-				isPlumInitialized = true;
-
-			});
-		}
+//		if (!isPlumInitialized) {
+//			progressBarFunction(" Initialisation ", x -> {
+//				ModelMain.main(new String[] {});
+//			}, y -> {
+//				isPlumInitialized = true;
+//
+//			});
+//		}
 	}
 
 	@FXML
 	void oneTick() {
-		if (isPlumInitialized && isATickFinished) {
-			isATickFinished = false;
-			String year = (ModelConfig.BASE_YEAR + ModelMain.newStartYear) + "";
-			progressBarFunction("Running PLUM for: " + year, x -> {
-				ModelMain.theModel.runNTick(tick.getAndIncrement());
-			}, y -> {
-				isATickFinished = true;
-				Button btn = Tools.button("Build demands for Crafty", "");
-				btn.setOnAction(e -> {
-					TextArea console = new TextArea();
-					box.getChildren().addAll(console);
-					GraphicConsol.start(console);
-					logicOfPlumToCraftyDemand();
-				});
-				box.getChildren().addAll(Tools.hBox(btn, Tools.text("    for " + 2020, Color.BLUE)));
-			});
-		}
+//		if (isPlumInitialized && isATickFinished) {
+//			isATickFinished = false;
+//			String year = (ModelConfig.BASE_YEAR + ModelMain.newStartYear) + "";
+//			progressBarFunction("Running PLUM for: " + year, x -> {
+//				ModelMain.theModel.runNTick(tick.getAndIncrement());
+//			}, y -> {
+//				isATickFinished = true;
+//				Button btn = Tools.button("Build demands for Crafty", "");
+//				btn.setOnAction(e -> {
+//					TextArea console = new TextArea();
+//					box.getChildren().addAll(console);
+//					GraphicConsol.start(console);
+//					logicOfPlumToCraftyDemand();
+//				});
+//				box.getChildren().addAll(Tools.hBox(btn, Tools.text("    for " + 2020, Color.BLUE)));
+//			});
+//		}
 	}
 
-	void logicOfPlumToCraftyDemand() {
-		Timeline timeline = new Timeline(
-				new KeyFrame(Duration.ZERO,
-						event -> System.out.println(
-								" INFO : [PlumController] - Reading : " + PlumOutPutPath + "bio_fractions_df.csv")),
-				new KeyFrame(Duration.seconds(0.8),
-						event -> System.out.println(
-								" INFO : [PlumController] - Reading : " + PlumOutPutPath + "countryDemand.txt")),
-				new KeyFrame(Duration.seconds(1.6),
-						event -> System.out
-								.println(" INFO : [PlumController] - Reading : " + PlumOutPutPath + "waste_df.csv")),
-				new KeyFrame(Duration.seconds(2.0),
-						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
-								+ PlumOutPutPath + "bio_fractions_df.csv")),
-				new KeyFrame(Duration.seconds(2.5),
-						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
-								+ PlumOutPutPath + "countryDemand.txt")),
-				new KeyFrame(Duration.seconds(3.0),
-						event -> System.out.println(" INFO : [PlumController] - Create bio_crop_demand_df data")),
-				new KeyFrame(Duration.seconds(3.8),
-						event -> System.out.println(
-								" INFO : [PlumController] - Write : " + PlumOutPutPath + "bio_crop_demand_df.csv")),
-				new KeyFrame(Duration.seconds(4.6),
-						event -> System.out
-								.println(" INFO : [PlumController] - Reading : " + PlumOutPutPath + "domestic.txt")),
-				new KeyFrame(Duration.seconds(5.4),
-						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
-								+ PlumOutPutPath + "domestic.txt")),
-				new KeyFrame(Duration.seconds(6.2),
-						event -> System.out.println(" INFO : [PlumController] - Create bio_crop_demand_df data")),
-				new KeyFrame(Duration.seconds(7.0),
-						event -> System.out.println(
-								" INFO : [PlumController] - Write : " + PlumOutPutPath + "commodity_balances.csv")),
-				new KeyFrame(Duration.seconds(7.8),
-						event -> System.out.println(
-								" INFO : [PlumController] - Reading : " + PlumOutPutPath + "country_fractions.csv")),
-				new KeyFrame(Duration.seconds(8.2),
-						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
-								+ PlumOutPutPath + "country_fractions.csv")),
-				new KeyFrame(Duration.seconds(8.7), event -> {
-					for (String country : EuCountries) {
-						System.out.println(" INFO : [PlumController] - Create demand data for: " + country);
-						System.out.println(
-								" INFO : [PlumController] - Write : " + PlumOutPutPath + "demand_" + country + ".csv");
-					}
-				}));
-		timeline.play();
-	}
+//	void logicOfPlumToCraftyDemand() {
+//		Timeline timeline = new Timeline(
+//				new KeyFrame(Duration.ZERO,
+//						event -> System.out.println(
+//								" INFO : [PlumController] - Reading : " + PlumOutPutPath + "bio_fractions_df.csv")),
+//				new KeyFrame(Duration.seconds(0.8),
+//						event -> System.out.println(
+//								" INFO : [PlumController] - Reading : " + PlumOutPutPath + "countryDemand.txt")),
+//				new KeyFrame(Duration.seconds(1.6),
+//						event -> System.out
+//								.println(" INFO : [PlumController] - Reading : " + PlumOutPutPath + "waste_df.csv")),
+//				new KeyFrame(Duration.seconds(2.0),
+//						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
+//								+ PlumOutPutPath + "bio_fractions_df.csv")),
+//				new KeyFrame(Duration.seconds(2.5),
+//						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
+//								+ PlumOutPutPath + "countryDemand.txt")),
+//				new KeyFrame(Duration.seconds(3.0),
+//						event -> System.out.println(" INFO : [PlumController] - Create bio_crop_demand_df data")),
+//				new KeyFrame(Duration.seconds(3.8),
+//						event -> System.out.println(
+//								" INFO : [PlumController] - Write : " + PlumOutPutPath + "bio_crop_demand_df.csv")),
+//				new KeyFrame(Duration.seconds(4.6),
+//						event -> System.out
+//								.println(" INFO : [PlumController] - Reading : " + PlumOutPutPath + "domestic.txt")),
+//				new KeyFrame(Duration.seconds(5.4),
+//						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
+//								+ PlumOutPutPath + "domestic.txt")),
+//				new KeyFrame(Duration.seconds(6.2),
+//						event -> System.out.println(" INFO : [PlumController] - Create bio_crop_demand_df data")),
+//				new KeyFrame(Duration.seconds(7.0),
+//						event -> System.out.println(
+//								" INFO : [PlumController] - Write : " + PlumOutPutPath + "commodity_balances.csv")),
+//				new KeyFrame(Duration.seconds(7.8),
+//						event -> System.out.println(
+//								" INFO : [PlumController] - Reading : " + PlumOutPutPath + "country_fractions.csv")),
+//				new KeyFrame(Duration.seconds(8.2),
+//						event -> System.out.println(" INFO : [PlumController] - Filter EU coutries for: "
+//								+ PlumOutPutPath + "country_fractions.csv")),
+//				new KeyFrame(Duration.seconds(8.7), event -> {
+//					for (String country : EuCountries) {
+//						System.out.println(" INFO : [PlumController] - Create demand data for: " + country);
+//						System.out.println(
+//								" INFO : [PlumController] - Write : " + PlumOutPutPath + "demand_" + country + ".csv");
+//					}
+//				}));
+//		timeline.play();
+//	}
 
 	void progressBarFunction(String titel, Consumer<String> actoin, Consumer<String> succeeded) {
 		box.getChildren().forEach(e -> {

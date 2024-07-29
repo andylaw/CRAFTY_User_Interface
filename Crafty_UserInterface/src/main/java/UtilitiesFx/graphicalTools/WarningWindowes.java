@@ -35,9 +35,9 @@ public class WarningWindowes {
 		Alert alert = new Alert(AlertType.WARNING);
 		ButtonType selectfile = new ButtonType("Select a new file", ButtonBar.ButtonData.OK_DONE);
 		alert.setTitle("Error Dialog");
-		alert.setHeaderText(message+" \n"+path);
-		System.out.println(message+" \n"+path);
-		alert.getButtonTypes().setAll(selectfile,  ButtonType.NO);
+		alert.setHeaderText(message + " \n" + path);
+		System.out.println(message + " \n" + path);
+		alert.getButtonTypes().setAll(selectfile, ButtonType.NO);
 		alert.showAndWait().ifPresent(response -> {
 			if (response == selectfile) {
 				FileChooser fileChooser = new FileChooser();
@@ -50,7 +50,6 @@ public class WarningWindowes {
 		});
 		return p;
 	}
-
 
 	public static void showWarningMessage(String message, String okbuttonName, Consumer<String> Retry,
 			String cancelbuttonName, Consumer<String> continuAnyWay) {
@@ -89,12 +88,36 @@ public class WarningWindowes {
 
 		alert.showAndWait();
 	}
-	
+
+	public static void showWarningMessage(String message, String okButtonName, Consumer<String> okButtonConsumer) {
+		ButtonType okButtonType = new ButtonType(okButtonName, ButtonBar.ButtonData.OK_DONE);
+		ButtonType customButtonType = new ButtonType("Close CRAFTY");
+
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.setTitle("Warning");
+		alert.setHeaderText(message);
+
+		// Add custom buttons
+		alert.getButtonTypes().setAll(okButtonType, customButtonType);
+
+		// Handle button actions
+		alert.setOnCloseRequest(event -> {
+			ButtonType result = alert.getResult();
+			if (result == okButtonType) {
+				okButtonConsumer.accept("");
+			} else if (result == customButtonType) {
+				Platform.exit();
+			}
+		});
+
+		alert.showAndWait();
+	}
+
 	public static void showWaitingDialog(Consumer<String> action) {
 		Stage waitingDialog = new Stage();
 		waitingDialog.initModality(Modality.NONE);
 		waitingDialog.initStyle(StageStyle.UNDECORATED);
-		//loadingAlert.initModality(Modality.NONE);
+		// loadingAlert.initModality(Modality.NONE);
 		Label label = new Label("Please wait...");
 		ProgressIndicator progressIndicator = new ProgressIndicator();
 		progressIndicator.setCenterShape(true);

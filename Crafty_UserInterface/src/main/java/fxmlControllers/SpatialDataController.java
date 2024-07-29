@@ -14,7 +14,6 @@ import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.LineChartTools;
 import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.PieChartTools;
-import UtilitiesFx.graphicalTools.SankeyPlotGraph;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.CurvesLoader;
@@ -71,11 +70,11 @@ public class SpatialDataController {
 		M.loadCapitalsAndServiceList();
 		CurvesLoader.loadcurves();
 		M.loadMap();
-		M.loadGisData();
+		
 		CellsSet.setCellsSet(M);
 		CellsSet.plotCells();
 
-		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, DemandModel.getDemand());
+		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, DemandModel.getGolbalDemand());
 		//////
 		String ItemName = "Save as CSV";
 		Consumer<String> action = x -> {

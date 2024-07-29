@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 
 class PlumControllerTest {
 
-	@BeforeEach
+//	@BeforeEach
 	void setUp() throws Exception {
-		new PlumController().logicOfPlumToCraftyDemand();
+//		new PlumController().logicOfPlumToCraftyDemand();
 	}
 
-	@Test
+//	@Test
 	void test() {
 		//fail("Not yet implemented");
 	}

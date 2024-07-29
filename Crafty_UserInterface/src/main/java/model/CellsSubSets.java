@@ -97,6 +97,7 @@ public class CellsSubSets {
 		NewRegion_Controller.patchsInRergion.forEach(p -> {
 			p.ColorP(Color.BLACK);
 		});
+		CellsSet.gc.drawImage(CellsSet.writableImage, 0, 0);
 	}
 
 }

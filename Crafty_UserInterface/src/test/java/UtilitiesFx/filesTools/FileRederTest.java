@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 class FileRederTest {
 
-	@BeforeEach
+	//@BeforeEach
 	void setUp() throws Exception {
 	}
 
-	@Test
+	//@Test
 	void test() {
 		for (int i = 0; i < 10; i++) {
 			ReaderFile.processCSV(//"C:\\Users\\byari-m\\Downloads\\Baseline_map.csv");

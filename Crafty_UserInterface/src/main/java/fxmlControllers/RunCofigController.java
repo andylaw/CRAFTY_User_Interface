@@ -64,6 +64,8 @@ public class RunCofigController {
 	private Slider percentageOfGiveUpS;
 	@FXML
 	private TextField percentageOfGiveUpT;
+	@FXML
+	private CheckBox traker;
 
 	static public ModelRunnerController CA;
 
@@ -79,7 +81,7 @@ public class RunCofigController {
 		neighbours.setSelected(ModelRunner.NeighboorEffect);
 		creatCSV.setSelected(ModelRunner.writeCsvFiles);
 		gUP.setSelected(ModelRunner.usegiveUp);
-		mutationM.setSelected(ModelRunner.isMutated);
+//		mutationM.setSelected(ModelRunner.isMutated);
 		// neighboursCollaboration.setSelected(CA.R.NeighboorEffect);
 		chartSync.setSelected(ModelRunnerController.chartSynchronisation);
 
@@ -109,12 +111,12 @@ public class RunCofigController {
 			ModelRunner.writeCsvFilesGap = (int) CSV_GapS.getValue();
 			CSV_GapT.setText((int) CSV_GapS.getValue() + "");
 		});
-		nbrOfSubSetS.setValue(ModelRunner.nbrOfSubSet);
-		nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
-		nbrOfSubSetS.valueProperty().addListener((ov, oldval, newval) -> {
-			ModelRunner.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
-			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
-		});
+//		nbrOfSubSetS.setValue(ModelRunner.nbrOfSubSet);
+//		nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
+//		nbrOfSubSetS.valueProperty().addListener((ov, oldval, newval) -> {
+//			ModelRunner.nbrOfSubSet = (int) nbrOfSubSetS.getValue();
+//			nbrOfSubSetT.setText((int) nbrOfSubSetS.getValue() + "");
+//		});
 		NeighbourRadiusS.setValue(ModelRunner.NeighborRaduis);
 		NeighbourRadiusT.setText((int) NeighbourRadiusS.getValue() + "");
 		NeighbourRadiusS.valueProperty().addListener((ov, oldval, newval) -> {
@@ -146,7 +148,7 @@ public class RunCofigController {
 			BestAftT.setText(Math.round(1000 - RandomAftS.getValue() * 10) / 10. + "");
 			BestAftS.setValue(Tools.sToD(BestAftT.getText()));
 		});
-
+		 traker.setSelected(ModelRunner.traker);
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction
@@ -206,22 +208,19 @@ public class RunCofigController {
 		ModelRunner.isMutated = mutationM.isSelected();
 	}
 
-
-
 	@FXML
 	public void BestAftT(ActionEvent event) {
-		ModelRunner.MostCompetitorAFTProbability = Tools.sToD(BestAftT.getText())/100;
+		ModelRunner.MostCompetitorAFTProbability = Tools.sToD(BestAftT.getText()) / 100;
 		BestAftS.setValue(Tools.sToD(BestAftT.getText()));
 		RandomAftS.setValue(100 - Tools.sToD(BestAftT.getText()));
 	}
 
 	@FXML
 	public void RandomAftT(ActionEvent event) {
-		ModelRunner.MostCompetitorAFTProbability = 1 - Tools.sToD(RandomAftT.getText())/100;
+		ModelRunner.MostCompetitorAFTProbability = 1 - Tools.sToD(RandomAftT.getText()) / 100;
 		RandomAftS.setValue(Tools.sToD(RandomAftT.getText()));
 		BestAftS.setValue(100 - Tools.sToD(RandomAftT.getText()));
 	}
-
 
 	// Event Listener on TextField[#CellPersT].onAction
 	@FXML
@@ -262,5 +261,10 @@ public class RunCofigController {
 	public void creatCSV(ActionEvent event) {
 		ModelRunner.writeCsvFiles = creatCSV.isSelected();
 
+	}
+
+	@FXML
+	public void trakerAction() {
+		ModelRunner.traker = traker.isSelected();
 	}
 }

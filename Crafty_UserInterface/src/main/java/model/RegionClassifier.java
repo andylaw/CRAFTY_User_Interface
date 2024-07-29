@@ -1,30 +1,48 @@
 package model;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import dataLoader.CellsLoader;
+import dataLoader.DemandModel;
+import dataLoader.Paths;
 
 public class RegionClassifier {
 
+	private static final Logger LOGGER = LogManager.getLogger(RegionClassifier.class);
+	public static ConcurrentHashMap<String, ConcurrentHashMap<String, Cell>> regions;
+	public static ConcurrentHashMap<String, Set<Cell>> unmanageCellsR = new ConcurrentHashMap<>();
 
-    public static ConcurrentHashMap<String, ConcurrentHashMap<String, Cell>> regions() {
-        // Map to store region and cells belonging to that region
-        ConcurrentHashMap<String, ConcurrentHashMap<String, Cell>> regionMap = new ConcurrentHashMap<>();
+	public static void initialation(boolean isRegionalized) {
+		regions = new ConcurrentHashMap<>();
+//		try {
+			if (isRegionalized) {
+				CellsLoader.hashCell.entrySet().parallelStream().forEach(entry -> {
+					String region = entry.getValue().getCurrentRegion();
+					regions.computeIfAbsent(region, k -> new ConcurrentHashMap<>()).put(entry.getKey(),
+							entry.getValue());
+				});
+				if (!DemandModel.isRegionalDemandExisted()) {
+					initialation(false);
+				}
+			} else {
+				regions.put(Paths.WorldName, CellsLoader.hashCell);
+			}
+			
+			DemandModel.updateRegionsDemand();
+			regions.keySet().forEach(region -> {
+				unmanageCellsR.put(region, ConcurrentHashMap.newKeySet());
+			});
 
-        // Using parallelStream to process entries in parallel
-        CellsLoader.hashCell.entrySet().parallelStream().forEach(entry -> {
-            String region = entry.getValue().getCurrentRegion();
-            regionMap.computeIfAbsent(region, k -> new ConcurrentHashMap<>()).put(entry.getKey(), entry.getValue());
-        });
-        System.out.println(regionMap.keySet());
-//        regionMap.forEach((name,hash)->{
-//        	System.out.println(name+": "+hash.keySet());
-//        	Color color = ColorsTools.RandomColor();
-//        	hash.values().forEach(c->{
-//        		CellsSet.pixelWriter.setColor(c.getX(), CellsSet.maxY - c.getY(), color);
-//        	});
-//        });
-		return regionMap;
+			LOGGER.info("Regions: " + regions.keySet());
 
-    }
+//		} catch (NullPointerException e) {
+//			LOGGER.warn("The Regionalization Files is not Found");
+//		}
+
+	}
+
 }

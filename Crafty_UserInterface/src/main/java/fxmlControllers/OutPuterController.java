@@ -25,13 +25,14 @@ import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.Paths;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -39,11 +40,9 @@ import javafx.stage.Screen;
 import model.CellsSet;
 import model.Manager;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 public class OutPuterController {
 	CellsLoader M;
@@ -62,21 +61,57 @@ public class OutPuterController {
 	private Button selecserivce;
 	@FXML
 	private VBox borderPane;
-	String outputpath = "";
+	@FXML
+	private ChoiceBox<String> regionsBox;
+	@FXML
+	private Tab regionTab;
+	@FXML
+	private ScrollPane scrollRegions;
+	@FXML
+	private GridPane regionalGridChart;
 
 	ArrayList<CheckBox> radioListOfAFTs = new ArrayList<>();
 	private static final Logger LOGGER = LogManager.getLogger(OutPuterController.class);
 
+	public static boolean isCurrentResult = false;
+	public static String outputpath = "";
+
 	public void initialize() {
-		System.out.println("initialize " + getClass().getSimpleName());
+		System.out.println("Initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
 		selectoutPut();
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 		gridChart.prefWidthProperty().bind(scroll.widthProperty());
+		scrollRegions.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
+		regionalGridChart.prefWidthProperty().bind(scrollRegions.widthProperty());
+		isCurrentResult = false;
+		initialiseregionBox();
+		if (regionsBox.getItems().size() > 0) {
+			regionsBox.setValue(regionsBox.getItems().get(0));
+		}
+	}
+
+	void initialiseregionBox() {
+		List<File> folders = PathTools.detectFolders(outputpath);
+		folders.forEach(e -> {
+			if (e.getName().contains("region_")) {
+				regionsBox.getItems().addAll(e.getName());
+			}
+		});
+		if (regionsBox.getItems().size() == 0) {
+			regionTab.setDisable(true);
+			regionTab.getTooltip().setText("Output Files by regions are Not Available For This Simulation ");
+		}
+	}
+
+	@FXML
+	public void regionsBoxAction() {
+		Graphs(regionalGridChart, regionsBox.getValue() + "-AggregateServiceDemand.csv",
+				regionsBox.getValue() + "-AggregateAFTComposition.csv");
+
 	}
 
 	HashMap<Manager, HashMap<Manager, Integer>> stateToHashSankey(String lastYear) {
-
 		HashMap<String, String> copyfirstYearHash = new HashMap<>();
 		CellsLoader.hashCell.forEach((coor, c) -> {
 			if (c.getOwner() != null)
@@ -115,10 +150,20 @@ public class OutPuterController {
 	}
 
 	public void selectoutPut() {
-		File selectedDirectory = PathTools.selectFolder(Paths.getProjectPath() + "\\output");
-		if (selectedDirectory != null) {
-			outputpath = selectedDirectory.getAbsolutePath();
-
+		if (!isCurrentResult) {
+			File selectedDirectory = PathTools.selectFolder(Paths.getProjectPath() + "\\output");
+			if (selectedDirectory != null) {
+				outputpath = selectedDirectory.getAbsolutePath();
+			} else {
+				outputpath = null;
+			}
+		} else {
+			if (ModelRunnerController.outPutFolderName != null) {
+				outputpath = ModelRunnerController.outPutFolderName;
+				isCurrentResult = false;
+			}
+		}
+		if (outputpath != null) {
 			ArrayList<String> yearList = new ArrayList<>();
 			PathTools.findAllFiles(outputpath).forEach(str -> {
 				File file = new File(str);
@@ -133,15 +178,33 @@ public class OutPuterController {
 			sankeyBox.getItems().addAll(yearList);
 			sankeyBox.setValue(yearList.get(yearList.size() - 1));
 			OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
-			newOutPut(yearChoice.getValue());
-			Graphs(gridChart);
-
+			// newOutPut(yearChoice.getValue());
+			Graphs(gridChart, "AggregateServiceDemand.csv", "-AggregateAFTComposition.csv");
 		}
+	}
+
+	public void selectoutPut(String path) {
+		outputpath = path;
+		ArrayList<String> yearList = new ArrayList<>();
+		PathTools.findAllFiles(outputpath).forEach(str -> {
+			File file = new File(str);
+			String tmp = new File(file.getParent()).getName() + "\\" + file.getName();
+			if (tmp.contains("-Cell-"))
+				yearList.add(tmp);
+		});
+		LOGGER.info("output files List---> " + yearList);
+		yearChoice.getItems().addAll(yearList);
+		yearChoice.setValue(yearList.get(0));
+		sankeyBox.getItems().addAll(yearList);
+		sankeyBox.setValue(yearList.get(yearList.size() - 1));
+		OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
+		newOutPut(yearChoice.getValue());
+		Graphs(gridChart, "AggregateServiceDemand.csv", "-AggregateAFTComposition.csv");
+
 	}
 
 	@FXML
 	public void saveAllFilAsPNGAction() {
-
 		for (int i = 0; i < OutPutTabController.radioColor.length; i++) {
 			int ii = i;
 			if (OutPutTabController.radioColor[i].getText().contains("Agent")) {
@@ -159,17 +222,55 @@ public class OutPuterController {
 			}
 		}
 		String newfolder = PathTools.makeDirectory(outputpath + "\\" + "Charts");
-		gridChart.getChildren().forEach(chart -> {
-			VBox container = (VBox) chart;
-			@SuppressWarnings("unchecked")
-			LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
-			ImageExporter.NodeToImage(chart, newfolder + "\\" + ch.getTitle() + ".PNG");
-		});
+		
+		// First, create a snapshot of the children with their positions
+		List<Node> children = new ArrayList<>(gridChart.getChildren());
+		List<Integer> rowIndexes = new ArrayList<>();
+		List<Integer> colIndexes = new ArrayList<>();
+
+		for (Node child : children) {
+		    rowIndexes.add(GridPane.getRowIndex(child));
+		    colIndexes.add(GridPane.getColumnIndex(child));
+		}
+
+		// Clear children to prevent ConcurrentModificationException
+		gridChart.getChildren().clear();
+
+		// Process each child, create an image, and then re-add to the original position
+		for (int i = 0; i < children.size(); i++) {
+		    Node child = children.get(i);
+		    VBox container = (VBox) child;
+		    LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
+		    double w = ch.getWidth();
+		    double h = ch.getHeight();
+		    ch.setPrefSize(1000, 1000);
+
+		    Group rootPane = new Group();
+		    rootPane.getChildren().add(child);  // Temporarily add to another group
+
+		    ImageExporter.NodeToImage(rootPane, newfolder + "\\" + ch.getTitle() + ".PNG");
+
+		    // Now re-add the child to the grid at its original position
+		    GridPane.setRowIndex(child, rowIndexes.get(i));
+		    GridPane.setColumnIndex(child, colIndexes.get(i));
+		    gridChart.getChildren().add(child);
+		    ch.setPrefSize(w, h);
+		}
+		
+//		gridChart.getChildren().forEach(chart -> {
+//			VBox container = (VBox) chart;
+//			@SuppressWarnings("unchecked")
+//			LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
+//			ch.setPrefSize(1000, 1000);
+//			StackPane rootPane = new StackPane();
+//			rootPane.getChildren().add(chart);
+//			ImageExporter.NodeToImage(rootPane, newfolder + "\\" + ch.getTitle() + ".PNG");
+//
+//		});
 		List<File> foders = PathTools.detectFolders(outputpath);
 		for (File folder : foders) {
 			ImagesToPDF.createPDFWithImages(folder.getAbsolutePath(), folder.getName() + ".pdf", 4, 4);
 		}
-
 	}
 
 	@FXML
@@ -186,29 +287,32 @@ public class OutPuterController {
 			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(sankeyBox.getValue());
 			Set<Manager> setManagers = new HashSet<>();
 			VBox boxOfAftRadios = new VBox();
+
 			AFTsLoader.getActivateAFTsHash().keySet().forEach(n -> {
 				CheckBox radio = new CheckBox(n);
 				radioListOfAFTs.add(radio);
 				boxOfAftRadios.getChildren().add(radio);
 				radio.setSelected(true);
 				setManagers.add(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
-				radio.setOnAction(e->{
-					if(radio.isSelected()) {
+				radio.setOnAction(e -> {
+					if (radio.isSelected()) {
 						setManagers.add(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
+					} else {
+						if (setManagers.size() > 1) {
+							setManagers.remove(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
+						} else {
+							radio.setSelected(true);
+						}
 					}
-					else {
-						setManagers.remove(AFTsLoader.getActivateAFTsHash().get(radio.getText()));
-					}
-					updateSankeyPlot( txt2,boxOfAftRadios, h, setManagers);
+					updateSankeyPlot(txt2, boxOfAftRadios, h, setManagers);
 				});
 			});
-			
-			updateSankeyPlot( txt2,boxOfAftRadios, h, setManagers);
-
+			updateSankeyPlot(txt2, boxOfAftRadios, h, setManagers);
 		}
 	}
-	
-	void updateSankeyPlot(Text txt2,VBox boxOfAftRadios,HashMap<Manager, HashMap<Manager, Integer>> h, Set<Manager> setManagers) {
+
+	private void updateSankeyPlot(Text txt2, VBox boxOfAftRadios, HashMap<Manager, HashMap<Manager, Integer>> h,
+			Set<Manager> setManagers) {
 		Text txt = new Text("Create a Sankey diagram for  ");
 		Text txt3 = new Text("  To  ");
 		Text txt4 = Tools.text(new File(sankeyBox.getValue()).getName(), Color.RED);
@@ -216,7 +320,7 @@ public class OutPuterController {
 		MousePressed.mouseControle(borderPane, SankeyPlotGraph.sankey);
 		borderPane.getChildren().clear();
 		borderPane.getChildren().addAll(Tools.hBox(txt, txt2, txt3, txt4),
-				Tools.hBox(boxOfAftRadios , SankeyPlotGraph.sankey));
+				Tools.hBox(boxOfAftRadios, SankeyPlotGraph.sankey));
 		SankeyPlotGraph.sankey.setPrefWidth(scroll.getPrefWidth());
 	}
 
@@ -228,16 +332,16 @@ public class OutPuterController {
 				OutPutTabController.radioColor[i].setSelected(true);
 			}
 		}
-		yearChoice.setValue(year);
+
 	}
 
-	void Graphs(GridPane gridPane) {
+	void Graphs(GridPane gridPane, String serviceDemand, String aftComposition) {
 		gridPane.getChildren().clear();
 		ArrayList<LineChart<Number, Number>> lineChart = new ArrayList<>();
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		HashMap<String, ArrayList<String>> reder = ReaderFile
-				.ReadAsaHash(PathTools.fileFilter(outputpath, "AggregateServiceDemand.csv").get(0));
+		ArrayList<String> servicepath = PathTools.fileFilter(outputpath, serviceDemand);
+		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(servicepath.get(0));
 
 		ArrayList<HashMap<String, ArrayList<Double>>> has = new ArrayList<>();
 		CellsSet.getServicesNames().forEach(servicename -> {
@@ -258,21 +362,19 @@ public class OutPuterController {
 			lineChart.add(chart);
 		});
 
-		has.add(updatComposition(outputpath, "-AggregateAFTComposition.csv"));
+		has.add(updatComposition(outputpath, aftComposition));
 		LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
 				new NumberAxis());
 		chart.setTitle("Land use trends");
 		lineChart.add(chart);
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
-
 			LineChart<Number, Number> Ch = lineChart.get(i);
-
 			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, has.get(i));
 
 			// this for coloring the Chart by the AFTs color after the creation of the chart
 			if (i == has.size() - 1) {
-				coloringCartByAFts(Ch);
+				coloringChartByAFts(Ch);
 			}
 			gridPane.add(Tools.vBox(Ch), j++, k);
 			MousePressed.mouseControle((Pane) Ch.getParent(), Ch);
@@ -291,14 +393,13 @@ public class OutPuterController {
 		}
 	}
 
-	void coloringCartByAFts(LineChart<Number, Number> Ch) {
+	private void coloringChartByAFts(LineChart<Number, Number> Ch) {
 		Ch.setCreateSymbols(false);
 		for (int k2 = 0; k2 < Ch.getData().size(); k2++) {
 			Manager a = AFTsLoader.getAftHash().get(Ch.getData().get(k2).getName());
 			Ch.getData().get(k2).getNode().lookup(".chart-series-line")
 					.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
 		}
-
 		LineChartTools.labelcolor(M, Ch);
 	}
 
@@ -321,4 +422,7 @@ public class OutPuterController {
 			return null;
 		}
 	}
+
+	// Detect if there is regional output
+	// if yes create a set of countries or click on region to acces
 }

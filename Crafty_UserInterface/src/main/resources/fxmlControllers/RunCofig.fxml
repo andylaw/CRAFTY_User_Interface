@@ -37,11 +37,11 @@
 										<Label text="\%" />
 									</children>
 								</HBox>
-
+<!--
 								<CheckBox fx:id="isAveragedPerCellResidualDemand"
 									mnemonicParsing="false"
 									onAction="#averagedPerCellResidualDemand"
-									text="Averaged Per Cell Residual Demand" />
+									text="Averaged Per Cell Residual Demand" />-->
 								<HBox spacing="5.0">
 									<CheckBox fx:id="neighbours" mnemonicParsing="false"
 										onAction="#NeighboursAction"
@@ -55,8 +55,9 @@
 											prefWidth="58.0" />
 									</children>
 								</HBox>
+								<!--
 								<CheckBox fx:id="mutationM" mnemonicParsing="false"
-									onAction="#MutationMechanism" text="Mutation mechanism" />
+									onAction="#MutationMechanism" text="Mutation mechanism" />-->
 								<HBox spacing="5.0">
 									<children>
 										<Label text="The percentage of 'Most competitive' AFT selection" />
@@ -86,15 +87,16 @@
 										<Label text="\%" />
 									</children>
 								</HBox>
+								
 								<HBox spacing="5.0">
-									<children>
+									<children><!--
 										<Label
 											text="Number of Sub-sets and Supply Update During a Single Iteration" />
 										<Slider fx:id="nbrOfSubSetS" blockIncrement="1.0"
 											majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="5"
 											showTickLabels="true" showTickMarks="true" />
 										<TextField fx:id="nbrOfSubSetT"
-											onAction="#nbrOfSubSetT" prefHeight="25.0" prefWidth="58.0" />
+											onAction="#nbrOfSubSetT" prefHeight="25.0" prefWidth="58.0" />-->
 									</children>
 								</HBox>
 							</children>
@@ -144,6 +146,8 @@
 							<TextField fx:id="CSV_GapT" onAction="#CSVAction"
 								prefHeight="25.0" prefWidth="58.0" />
 						</HBox>
+						<CheckBox fx:id="traker" mnemonicParsing="false"
+								onAction="#trakerAction" text="Create .csv supply tracker files" />
 					</children>
 				</VBox>
 			</content>

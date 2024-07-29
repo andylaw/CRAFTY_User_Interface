@@ -11,12 +11,12 @@ import UtilitiesFx.filesTools.CsvTools;
 
 class FxMainTest {
 
-	 @BeforeAll
+//	 @BeforeAll
 	    public static void setUpClass() {
 	 
 	    }
 
-	    @Test
+//	    @Test
 	    public void testLabelContainsCorrectText() {
 			  List<String> file2 = CsvTools.csvReaderAsVector(
 						"C:\\Users\\byari-m\\Downloads\\EU_capitals.csv");

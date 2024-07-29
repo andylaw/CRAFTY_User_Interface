@@ -1,8 +1,9 @@
 package dataLoader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import model.Cell;
 import model.CellsSet;
+import model.RegionClassifier;
 import tech.tablesaw.api.Table;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.ReaderFile;
@@ -24,7 +26,8 @@ public class CellsLoader {
 	private static final Logger LOGGER = LogManager.getLogger(CellsLoader.class);
 	public static List<String> GISRegionsNames = new ArrayList<>();
 	public static ConcurrentHashMap<String, Cell> hashCell = new ConcurrentHashMap<>();
-	private static Set<Cell> unmanageCells = ConcurrentHashMap.newKeySet();
+	public static boolean regionalization = true;
+//	private static Set<Cell> unmanageCells = ConcurrentHashMap.newKeySet();
 
 //	public Set<Cell> cells = Collections.synchronizedSet(new HashSet<>());
 	public AFTsLoader AFtsSet;
@@ -44,9 +47,14 @@ public class CellsLoader {
 		if (nbrOfCells < 1000) {
 			Cell.setSize(200);
 		}
-		AFTsLoader.hashAgentNbr();
-		LOGGER.info("Number of cells for each AFT: " + AFTsLoader.hashAgentNbr);
+
+		loadGisData();
+		RegionClassifier.initialation(false);
 		DemandModel.updateDemand();
+		AFTsLoader.hashAgentNbr();
+		AFTsLoader.hashAgentNbrRegions();
+
+		LOGGER.info("Number of cells for each AFT: " + AFTsLoader.hashAgentNbr);
 
 	}
 
@@ -70,6 +78,8 @@ public class CellsLoader {
 	public void loadGisData() {
 		try {
 			String path = PathTools.fileFilter(true, "\\GIS\\").get(0);
+			Paths.WorldName = new File(path).getName().replace("_Regions", "").replace(".csv", "");
+			LOGGER.info("WorldName = " + Paths.WorldName);
 			Table T = Table.read().csv(path);
 			GISRegionsNames = T.columnNames();
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
@@ -82,12 +92,14 @@ public class CellsLoader {
 					});
 				}
 			}
-			hashCell.values().forEach(c->{
+			hashCell.values().forEach(c -> {
 				c.setCurrentRegion(c.getGisNameValue().values().iterator().next());
 			});
-		} catch (NullPointerException e) {
+		} catch (NullPointerException | IOException e) {
+			regionalization = false;
 			LOGGER.warn(
 					"The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
+			
 		}
 	}
 
@@ -102,8 +114,8 @@ public class CellsLoader {
 
 	public void servicesAndOwneroutPut(String year, String outputpath) {
 		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
-		String path = PathTools.fileFilter(year,".csv").get(0);
-		
+		String path = PathTools.fileFilter(year, ".csv").get(0);
+
 		ReaderFile.processCSV(this, path, "Services");
 	}
 
@@ -115,8 +127,8 @@ public class CellsLoader {
 		return nbrOfCells;
 	}
 
-	public static Set<Cell> getUnmanageCells() {
-		return unmanageCells;
-	}
+//	public static Set<Cell> getUnmanageCells() {
+//		return unmanageCells;
+//	}
 
 }

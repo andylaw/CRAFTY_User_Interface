@@ -53,8 +53,11 @@ public class SankeyPlotGraph {
 		HashMap<Manager, HashMap<Manager, PlotItem>> hashItems = new HashMap<>();
 		HashMap<Manager, PlotItem> senderHash = new HashMap<>();
 		HashMap<Manager, PlotItem> plothash = new HashMap<>();
-		if(setManagers.size()==0) {return;}
+		if (setManagers.size() == 0) {
+			return;
+		}
 		h.forEach((sender, hash) -> {
+
 			if (setManagers.contains(sender)) {
 				hash.forEach((reciever, value) -> {
 					if (value > 0) {
@@ -62,10 +65,12 @@ public class SankeyPlotGraph {
 						plothash.put(reciever, plotItem2);
 					}
 				});
-				hashItems.put(sender, plothash);
-				PlotItem plotItem1 = new PlotItem(sender.getLabel(), sender.getColor(), 0);
-				senderHash.put(sender, plotItem1);
-				sankey.addItem(plotItem1);
+				if (!areAllValuesZero(hash)) {
+					hashItems.put(sender, plothash);
+					PlotItem plotItem1 = new PlotItem(sender.getLabel(), sender.getColor(), 0);
+					senderHash.put(sender, plotItem1);
+					sankey.addItem(plotItem1);
+				}
 			}
 		});
 		plothash.values().forEach((v) -> {
@@ -75,12 +80,22 @@ public class SankeyPlotGraph {
 		// define relation (valus) between items
 		h.forEach((sender, hash) -> {
 			hash.forEach((reciever, value) -> {
-				if (setManagers.contains(sender))
+				if (setManagers.contains(sender) && hashItems.containsKey(sender))
 					senderHash.get(sender).addToOutgoing(hashItems.get(sender).get(reciever), value);
 			});
 		});
 		configuration();
 
+	}
+
+
+	public static boolean areAllValuesZero(HashMap<Manager, Integer> hash) {
+		for (Integer value : hash.values()) {
+			if (value != 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static void configuration() {

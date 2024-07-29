@@ -108,7 +108,7 @@ public class Tools {
 		}
 	}
 
-	public static void reinsertChildAtIndexPath(Node child, Parent rootParent, List<Integer> indexPath) {
+	public static void reInsertChildAtIndexPath(Node child, Parent rootParent, List<Integer> indexPath) {
 		Parent currentParent = rootParent;
 		// Traverse down the hierarchy using the index path
 		for (int i = 0; i < indexPath.size() - 1; i++) {

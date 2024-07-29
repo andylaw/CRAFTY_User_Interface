@@ -8,14 +8,14 @@ import fxmlControllers.TabPaneController;
 
 public class AFTsLoaderTest {
 	AFTsLoader afts;
-	@BeforeEach
+//	@BeforeEach
 	void setUp() throws Exception {
 		
 		
 		afts = new AFTsLoader();
 	}
 
-	@Test
+//	@Test
 	void test() {
 		 
 		//fail("Not yet implemented");

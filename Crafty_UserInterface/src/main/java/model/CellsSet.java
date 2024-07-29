@@ -41,10 +41,11 @@ public class CellsSet {
 	private static final Logger LOGGER = LogManager.getLogger(CellsSet.class);
 	public static boolean isPlotedMap = false;
 	private static Canvas canvas;
-	private static GraphicsContext gc;
-	static PixelWriter pixelWriter;
-	static WritableImage writableImage;
-	static int maxX, maxY;
+	public static GraphicsContext gc;
+	public static PixelWriter pixelWriter;
+	public static WritableImage writableImage;
+	static int maxX;
+	public static int maxY;
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
@@ -83,7 +84,7 @@ public class CellsSet {
 		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
 
 		MapControlerBymouse();
-		
+
 	}
 
 	public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> cellsHash,
@@ -100,8 +101,6 @@ public class CellsSet {
 				.limit(numberOfElementsToSelect).forEach(key -> randomSubset.put(key, cellsHash.get(key)));
 		return randomSubset;
 	}
-
-
 
 	public static ConcurrentHashMap<String, Cell> getSubset(ConcurrentHashMap<String, Cell> cellsHash,
 			double percentage) {
@@ -138,9 +137,11 @@ public class CellsSet {
 	public static void showOnlyOneAFT(Manager a) {
 		CellsLoader.hashCell.values().parallelStream().forEach(cell -> {
 			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
-				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), Color.gray(0.65));
+//				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), Color.gray(0.65));
+				cell.ColorP(Color.gray(0.65));
 			} else {
-				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), a.getColor());
+				cell.ColorP(a.getColor());
+//				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), a.getColor());
 			}
 		});
 		gc.drawImage(writableImage, 0, 0);
@@ -156,15 +157,15 @@ public class CellsSet {
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getOwner() != null) {
-					pixelWriter.setColor(c.getX(), maxY - c.getY(), c.getOwner().getColor());
+					// pixelWriter.setColor(c.getX(), maxY - c.getY(), );
+					c.ColorP(c.getOwner().getColor());
 				} else {
-					pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.WHITE);
+					c.ColorP(Color.WHITE);
 				}
 			});
 		} else if (capitalsName.contains(colortype)) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				pixelWriter.setColor(c.getX(), maxY - c.getY(),
-						ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
+				c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
 
 			});
 
@@ -173,12 +174,10 @@ public class CellsSet {
 				if (c.getServices().get(colortype) != null)
 					values.add(c.getServices().get(colortype));
 			});
-
 			double max = values.size() > 0 ? Collections.max(values) : 0;
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				pixelWriter.setColor(c.getX(), maxY - c.getY(),
-						ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
+				c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
 			});
 		} else if (colortype.equalsIgnoreCase("tmp")) {
 
@@ -188,17 +187,16 @@ public class CellsSet {
 			double max = Collections.max(values);
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				pixelWriter.setColor(c.getX(), maxY - c.getY(), ColorsTools.getColorForValue(max, c.getTmpValueCell()));
+				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
 			});
 
 		} else if (colortype.equalsIgnoreCase("Mask")) {
 			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.hashMasks.keySet());
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getMaskType() != null) {
-					pixelWriter.setColor(c.getX(), maxY - c.getY(),
-							ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
+					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));
 				} else {
-					pixelWriter.setColor(c.getX(), maxY - c.getY(), Color.gray(0.75));
+					c.ColorP(Color.gray(0.75));
 				}
 			});
 		} else {
@@ -208,7 +206,7 @@ public class CellsSet {
 				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
 			});
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				pixelWriter.setColor(c.getX(), maxY - c.getY(), colorGis.get(c.getGisNameValue().get(colortype)));
+				c.ColorP(colorGis.get(c.getGisNameValue().get(colortype)));
 			});
 		}
 		gc.drawImage(writableImage, 0, 0);
@@ -224,7 +222,7 @@ public class CellsSet {
 				int cx = (int) (pixelX / Cell.getSize());
 				int cy = (int) (maxY - pixelY / Cell.getSize());
 				if (CellsLoader.hashCell.get(cx + "," + cy) != null) {
-					gc.setFill(Color.BLACK);
+					gc.setFill(Color.RED);
 					gc.fillRect(pixelX, pixelY, Cell.getSize(), Cell.getSize());
 					HashMap<String, Consumer<String>> menu = new HashMap<>();
 					if (!NewRegion_Controller.patchsInRergion.contains(CellsLoader.hashCell.get(cx + "," + cy))) {

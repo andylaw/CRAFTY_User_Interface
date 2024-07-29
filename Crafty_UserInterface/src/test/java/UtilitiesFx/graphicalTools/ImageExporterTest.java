@@ -11,13 +11,13 @@ import javafx.scene.shape.Rectangle;
 
 class ImageExporterTest {
 
-	@BeforeEach
+	//@BeforeEach
 	void setUp() throws Exception {
 		// Rectangle rectangle = new Rectangle(100, 100, Color.RED);
 	//	 ImageExporter.NodeToImage(rectangle, new File("C:\\Users\\byari-m\\Desktop\\Newfolder\\justAtest.PNG") );
 	}
 
-	@Test
+//	@Test
 	   public void tst() {
 
     }

@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-import dataLoader.Paths;
 import fxmlControllers.ModelRunnerController;
+import model.RegionClassifier;
 
 public class Tracker {
 	private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
@@ -36,9 +36,28 @@ public class Tracker {
 			AFTsLoader.hashAgentNbr.forEach((label, a) -> {
 				container.get(label).put("AggregateAFT", (double) a);
 			});
-			writeCSV(container, Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\"
-					+ ModelRunnerController.outPutFolderName + "\\SupplyTracker_" + year + ".csv");
+			writeCSV(container, ModelRunnerController.outPutFolderName + "\\SupplyTracker_" + year + ".csv");
 			LOGGER.trace("Time taken for trackSupply " + (System.currentTimeMillis() - staetTime) + " ms");
+		}
+	}
+
+	public static void trackSupply(int year, String regionName) {
+		if (ModelRunnerController.outPutFolderName != null) {
+			ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> container = new ConcurrentHashMap<>();
+			AFTsLoader.getAftHash().values().forEach(a -> {
+				ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
+				container.put(a.getLabel(), tmp);
+			});
+			RegionClassifier.regions.get(regionName).values().parallelStream().forEach(c -> {
+				c.currentProductivity.forEach((s, v) -> {
+					if (c.getOwner() != null)
+						container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
+				});
+			});
+			AFTsLoader.hashAgentNbrRegions.get(regionName).forEach((label, a) -> {
+				container.get(label).put("AggregateAFT", (double) a);
+			});
+			writeCSV(container, ModelRunnerController.outPutFolderName+"\\region_"+regionName + "\\SupplyTracker_" + year + ".csv");
 		}
 	}
 

@@ -10,9 +10,13 @@
 
 <VBox xmlns="http://javafx.com/javafx/21"
 	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="fxmlControllers.GlobalViewFXMLController">
+	fx:controller="fxmlControllers.GlobalViewFXMLController"
+	fx:id="vbox">
 	<!-- TODO Add Nodes -->
 	<children>
+		<TitledPane animated="true" text="AFTs">
+			<TableView fx:id="TablAFTs" />
+		</TitledPane>
 		<TitledPane animated="true" text="Capitals">
 			<TableView fx:id="TablCapitals" />
 		</TitledPane>
@@ -21,9 +25,6 @@
 		</TitledPane>
 		<TitledPane animated="true" text="Scenarios">
 			<TableView fx:id="TabScenarios" />
-		</TitledPane>
-		<TitledPane animated="true" text="AFTs">
-			<TableView fx:id="TablAFTs" />
 		</TitledPane>
 	</children>
 </VBox>

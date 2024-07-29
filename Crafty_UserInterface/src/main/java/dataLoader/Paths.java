@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
-import model.ModelRunner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,9 +27,9 @@ public final class Paths {
 	private static String projectPath = "";
 	private static ArrayList<String> scenariosList = new ArrayList<>();
 	private static HashMap<String, String> scenariosHash = new HashMap<>();
-	private static ArrayList<String> allfilesPathInData;
+	static ArrayList<String> allfilesPathInData;
 	private static String scenario;
-
+	public static String WorldName = "";
 	public static void initialisation(String str) {
 		projectPath = str;
 		allfilesPathInData = PathTools.findAllFiles(projectPath);

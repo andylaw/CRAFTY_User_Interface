@@ -1,6 +1,5 @@
 package model;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.scene.paint.Color;

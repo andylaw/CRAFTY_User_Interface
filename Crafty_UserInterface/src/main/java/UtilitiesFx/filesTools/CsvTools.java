@@ -168,6 +168,7 @@ public class CsvTools {
 
 	public static void writeCSVfile(String[][] tabl, String filePath) {
 		LOGGER.info("writing CSV file: " + filePath);
+		
 		File file = new File(filePath);
 		try {
 			if (!file.exists()) {
@@ -184,7 +185,6 @@ public class CsvTools {
 				bw.newLine();
 			}
 			bw.close();
-
 		} catch (IOException e) {
 		}
 	LOGGER.info("Writing CSV file...  Done");

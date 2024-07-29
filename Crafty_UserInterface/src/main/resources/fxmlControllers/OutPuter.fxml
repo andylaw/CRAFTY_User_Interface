@@ -73,6 +73,28 @@
 								</VBox>
 							</content>
 						</Tab>
+						<Tab fx:id="regionTab" text="Regions Output"
+							style="-fx-background-color: #bddee9;">
+							<graphic>
+								<FontIcon iconLiteral="fas-map-marked-alt"
+									iconSize="15" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="Regional Results " />
+							</tooltip>
+							<content>
+								<VBox spacing="2.0">
+									<ChoiceBox fx:id="regionsBox"
+										onAction="#regionsBoxAction" />
+									<ScrollPane fx:id="scrollRegions" prefHeight="700.0"
+										prefWidth="700.0">
+										<GridPane fx:id="regionalGridChart"
+											style="-fx-background-color: #edf5f7;" />
+									</ScrollPane>
+								</VBox>
+
+							</content>
+						</Tab>
 					</tabs>
 				</TabPane>
 			</children>
