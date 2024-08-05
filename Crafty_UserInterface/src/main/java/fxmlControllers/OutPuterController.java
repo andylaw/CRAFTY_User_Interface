@@ -32,7 +32,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -240,7 +239,8 @@ public class OutPuterController {
 		for (int i = 0; i < children.size(); i++) {
 		    Node child = children.get(i);
 		    VBox container = (VBox) child;
-		    LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
+		    @SuppressWarnings("unchecked")
+			LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
 		    double w = ch.getWidth();
 		    double h = ch.getHeight();
 		    ch.setPrefSize(1000, 1000);

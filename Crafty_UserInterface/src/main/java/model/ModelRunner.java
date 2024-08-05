@@ -83,6 +83,8 @@ public class ModelRunner {
 		cells.updateCapitals(year);
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
 
+		
+		
 		regions.values()/* .parallelStream() */ .forEach(RegionalRunner -> {
 			RegionalRunner.regionalSupply();
 			RegionalRunner.totalSupply.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
@@ -94,10 +96,12 @@ public class ModelRunner {
 				Tracker.trackSupply(year);
 			}
 		}
+	
 
 		regions.values()/* .parallelStream() */ .forEach(RegionalRunner -> {
 			RegionalRunner.go(year);
 		});
+		
 
 		if (writeCsvFiles) {
 			compositionAFT(year);
@@ -108,7 +112,7 @@ public class ModelRunner {
 				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
 			CellsSet.colorMap(colorDisplay);
 		}
-		AFTsLoader.hashAgentNbr();
+		AFTsLoader.hashAgentNbr(); 
 	}
 
 	private void outPutservicedemandToCsv(int year) {

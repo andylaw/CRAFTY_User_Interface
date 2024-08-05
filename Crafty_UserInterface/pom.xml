@@ -6,25 +6,19 @@
 	<artifactId>Crafty_UserInterface</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<javafx.version>17</javafx.version>
+		<!-- Update JavaFX version to match the SDK version you are using -->
+		<javafx.version>22.0.2</javafx.version>
 		<javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+		<!-- Specify platform classifier (win, mac, linux) -->
+		<javafx.platform>win</javafx.platform>
 	</properties>
 
+
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*.fxml</include>
-					<include>**/*.css</include>
-					<include>**/*.png</include>
-					<!-- Include any other types of resource files as needed -->
-				</includes>
-			</resource>
-		</resources>
+
+
 
 		<plugins>
 			<plugin>
@@ -61,11 +55,39 @@
 			</plugin>
 
 		</plugins>
-
-
 	</build>
 
+
 	<dependencies>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>22.0.2</version>
+			<classifier>win</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>22.0.2</version>
+			<classifier>win</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>22.0.2</version>
+			<classifier>win</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>22.0.2</version>
+			<classifier>win</classifier>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/net.mahdilamb/colormap -->
 		<dependency>
 			<groupId>net.mahdilamb</groupId>
@@ -75,37 +97,19 @@
 
 
 		<dependency>
-			<groupId>
-				org.openjfx</groupId>
-			<artifactId>javafx-swing</artifactId>
-			<version>17</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-fxml</artifactId>
-			<version>21.0.2</version> <!-- Ensure this version matches your
-			JavaFX SDK version -->
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-web -->
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-web</artifactId>
-			<version>17.0.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>
-				javafx-controls</artifactId>
-			<version>17.0.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>eu.hansolo.fx</groupId>
 			<artifactId>charts</artifactId>
 			<version>17.0.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.openjfx</groupId>
+					<artifactId>javafx-base</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.openjfx</groupId>
+					<artifactId>javafx-swing</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!--

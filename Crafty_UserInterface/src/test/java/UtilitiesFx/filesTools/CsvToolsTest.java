@@ -32,33 +32,33 @@ class CsvToolsTest {
 	@Test
 	void controlServiceProductivity() {
 		// t2("ssp1a26", "C3pulses", 1);
-		demandFiles("C3pulses",4.517221531565974);
-		demandFiles("FloodRegulation",8.947317179136961);
-		demandFiles("C3fruitveg",5.482352443191113);
-		demandFiles("Softwood",10.934606743000856);
-		demandFiles("Hardwood",11.429365046232567);
-		demandFiles("C3starchyroots",5.835639730856504);
-		demandFiles("BioenergyG1",6.368460163497004);
-		demandFiles("Biodiversity",8.448771370308279);
-		demandFiles("BioenergyG2",26.05545199907801);
-		demandFiles("Carbon",8.613496013910156);
-		demandFiles("SusProd",7.7346213505587285);
-		demandFiles("GFmilk",8.886989061203632);
-		demandFiles("CES",7.680113238722144);
-		demandFiles("C4crops",7.230685378602165);
-		demandFiles("Ldiversity",7.476656296839283);
-		demandFiles("Foddercrops",17.030438543825618);
-		demandFiles("Recreation",8.327013850542208);
-		demandFiles("Employment",8.241254544491785);
-		demandFiles("SolarEnergy",36.04185853841488);
-		demandFiles("C3cereals",5.49133490369705);
-		demandFiles("C3oilcrops",7.402962558589438);
-		demandFiles("GFmeat",8.43339882235723);
+		demandFiles("C3pulses",0.7499999999999999);
+		demandFiles("FloodRegulation",0.9985654713100208);
+		demandFiles("C3fruitveg",0.7193175387101257);
+		demandFiles("Softwood",1.0000000000000007);
+		demandFiles("Hardwood",1.0000000000000004);
+		demandFiles("C3starchyroots",0.7706442560422526);
+		demandFiles("BioenergyG1",1.0);
+		demandFiles("Biodiversity",1.166189837238498);
+		demandFiles("BioenergyG2",1.0);
+		demandFiles("Carbon",1.05154145438215);
+		demandFiles("SusProd",1.1317580367231195);
+		demandFiles("GFmilk",0.7907626004893809);
+		demandFiles("CES",1.1338313890137357);
+		demandFiles("C4crops",0.7497745300851301);
+		demandFiles("Ldiversity",1.0002480773524307);
+		demandFiles("Foddercrops",0.9999999999999996);
+		demandFiles("Recreation",1.0562848787042627);
+		demandFiles("Employment",1.0017711805145526);
+		demandFiles("SolarEnergy",0.9999999999999996);
+		demandFiles("C3cereals",0.6939297578694815);
+		demandFiles("C3oilcrops",0.7572536477419254);
+		demandFiles("GFmeat",0.7820384276249897);
 	}
 
 	void demandFiles(String service, double p) {
 		System.out.println(service);
-		String path = "C:\\Users\\byari-m\\Desktop\\data-DE_3kmgrid\\worlds\\demand\\ssp585_demands_DE.csv";
+		String path = "C:\\Users\\byari-m\\Desktop\\data-DE_3kmgrid\\worlds\\demand\\ssp245_demands_DE.csv";
 		String[][] filereder = CsvTools.csvReader(path);
 		int index = Tools.indexof(service, filereder[0]);
 		for (int i = 1; i < filereder.length; i++) {

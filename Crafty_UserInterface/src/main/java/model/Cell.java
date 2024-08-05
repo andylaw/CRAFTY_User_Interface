@@ -97,10 +97,12 @@ public class Cell extends AbstractCell {
 		boolean makeCopetition = true;
 		if (getMaskType() != null) {
 			HashMap<String, Boolean> mask = MasksPaneController.restrictions.get(getMaskType());
-			if (owner == null) {
-				makeCopetition = mask.get(competitor.getLabel() + "_" + competitor.getLabel());
-			} else {
-				makeCopetition = mask.get(owner.getLabel() + "_" + competitor.getLabel());
+			if (mask != null) {
+				if (owner == null) {
+					makeCopetition = mask.get(competitor.getLabel() + "_" + competitor.getLabel());
+				} else {
+					makeCopetition = mask.get(owner.getLabel() + "_" + competitor.getLabel());
+				}
 			}
 		}
 

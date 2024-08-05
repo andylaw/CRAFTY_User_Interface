@@ -124,19 +124,18 @@ public class RegionalModelRunner {
 	public void go(int year) {
 		boolean outputFilesCreation = ModelRunner.writeCsvFiles && DemandModel.getDemandsRegions().size() > 1;
 
-//		totalSupply.forEach((serviceName, serviceVal) -> {
-//		System.out.println("demandFiles(\""+serviceName+"\","+(DemandModel.getRegionalDemand(serviceName, year, regionName)/serviceVal)+");");
-//	});
+		totalSupply.forEach((serviceName, serviceVal) -> {
+		System.out.println("demandFiles(\""+serviceName+"\","+(DemandModel.getRegionalDemand(serviceName, year, regionName)/serviceVal)+");");
+	});
 
 		if (outputFilesCreation) {
 			outPutservicedemandToCsv(year);
 			Tracker.trackSupply(year, regionName);
 		}
 
-		// LOGGER.info("Rigion: [" + regionName + "] Total Supply = " + totalSupply);
+		 LOGGER.info("Rigion: [" + regionName + "] Total Supply = " + totalSupply);
 		calculeMarginal(year);
-		// LOGGER.info("Rigion: [" + regionName + "] Calculating Distribution Mean &
-		// Land abandonment");
+		 LOGGER.info("Rigion: [" + regionName + "] Calculating Distribution Mean & Land abandonment");
 		calculeDistributionMean();
 
 		if (ModelRunner.usegiveUp) {
@@ -191,7 +190,7 @@ public class RegionalModelRunner {
 			updateCSVFiles();
 		}
 		AFTsLoader.hashAgentNbr(regionName);
-
+		
 	}
 
 	public void main(int nbrOfPartition) {

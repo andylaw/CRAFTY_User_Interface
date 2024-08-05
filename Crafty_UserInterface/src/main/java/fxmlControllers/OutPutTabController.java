@@ -10,7 +10,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import model.CellsSet;
 
-import java.io.File;
 import java.io.IOException;
 
 import UtilitiesFx.graphicalTools.NewWindow;
