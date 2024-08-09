@@ -116,7 +116,8 @@ public class PathTools {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Select Project");
 		File initialDirectory = new File(projectPath);
-		chooser.setInitialDirectory(initialDirectory);
+		if(initialDirectory.exists())
+			chooser.setInitialDirectory(initialDirectory);
 		File selectedDirectory = chooser.showDialog(FxMain.primaryStage);
 		return selectedDirectory;
 	}
