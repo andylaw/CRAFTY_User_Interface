@@ -1,5 +1,8 @@
 package model;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +24,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CurvesLoader;
 import dataLoader.DemandModel;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import fxmlControllers.ModelRunnerController;
 
 /**
@@ -47,9 +50,9 @@ public class RegionalModelRunner {
 	}
 
 	private void initializeListeners() {
-		compositionAftListener = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][AFTsLoader.getAftHash()
+		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader.getAftHash()
 				.size()];
-		servicedemandListener = new String[Paths.getEndtYear() - Paths.getStartYear()
+		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
 				+ 2][CellsSet.getServicesNames().size() * 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			servicedemandListener[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
@@ -228,7 +231,7 @@ public class RegionalModelRunner {
 
 	private void outPutservicedemandToCsv(int year) {
 		AtomicInteger m = new AtomicInteger();
-		int y = year - Paths.getStartYear() + 1;
+		int y = year - PathsLoader.getStartYear() + 1;
 
 		CellsSet.getServicesNames().forEach(name -> {
 			servicedemandListener[y][m.get()] = totalSupply.get(name) + "";
@@ -239,18 +242,20 @@ public class RegionalModelRunner {
 	}
 
 	private void compositionAFT(int year) {
-		int y = year - Paths.getStartYear() + 1;
+		int y = year - PathsLoader.getStartYear() + 1;
 		AFTsLoader.hashAgentNbrRegions.get(regionName).forEach((name, value) -> {
 			compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
 		});
 	}
 
 	private void updateCSVFiles() {
-		String dir = PathTools.makeDirectory(ModelRunnerController.outPutFolderName + "\\region_" + regionName + "\\");
+		String dir = PathTools.makeDirectory(ModelRunnerController.outPutFolderName + File.separator+"region_" + regionName + File.separator+"");
 		if (ModelRunner.writeCsvFiles) {
-			CsvTools.writeCSVfile(compositionAftListener,
+			Path aggregateAFTComposition= Paths.get(
 					dir + "region_" + regionName + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(servicedemandListener, dir + "region_" + regionName + "-AggregateServiceDemand.csv");
+			CsvTools.writeCSVfile(compositionAftListener,aggregateAFTComposition);
+			Path aggregateServiceDemand= Paths.get(dir + "region_" + regionName + "-AggregateServiceDemand.csv");
+			CsvTools.writeCSVfile(servicedemandListener, aggregateServiceDemand);
 		}
 
 	}

@@ -1,6 +1,8 @@
 package UtilitiesFx.filesTools;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +13,7 @@ public class ConvertScotlanddata {
 	static List<String> set = new ArrayList<>();
 
 	public static void initilasiation() {
-		String p = "C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\Wales\\Base_line_map_Wales.csv";
+		Path p = Paths.get("C:\\Users\\byari-m\\Documents\\Data\\data_Wales\\worlds\\Wales\\Base_line_map_Wales.csv");
 		HashMap<String, ArrayList<String>> baseline = ReaderFile
 				.ReadAsaHash(p);
 		for (int i = 0; i < baseline.values().iterator().next().size(); i++) {
@@ -19,10 +21,10 @@ public class ConvertScotlanddata {
 		}
 	}
 
-	public static void scotlandcells(String path) {
+	public static void scotlandcells(Path path) {
 		List<File> files = CsvTools.detectFiles(path);
 		files.forEach(file -> {
-			String[][] m = CsvTools.csvReader(file.getAbsolutePath());
+			String[][] m = CsvTools.csvReader(file.toPath());
 			ArrayList<String[]> lines = new ArrayList<>();
 			lines.add(m[0]);
 			for (int i = 0; i < m.length; i++) {
@@ -35,14 +37,14 @@ public class ConvertScotlanddata {
 				newCapi[i] = lines.get(i);
 			}
 
-			String newPath = file.getParent() + "\\" + file.getName().replace("UK", "Wales");
+			Path newPath =Paths.get(file.getParent() + File.separator + file.getName().replace("UK", "Wales"));
 			CsvTools.writeCSVfile(newCapi, newPath);
 			System.out.println(file.getName());
 		});
 
 	}
 
-	static HashMap<String, Double> csvtoHashmap(String path) {
+	static HashMap<String, Double> csvtoHashmap(Path path) {
 		String[][] csv = CsvTools.csvReader(path);
 		HashMap<String, Double> hash = new HashMap<>();
 		for (int i = 1; i < csv.length; i++) {
@@ -54,14 +56,16 @@ public class ConvertScotlanddata {
 	}
 
 	public static void creatsensitivty() {
-		String path = "C:\\Users\\byari-m\\Desktop\\Sensitivity_configuration_DE\\";
-		String aft_capital_path = path + "ac_DE.csv";
-		String aft_services_path = path + "as_javaGPT.csv";
-		String services_capitals_path = path + "sc_DE.csv";
+		Path path =Paths.get("C:\\Users\\byari-m\\Desktop\\Sensitivity_configuration_DE\\");
+		Path aft_capital_path = Paths.get(path + "ac_DE.csv");
+		Path aft_services_path = Paths.get(path + "as_javaGPT.csv");
+		Path services_capitals_path = Paths.get(path + "sc_DE.csv");
+		Path AFT_list = Paths.get(path + "AFT_list.csv");
+		
 
 		ArrayList<String> capital = new ArrayList<>(ReaderFile.ReadAsaHash(aft_capital_path).keySet());
 		ArrayList<String> services = new ArrayList<>(ReaderFile.ReadAsaHash(aft_services_path).keySet());
-		ArrayList<String> aft = new ArrayList<>(ReaderFile.ReadAsaHash(path + "AFT_list.csv").keySet());
+		ArrayList<String> aft = new ArrayList<>(ReaderFile.ReadAsaHash(AFT_list).keySet());
 
 		capital.remove(capital.indexOf(""));
 		services.remove(services.indexOf(""));
@@ -100,7 +104,8 @@ public class ConvertScotlanddata {
 			tab[j + 1][capital.size()+1] = (sum/capital.size())+ "";
 			}
 		}
-		CsvTools.writeCSVfile(tab, path + "Production_parametres\\" + a + ".csv");
+		Path p = Paths.get( path + "Production_parametres\\" + a + ".csv");
+		CsvTools.writeCSVfile(tab,p);
 });
 	}
 

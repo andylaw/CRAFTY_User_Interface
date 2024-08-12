@@ -1,5 +1,6 @@
 package fxmlControllers;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +9,6 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.CSVTableView;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
@@ -32,15 +32,14 @@ public class GlobalViewFXMLController {
 	}
 
 	void initilaseTabls() {
-		// Paths.initialisation("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv");
 		System.out.println("initialize " + getClass().getSimpleName());
-		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\AFTsMetaData.csv").get(0)), null,
+		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter(File.separator+"AFTsMetaData.csv").get(0)), null,
 				TablAFTs);
-		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\Capitals.csv").get(0)), null,
+		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter(File.separator+"Capitals.csv").get(0)), null,
 				TablCapitals);
-		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\Services.csv").get(0)), null,
+		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter(File.separator+"Services.csv").get(0)), null,
 				TablServices);
-		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter("\\scenarios.csv").get(0)), null,
+		CSVTableView.updateTableView(CsvTools.csvReader(PathTools.fileFilter(File.separator+"scenarios.csv").get(0)), null,
 				TabScenarios);
 		Set<TitledPane> panes = new HashSet<>();
 

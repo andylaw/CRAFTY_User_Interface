@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 
 public class RegionClassifier {
 
@@ -29,7 +29,7 @@ public class RegionClassifier {
 					initialation(false);
 				}
 			} else {
-				regions.put(Paths.WorldName, CellsLoader.hashCell);
+				regions.put(PathsLoader.WorldName, CellsLoader.hashCell);
 			}
 			
 			DemandModel.updateRegionsDemand();

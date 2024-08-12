@@ -12,7 +12,7 @@ class CurvesLoaderTest {
 
 //	@Test
 	void test() {
-		CurvesLoader.loadcurves("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv\\csv\\Curves.csv");
+//		CurvesLoader.loadcurves("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv\\csv\\Curves.csv");
 
 	}
 

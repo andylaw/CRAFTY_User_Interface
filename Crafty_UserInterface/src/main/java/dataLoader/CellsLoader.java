@@ -2,6 +2,7 @@ package dataLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +40,7 @@ public class CellsLoader {
 		AFtsSet = new AFTsLoader();
 		hashCell.clear();
 
-		String baseLindPath = PathTools.fileFilter("\\worlds\\", "Baseline_map").iterator().next();
+		Path baseLindPath = PathTools.fileFilter(File.separator +"worlds"+File.separator, "Baseline_map").iterator().next();
 
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
 
@@ -59,7 +60,7 @@ public class CellsLoader {
 	}
 
 	public void loadCapitalsAndServiceList() {
-		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Capitals.csv").get(0));
+		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator +"Capitals.csv").get(0));
 		CellsSet.getCapitalsName().clear();
 		for (int n = 1; n < line0.length; n++) {
 			CellsSet.getCapitalsName().add(line0[n]);
@@ -67,7 +68,7 @@ public class CellsLoader {
 		LOGGER.info("Capitals size=" + CellsSet.getCapitalsName().size() + " CellsSet.getCapitalsName() "
 				+ CellsSet.getCapitalsName());
 		CellsSet.getServicesNames().clear();
-		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter("\\Services.csv").get(0));
+		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator +"Services.csv").get(0));
 		for (int n = 1; n < line0s.length; n++) {
 			CellsSet.getServicesNames().add(line0s[n]);
 		}
@@ -77,10 +78,10 @@ public class CellsLoader {
 
 	public void loadGisData() {
 		try {
-			String path = PathTools.fileFilter(true, "\\GIS\\").get(0);
-			Paths.WorldName = new File(path).getName().replace("_Regions", "").replace(".csv", "");
-			LOGGER.info("WorldName = " + Paths.WorldName);
-			Table T = Table.read().csv(path);
+			Path path = PathTools.fileFilter(true, File.separator +"GIS"+File.separator).get(0);
+			PathsLoader.WorldName = path.toFile().getName().replace("_Regions", "").replace(".csv", "");
+			LOGGER.info("WorldName = " + PathsLoader.WorldName);
+			Table T = Table.read().csv(path.toFile());
 			GISRegionsNames = T.columnNames();
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
 				String coor = T.column("X").get(i) + "," + T.column("Y").get(i);
@@ -104,17 +105,17 @@ public class CellsLoader {
 	}
 
 	public void updateCapitals(int year) {
-		year = Math.min(year, Paths.getEndtYear());
+		year = Math.min(year, PathsLoader.getEndtYear());
 
-		if (!Paths.getScenario().equalsIgnoreCase("Baseline")) {
-			String path = PathTools.fileFilter(year + "", Paths.getScenario(), "\\capitals\\").get(0);
+		if (!PathsLoader.getScenario().equalsIgnoreCase("Baseline")) {
+			Path path = PathTools.fileFilter(year + "", PathsLoader.getScenario(), File.separator +"capitals"+File.separator).get(0);
 			ReaderFile.processCSV(this, path, "Capitals");
 		}
 	}
 
 	public void servicesAndOwneroutPut(String year, String outputpath) {
-		Paths.setAllfilesPathInData(PathTools.findAllFiles(Paths.getProjectPath()));
-		String path = PathTools.fileFilter(year, ".csv").get(0);
+		PathsLoader.setAllfilesPathInData(PathTools.findAllFiles(PathsLoader.getProjectPath()));
+		Path path = PathTools.fileFilter(year, ".csv").get(0);
 
 		ReaderFile.processCSV(this, path, "Services");
 	}

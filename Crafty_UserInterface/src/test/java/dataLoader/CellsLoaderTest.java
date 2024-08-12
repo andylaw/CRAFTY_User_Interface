@@ -2,6 +2,8 @@ package dataLoader;
 
 import static org.mockito.Mockito.mock;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +22,11 @@ public class CellsLoaderTest {
 
 //	@BeforeEach
 	public void setUp() throws Exception {
-		Paths.initialisation("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv");
-		M.loadCapitalsAndServiceList();
-		afTets.setUp();
-		M.loadMap();
-		CellsSet.setCellsSet(M);
+//		PathsLoader.initialisation("C:\\Users\\byari-m\\Documents\\Data\\data_EUpaper_nocsv");
+//		M.loadCapitalsAndServiceList();
+//		afTets.setUp();
+//		M.loadMap();
+//		CellsSet.setCellsSet(M);
 
 	}
 
@@ -54,7 +56,8 @@ public class CellsLoaderTest {
 	double[] sumCSVboxs(String path, int firstYear, int lastYear) {
 		double[] SUM = new double[lastYear - firstYear];
 		for (int k = 0; k < SUM.length; k++) {
-			String[][] svct = CsvTools.csvReader(path + (firstYear + k) + ".csv");
+			Path p = Paths.get(path + (firstYear + k) + ".csv");
+			String[][] svct = CsvTools.csvReader(p);
 			double sum = 0;
 			for (int i = 0; i < svct.length; i++) {
 				for (int j = 0; j < svct[0].length; j++) {

@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
@@ -99,7 +99,7 @@ public class SaveAs {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save As");
 		fileChooser.setInitialFileName("title."+type); // set initial file name
-		File initialDirectory = new File(Paths.getProjectPath());
+		File initialDirectory = PathsLoader.getProjectPath().toFile();//new File(PathsLoader.getProjectPath());
 		fileChooser.setInitialDirectory(initialDirectory);
 		fileChooser.getExtensionFilters().addAll(extensionFilter,
 				new FileChooser.ExtensionFilter("All Files", "*.*"));

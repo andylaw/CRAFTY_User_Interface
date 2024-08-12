@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,10 +29,10 @@ public class CsvTools {
 	 *
 	 */
 
-	public static List<String> csvReaderAsVector(String filePath) {
+	public static List<String> csvReaderAsVector(Path filePath) {
 		LOGGER.info("Read as a list file:  " + filePath );
 		List<String> lines = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				String values = line;
@@ -46,10 +47,10 @@ public class CsvTools {
 		return lines;
 	}
 
-	public static String[][] csvReader(String filePath) {
+	public static String[][] csvReader(Path filePath) {
 		LOGGER.info("Read as a table file: " + filePath );
 		List<String[]> lines = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] values = line.split(","); // Assumes CSV uses comma as delimiter
@@ -67,11 +68,11 @@ public class CsvTools {
 		return array;
 	}
 
-	public static String[] lineFromscsv(int lineNumber, String path) {
+	public static String[] lineFromscsv(int lineNumber, Path path) {
 		int i = 0;
 		Scanner scanner;
 		try {
-			scanner = new Scanner(new File(path));
+			scanner = new Scanner(path.toFile());
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine().toLowerCase();
 				if (i == lineNumber) {
@@ -85,7 +86,7 @@ public class CsvTools {
 		return null;
 	}
 
-	public static HashMap<String, String> lineFromscsvHash(int lineNumber, String path) {
+	public static HashMap<String, String> lineFromscsvHash(int lineNumber, Path path) {
 		HashMap<String, String> ret = new HashMap<>();
 		String[] names = lineFromscsv(0, path);
 		String[] val = lineFromscsv(lineNumber, path);
@@ -131,7 +132,7 @@ public class CsvTools {
 //        return resultMap;
 //    }
 
-	public static void cleanCsvFile(String filePath) {
+	public static void cleanCsvFile(Path filePath) {
 		List<String> vect = csvReaderAsVector(filePath);
 		String[][] vect2 = new String[vect.size()][1];
 		for (int i = 0; i < vect.size(); i++) {
@@ -141,7 +142,7 @@ public class CsvTools {
 		writeCSVfile(vect2, filePath);
 	}
 
-	public static String[] columnFromscsv(int colunNumber, String path) {
+	public static String[] columnFromscsv(int colunNumber, Path path) {
 		String[][] csvR = csvReader(path);
 		return columnFromsMatrix(colunNumber, csvR);
 	}
@@ -166,10 +167,10 @@ public class CsvTools {
 		return temp;
 	}
 
-	public static void writeCSVfile(String[][] tabl, String filePath) {
+	public static void writeCSVfile(String[][] tabl, Path filePath) {
 		LOGGER.info("writing CSV file: " + filePath);
 		
-		File file = new File(filePath);
+		File file =filePath.toFile();
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
@@ -191,39 +192,39 @@ public class CsvTools {
 	}
 
 
-	public static void writeNewLineCSVfile(String filePath, int lineNumber, String... content) {
+	public static void writeNewLineCSVfile(Path filePath, int lineNumber, String... content) {
 		String[][] M = csvReader(filePath);
 		M[lineNumber] = content;
 		writeCSVfile(M, filePath);
 	}
 
-	public static void writeValueCSVfile(String filePath, int lineNumber, int columnNbr, String content) {
+	public static void writeValueCSVfile(Path filePath, int lineNumber, int columnNbr, String content) {
 		String[][] M = csvReader(filePath);
 		M[lineNumber][columnNbr] = content;
 		writeCSVfile(M, filePath);
 	}
 
-	public static void ModefieOneElementCSVFile(int i, int j, String newValue, String filePath) {
+	public static void ModefieOneElementCSVFile(int i, int j, String newValue, Path filePath) {
 		String[][] M = csvReader(filePath);
 		M[i][j] = newValue;
 		writeCSVfile(M, filePath);
 
 	}
 
-	public static void addRefProductionInBehvoirFileFullPath(String folderPath) {
+	public static void addRefProductionInBehvoirFileFullPath(Path folderPath) {
 		List<File> Bfiles = detectFiles(folderPath);
 		Bfiles.forEach(file -> {
 			if (file.getName().contains(".csv")) {
-				String[][] M = csvReader(file.getAbsolutePath());
-				M[1][8] = file.getAbsolutePath().replace("AftParams_", "").replace("\\agents\\", "\\production\\");
-				writeCSVfile(M, file.getAbsolutePath());
+				String[][] M = csvReader(file.toPath());
+				M[1][8] = file.getAbsolutePath().replace("AftParams_", "").replace(File.separator+"agents"+File.separator, File.separator+"production"+File.separator);
+				writeCSVfile(M, file.toPath());
 			}
 		});
 	}
 
-	public static List<File> detectFiles(String folderPath) {
+	public static List<File> detectFiles(Path folderPath) {
 		List<File> filePaths = new ArrayList<>();
-		File folder = new File(folderPath);
+		File folder = folderPath.toFile();
 
 		if (!folder.isDirectory()) {
 			throw new IllegalArgumentException("Input path is not a directory.");

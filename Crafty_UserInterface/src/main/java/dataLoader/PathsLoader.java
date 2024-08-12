@@ -10,6 +10,7 @@ import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,26 +19,28 @@ import java.util.HashMap;
  *
  */
 
-public final class Paths {
-	private static final Logger LOGGER = LogManager.getLogger(Paths.class);
+public final class PathsLoader {
+	private static final Logger LOGGER = LogManager.getLogger(PathsLoader.class);
 	private static String[] foldersNecessary = { "agents", "csv", "production", "worlds" };
 	private static int startYear;
 	private static int endtYear;
 	private static int currentYear = startYear;
-	private static String projectPath = "";
+	private static Path projectPath ;
+	
 	private static ArrayList<String> scenariosList = new ArrayList<>();
 	private static HashMap<String, String> scenariosHash = new HashMap<>();
-	static ArrayList<String> allfilesPathInData;
+	static ArrayList<Path> allfilesPathInData;
 	private static String scenario;
 	public static String WorldName = "";
-	public static void initialisation(String str) {
-		projectPath = str;
+	public static void initialisation(Path p) {
+		projectPath = p;
 		allfilesPathInData = PathTools.findAllFiles(projectPath);
 		initialSenarios();
 	}
+	
 
 	static void initialSenarios() {
-		String path = PathTools.fileFilter("\\scenarios.csv").iterator().next();
+		Path path = PathTools.fileFilter(File.separator+"scenarios.csv").iterator().next();
 		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(path);
 		setScenariosList(hash.get("Name"));
 		for (String scenario : scenariosList) {
@@ -62,14 +65,14 @@ public final class Paths {
 		});
 		for (int i = 0; i < foldersNecessary.length; i++) {
 			if (!foldersname.contains(foldersNecessary[i])) {
-				listOfFilesMissing.add(folders.get(0).getParent() + "\\" + foldersNecessary[i]);
+				listOfFilesMissing.add(folders.get(0).getParent() + File.separator + foldersNecessary[i]);
 			}
 		}
 
 		return listOfFilesMissing;
 	}
 
-	public static ArrayList<String> getAllfilesPathInData() {
+	public static ArrayList<Path> getAllfilesPathInData() {
 		return allfilesPathInData;
 	}
 
@@ -78,7 +81,7 @@ public final class Paths {
 	}
 
 	public static void setStartYear(int startYear) {
-		Paths.startYear = startYear;
+		PathsLoader.startYear = startYear;
 	}
 
 	public static int getEndtYear() {
@@ -86,7 +89,7 @@ public final class Paths {
 	}
 
 	public static void setEndtYear(int endtYear) {
-		Paths.endtYear = endtYear;
+		PathsLoader.endtYear = endtYear;
 	}
 
 	public static int getCurrentYear() {
@@ -94,10 +97,10 @@ public final class Paths {
 	}
 
 	public static void setCurrentYear(int currentYear) {
-		Paths.currentYear = currentYear;
+		PathsLoader.currentYear = currentYear;
 	}
 
-	public static String getProjectPath() {
+	public static Path getProjectPath() {
 		return projectPath;
 	}
 
@@ -109,8 +112,8 @@ public final class Paths {
 		scenariosList = new ArrayList<>(list);
 	}
 
-	public static void setAllfilesPathInData(ArrayList<String> allfilesPathInData) {
-		Paths.allfilesPathInData = allfilesPathInData;
+	public static void setAllfilesPathInData(ArrayList<Path> allfilesPathInData) {
+		PathsLoader.allfilesPathInData = allfilesPathInData;
 	}
 
 	public static String getScenario() {
@@ -118,7 +121,7 @@ public final class Paths {
 	}
 
 	public static void setScenario(String scenario) {
-		Paths.scenario = scenario;
+		PathsLoader.scenario = scenario;
 		String[] temp = scenariosHash.get(scenario).split("_");
 		startYear = (int) Tools.sToD(temp[0]);
 		endtYear = (int) Tools.sToD(temp[1]);

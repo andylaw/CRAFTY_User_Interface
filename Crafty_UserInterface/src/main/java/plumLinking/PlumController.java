@@ -3,6 +3,7 @@ package plumLinking;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -114,7 +115,7 @@ public class PlumController {
 		return mergedList;
 	}
 
-	static ArrayList<String> filterCSV(String path, String... countries) {
+	static ArrayList<String> filterCSV(Path path, String... countries) {
 		List<String> T = CsvTools.csvReaderAsVector(path);
 		ArrayList<String> listFiltred = new ArrayList<>();
 		listFiltred.add(T.get(0));

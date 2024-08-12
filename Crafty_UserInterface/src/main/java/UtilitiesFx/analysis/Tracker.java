@@ -1,5 +1,6 @@
 package UtilitiesFx.analysis;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class Tracker {
 			AFTsLoader.hashAgentNbr.forEach((label, a) -> {
 				container.get(label).put("AggregateAFT", (double) a);
 			});
-			writeCSV(container, ModelRunnerController.outPutFolderName + "\\SupplyTracker_" + year + ".csv");
+			writeCSV(container, ModelRunnerController.outPutFolderName + File.separator+"SupplyTracker_" + year + ".csv");
 			LOGGER.trace("Time taken for trackSupply " + (System.currentTimeMillis() - staetTime) + " ms");
 		}
 	}
@@ -57,7 +58,7 @@ public class Tracker {
 			AFTsLoader.hashAgentNbrRegions.get(regionName).forEach((label, a) -> {
 				container.get(label).put("AggregateAFT", (double) a);
 			});
-			writeCSV(container, ModelRunnerController.outPutFolderName+"\\region_"+regionName + "\\SupplyTracker_" + year + ".csv");
+			writeCSV(container, ModelRunnerController.outPutFolderName+File.separator+"region_"+regionName + File.separator+"SupplyTracker_" + year + ".csv");
 		}
 	}
 

@@ -1,5 +1,7 @@
 package dataLoader;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +22,7 @@ public class CurvesLoader {
 
 	public static void loadcurves() {
 		try {
-		String path = PathTools.fileFilter("\\Curves.csv").get(0);
+			Path path = PathTools.fileFilter(File.separator+"Curves.csv").get(0);
 		loadcurves(path);}
 		catch (NullPointerException e) {
 			LOGGER.warn("Unable to find the file for the competitiveness curves model: the default curves for all services will be used. \' y=1x+0 \'");
@@ -29,7 +31,7 @@ public class CurvesLoader {
 			});
 		}
 	}
-	public static void loadcurves(String path) {
+	public static void loadcurves(Path path) {
 	
 		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(path);
 		try {

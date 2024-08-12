@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -33,7 +33,7 @@ public class LineChartTools {
 		if (hash == null) {
 			return;
 		}
-		configurexAxis(lineChart, Paths.getStartYear(), Paths.getEndtYear());
+		configurexAxis(lineChart, PathsLoader.getStartYear(), PathsLoader.getEndtYear());
 		lineChart.getData().clear();
 		Series<Number, Number>[] series = new XYChart.Series[hash.size()];
 

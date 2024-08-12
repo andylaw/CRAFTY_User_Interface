@@ -1,6 +1,9 @@
 package fxmlControllers;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +26,7 @@ import UtilitiesFx.graphicalTools.SankeyPlotGraph;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -73,7 +76,7 @@ public class OutPuterController {
 	private static final Logger LOGGER = LogManager.getLogger(OutPuterController.class);
 
 	public static boolean isCurrentResult = false;
-	public static String outputpath = "";
+	public static Path outputpath;
 
 	public void initialize() {
 		System.out.println("Initialize " + getClass().getSimpleName());
@@ -91,7 +94,7 @@ public class OutPuterController {
 	}
 
 	void initialiseregionBox() {
-		List<File> folders = PathTools.detectFolders(outputpath);
+		List<File> folders = PathTools.detectFolders(outputpath.toString());
 		folders.forEach(e -> {
 			if (e.getName().contains("region_")) {
 				regionsBox.getItems().addAll(e.getName());
@@ -150,23 +153,23 @@ public class OutPuterController {
 
 	public void selectoutPut() {
 		if (!isCurrentResult) {
-			File selectedDirectory = PathTools.selectFolder(Paths.getProjectPath() + "\\output");
+			File selectedDirectory = PathTools.selectFolder(PathsLoader.getProjectPath() +File.separator + "output");
 			if (selectedDirectory != null) {
-				outputpath = selectedDirectory.getAbsolutePath();
+				outputpath = Paths.get(selectedDirectory.getAbsolutePath());
 			} else {
 				outputpath = null;
 			}
 		} else {
 			if (ModelRunnerController.outPutFolderName != null) {
-				outputpath = ModelRunnerController.outPutFolderName;
+				outputpath = Paths.get(ModelRunnerController.outPutFolderName);
 				isCurrentResult = false;
 			}
 		}
 		if (outputpath != null) {
 			ArrayList<String> yearList = new ArrayList<>();
 			PathTools.findAllFiles(outputpath).forEach(str -> {
-				File file = new File(str);
-				String tmp = new File(file.getParent()).getName() + "\\" + file.getName();
+				File file = str.toFile();
+				String tmp = new File(file.getParent()).getName() + File.separator  + file.getName();
 
 				if (tmp.contains("-Cell-"))
 					yearList.add(tmp);
@@ -182,12 +185,12 @@ public class OutPuterController {
 		}
 	}
 
-	public void selectoutPut(String path) {
+	public void selectoutPut(Path path) {
 		outputpath = path;
 		ArrayList<String> yearList = new ArrayList<>();
 		PathTools.findAllFiles(outputpath).forEach(str -> {
-			File file = new File(str);
-			String tmp = new File(file.getParent()).getName() + "\\" + file.getName();
+			File file = str.toFile();
+			String tmp = new File(file.getParent()).getName() + File.separator  + file.getName();
 			if (tmp.contains("-Cell-"))
 				yearList.add(tmp);
 		});
@@ -208,28 +211,28 @@ public class OutPuterController {
 			int ii = i;
 			if (OutPutTabController.radioColor[i].getText().contains("Agent")) {
 				String newfolder = PathTools
-						.makeDirectory(outputpath + "\\" + OutPutTabController.radioColor[ii].getText());
+						.makeDirectory(outputpath + File.separator  + OutPutTabController.radioColor[ii].getText());
 				yearChoice.getItems().forEach(filepath -> {
-					M.servicesAndOwneroutPut(filepath, outputpath);
+					M.servicesAndOwneroutPut(filepath, outputpath.toString());
 					OutPutTabController.radioColor[ii].fire();
 					String fileyear = new File(filepath).getName().replace(".csv", "").replace("-Cell-", "");
-					for (String scenario : Paths.getScenariosList()) {
+					for (String scenario : PathsLoader.getScenariosList()) {
 						fileyear = fileyear.replace(scenario, "");
 					}
-					ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + "\\" + fileyear + ".PNG");
+					ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + File.separator  + fileyear + ".PNG");
 				});
 			}
 		}
-		String newfolder = PathTools.makeDirectory(outputpath + "\\" + "Charts");
-		
+		String newfolder = PathTools.makeDirectory(outputpath + File.separator  + "Charts");
+
 		// First, create a snapshot of the children with their positions
 		List<Node> children = new ArrayList<>(gridChart.getChildren());
 		List<Integer> rowIndexes = new ArrayList<>();
 		List<Integer> colIndexes = new ArrayList<>();
 
 		for (Node child : children) {
-		    rowIndexes.add(GridPane.getRowIndex(child));
-		    colIndexes.add(GridPane.getColumnIndex(child));
+			rowIndexes.add(GridPane.getRowIndex(child));
+			colIndexes.add(GridPane.getColumnIndex(child));
 		}
 
 		// Clear children to prevent ConcurrentModificationException
@@ -237,26 +240,26 @@ public class OutPuterController {
 
 		// Process each child, create an image, and then re-add to the original position
 		for (int i = 0; i < children.size(); i++) {
-		    Node child = children.get(i);
-		    VBox container = (VBox) child;
-		    @SuppressWarnings("unchecked")
+			Node child = children.get(i);
+			VBox container = (VBox) child;
+			@SuppressWarnings("unchecked")
 			LineChart<Number, Number> ch = (LineChart<Number, Number>) container.getChildren().iterator().next();
-		    double w = ch.getWidth();
-		    double h = ch.getHeight();
-		    ch.setPrefSize(1000, 1000);
+			double w = ch.getWidth();
+			double h = ch.getHeight();
+			ch.setPrefSize(1000, 1000);
 
-		    Group rootPane = new Group();
-		    rootPane.getChildren().add(child);  // Temporarily add to another group
+			Group rootPane = new Group();
+			rootPane.getChildren().add(child); // Temporarily add to another group
 
-		    ImageExporter.NodeToImage(rootPane, newfolder + "\\" + ch.getTitle() + ".PNG");
+			ImageExporter.NodeToImage(rootPane, newfolder + File.separator  + ch.getTitle() + ".PNG");
 
-		    // Now re-add the child to the grid at its original position
-		    GridPane.setRowIndex(child, rowIndexes.get(i));
-		    GridPane.setColumnIndex(child, colIndexes.get(i));
-		    gridChart.getChildren().add(child);
-		    ch.setPrefSize(w, h);
+			// Now re-add the child to the grid at its original position
+			GridPane.setRowIndex(child, rowIndexes.get(i));
+			GridPane.setColumnIndex(child, colIndexes.get(i));
+			gridChart.getChildren().add(child);
+			ch.setPrefSize(w, h);
 		}
-		
+
 //		gridChart.getChildren().forEach(chart -> {
 //			VBox container = (VBox) chart;
 //			@SuppressWarnings("unchecked")
@@ -264,10 +267,10 @@ public class OutPuterController {
 //			ch.setPrefSize(1000, 1000);
 //			StackPane rootPane = new StackPane();
 //			rootPane.getChildren().add(chart);
-//			ImageExporter.NodeToImage(rootPane, newfolder + "\\" + ch.getTitle() + ".PNG");
+//			ImageExporter.NodeToImage(rootPane, newfolder + File.separator  + ch.getTitle() + ".PNG");
 //
 //		});
-		List<File> foders = PathTools.detectFolders(outputpath);
+		List<File> foders = PathTools.detectFolders(outputpath.toString());
 		for (File folder : foders) {
 			ImagesToPDF.createPDFWithImages(folder.getAbsolutePath(), folder.getName() + ".pdf", 4, 4);
 		}
@@ -275,14 +278,14 @@ public class OutPuterController {
 
 	@FXML
 	public void yearChoice() {
-		if (outputpath.length() > 0) {
+		if (Files.exists(outputpath)) {
 			newOutPut(yearChoice.getValue());
 		}
 	}
 
 	@FXML
 	public void sankeyPlot() {
-		if (outputpath.length() > 0) {
+		if (Files.exists(outputpath)) {
 			Text txt2 = Tools.text(new File(yearChoice.getValue()).getName(), Color.BLUE);
 			HashMap<Manager, HashMap<Manager, Integer>> h = stateToHashSankey(sankeyBox.getValue());
 			Set<Manager> setManagers = new HashSet<>();
@@ -325,7 +328,7 @@ public class OutPuterController {
 	}
 
 	void newOutPut(String year) {
-		M.servicesAndOwneroutPut(year, outputpath);
+		M.servicesAndOwneroutPut(year, outputpath.toString());
 		for (int i = 0; i < OutPutTabController.radioColor.length; i++) {
 			if (OutPutTabController.radioColor[i].isSelected()) {
 				OutPutTabController.radioColor[i].fire();
@@ -340,7 +343,7 @@ public class OutPuterController {
 		ArrayList<LineChart<Number, Number>> lineChart = new ArrayList<>();
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		ArrayList<String> servicepath = PathTools.fileFilter(outputpath, serviceDemand);
+		ArrayList<Path> servicepath = PathTools.fileFilter(outputpath.toString(), serviceDemand);
 		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(servicepath.get(0));
 
 		ArrayList<HashMap<String, ArrayList<Double>>> has = new ArrayList<>();
@@ -362,9 +365,9 @@ public class OutPuterController {
 			lineChart.add(chart);
 		});
 
-		has.add(updatComposition(outputpath, aftComposition));
-		LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
-				new NumberAxis());
+		has.add(updatComposition(outputpath.toString(), aftComposition));
+		LineChart<Number, Number> chart = new LineChart<>(
+				new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5), new NumberAxis());
 		chart.setTitle("Land use trends");
 		lineChart.add(chart);
 		int j = 0, k = 0;

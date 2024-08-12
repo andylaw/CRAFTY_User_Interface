@@ -1,6 +1,8 @@
 package fxmlControllers;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +19,7 @@ import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import eu.hansolo.fx.charts.Category;
 import eu.hansolo.fx.charts.ChartType;
 import eu.hansolo.fx.charts.YChart;
@@ -367,8 +369,9 @@ public class AFTsConfigurationController {
 			}
 		}
 
-		String folder = new File(PathTools.fileFilter("\\production\\", Paths.getScenario()).get(0)).getParent();
-		CsvTools.writeCSVfile(tab, folder + "\\" + a.getLabel() + ".csv");
+		String folder = PathTools.fileFilter(File.separator + "production" + File.separator, PathsLoader.getScenario())
+				.get(0).toFile().getParent();
+		CsvTools.writeCSVfile(tab,Paths.get(folder + File.separator + a.getLabel() + ".csv") );
 		String[][] tab2 = new String[2][7];
 		tab2[0] = "givingInDistributionMean,givingInDistributionSD,givingUpDistributionMean,givingUpDistributionSD,serviceLevelNoiseMin,serviceLevelNoiseMax,givingUpProb"
 				.split(",");
@@ -379,11 +382,13 @@ public class AFTsConfigurationController {
 		tab2[1][4] = a.getServiceLevelNoiseMin() + "";
 		tab2[1][5] = a.getServiceLevelNoiseMax() + "";
 		tab2[1][6] = a.getGiveUpProbabilty() + "";
-		String folder2 = new File(PathTools.fileFilter("\\agents\\", Paths.getScenario()).get(0)).getParent();
-		CsvTools.writeCSVfile(tab2, folder2 + "\\AftParams_" + a.getLabel() + ".csv");
+		String folder2 = PathTools.fileFilter(File.separator + "agents" + File.separator, PathsLoader.getScenario())
+				.get(0).toFile().getParent();
+		CsvTools.writeCSVfile(tab2, Paths.get(folder2 + File.separator + "AftParams_" + a.getLabel() + ".csv"));
 		// add also in csv folder
-		String pathCSV = PathTools.fileFilter("\\csv\\", "AFTsMetaData").get(0);
-		String[][] tmp = CsvTools.csvReader(PathTools.fileFilter("\\csv\\", "AFTsMetaData").get(0));
+		Path pathCSV = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData").get(0);
+		String[][] tmp = CsvTools
+				.csvReader(PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData").get(0));
 		boolean isExiste = false;
 		for (int i = 0; i < tmp.length; i++) {
 			if (a.getLabel().equalsIgnoreCase(tmp[i][Tools.indexof("Label", tmp[0])])) {

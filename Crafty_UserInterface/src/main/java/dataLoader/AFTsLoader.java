@@ -1,7 +1,8 @@
-package dataLoader;
+ package dataLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void agentsColorinitialisation() {
-		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
+		List<Path> colorFiles = PathTools.fileFilter(File.separator +"csv"+File.separator , "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 
@@ -71,7 +72,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void updateColorsInputData() {
-		List<String> colorFiles = PathTools.fileFilter("\\csv\\", "AFTsMetaData");
+		List<Path> colorFiles = PathTools.fileFilter(File.separator +"csv"+File.separator, "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 			ArrayList<String> tmp = new ArrayList<>();
@@ -100,9 +101,9 @@ public class AFTsLoader extends HashSet<Manager> {
 		updateAftTypes();
 		hash.forEach((Label, a) -> {
 			if (a.isActive()) {
-				String pFile = PathTools.fileFilter("\\production\\", Paths.getScenario(), Label, ".csv").get(0);
+				Path pFile = PathTools.fileFilter(File.separator +"production"+File.separator , PathsLoader.getScenario(), Label, ".csv").get(0);
 				initializeAFTProduction(pFile);
-				String bFile = PathTools.fileFilter("\\agents\\", Paths.getScenario(), Label, ".csv").get(0);
+				Path bFile = PathTools.fileFilter(File.separator +"agents"+File.separator, PathsLoader.getScenario(), Label, ".csv").get(0);
 				initializeAFTBehevoir(bFile);
 			}
 		});
@@ -111,14 +112,14 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void updateAFTs() {
-		List<String> pFiles = PathTools.fileFilter("\\production\\", Paths.getScenario(), ".csv");
+		List<Path> pFiles = PathTools.fileFilter(File.separator +"production"+File.separator, PathsLoader.getScenario(), ".csv");
 		pFiles.forEach(f -> {
-			File file = new File(f);
+			File file = f.toFile();
 			updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
 		});
-		List<String> bFiles = PathTools.fileFilter("\\agents\\", Paths.getScenario(), ".csv");
+		List<Path> bFiles = PathTools.fileFilter(File.separator +"agents"+File.separator, PathsLoader.getScenario(), ".csv");
 		bFiles.forEach(f -> {
-			File file = new File(f);
+			File file = f.toFile();
 			try {
 				updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
 			} catch (NullPointerException e) {
@@ -128,17 +129,17 @@ public class AFTsLoader extends HashSet<Manager> {
 		checkAFTsBehevoireParametres(bFiles);
 	}
 
-	public void initializeAFTBehevoir(String aftPath) {
-		File file = new File(aftPath);
+	public void initializeAFTBehevoir(Path aftPath) {
+		File file = aftPath.toFile();
 		Manager a = hash.get(file.getName().replace(".csv", "").replace("AftParams_", ""));
 		updateAFTBehevoir(a, file);
 	}
 
-	private void checkAFTsBehevoireParametres(List<String> bFiles) {
+	private void checkAFTsBehevoireParametres(List<Path> bFiles) {
 
 		List<String> bf = new ArrayList<>();
 		bFiles.forEach(f -> {
-			bf.add(new File(f).getName().replace(".csv", "").replace("AftParams_", ""));
+			bf.add(f.toFile().getName().replace(".csv", "").replace("AftParams_", ""));
 		});
 		hash.keySet().forEach(label -> {
 			if (!bf.contains(label)) {
@@ -148,7 +149,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void updateAFTBehevoir(Manager a, File file) {
-		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(file.getAbsolutePath());
+		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(file.toPath());
 		a.setGiveInMean(Tools.sToD(reder.get("givingInDistributionMean").get(0)));
 		a.setGiveUpMean(Tools.sToD(reder.get("givingUpDistributionMean").get(0)));
 		a.setGiveInSD(Tools.sToD(reder.get("givingInDistributionSD").get(0)));
@@ -158,14 +159,14 @@ public class AFTsLoader extends HashSet<Manager> {
 		a.setGiveUpProbabilty(Tools.sToD(reder.get("givingUpProb").get(0)));
 	}
 
-	public void initializeAFTProduction(String aftPath) {
-		File file = new File(aftPath);
+	public void initializeAFTProduction(Path aftPath) {
+		File file = aftPath.toFile();
 		updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
 	}
 
 	void updateAftTypes() {// mask, AFT, or unmanaged //
 		hash.clear();
-		String aftsmetadataPath = PathTools.fileFilter("\\csv\\", "AFTsMetaData").iterator().next();
+		Path aftsmetadataPath = PathTools.fileFilter(File.separator +"csv"+File.separator, "AFTsMetaData").iterator().next();
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(aftsmetadataPath);
 		if (matrix.get("Type") != null) {
 			for (int i = 0; i < matrix.get("Label").size(); i++) {
@@ -196,7 +197,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void updateAFTProduction(Manager a, File file) {
-		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(file.getAbsolutePath());
+		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(file.toPath());
 		String c0 = matrix.keySet().contains("C0") ? "C0" : "Unnamed: 0";
 		for (int i = 0; i < matrix.get(c0).size(); i++) {
 			if (CellsSet.getServicesNames().contains(matrix.get(c0).get(i))) {

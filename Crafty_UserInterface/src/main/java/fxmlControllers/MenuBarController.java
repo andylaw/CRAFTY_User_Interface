@@ -14,13 +14,14 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.WarningWindowes;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
@@ -37,7 +38,7 @@ public class MenuBarController {
 	public void open(ActionEvent event) {
 		openProject();
 
-		if (!Paths.getProjectPath().equals("")) {
+		if (!PathsLoader.getProjectPath().equals("")) {
 			initialsePAnes();
 		}
 	}
@@ -85,7 +86,7 @@ public class MenuBarController {
 	static void openProject() {
 		File selectedDirectory;
 
-		String userDocumentsPath = System.getProperty("user.home") + "\\Documents";
+		String userDocumentsPath = System.getProperty("user.home") + File.separator+"Documents";
 		File documentsDir = new File(userDocumentsPath);
 
 		// Check if the Data directory exists within Documents
@@ -100,7 +101,7 @@ public class MenuBarController {
 
 		if (selectedDirectory != null) {
 			if (selectedDirectory != null) {
-				List<String> folderMissig = Paths.checkfolders(selectedDirectory.getAbsolutePath());
+				List<String> folderMissig = PathsLoader.checkfolders(selectedDirectory.getAbsolutePath());
 				
 				boolean ispathcorrect = true;
 				if (folderMissig.size() > 0) {
@@ -112,7 +113,7 @@ public class MenuBarController {
 					}, folderMissig);
 				}
 				if (ispathcorrect) {
-					Paths.initialisation(selectedDirectory.getAbsolutePath());
+					PathsLoader.initialisation(Paths.get(selectedDirectory.getAbsolutePath()));
 				}
 			}
 		}
@@ -152,7 +153,7 @@ public class MenuBarController {
 			MenuItem item = new MenuItem(paths[i]);
 			int j=i;
 			item.setOnAction(event -> {
-				Paths.initialisation(paths[j]);
+				PathsLoader.initialisation(Paths.get(paths[j]));
 				initialsePAnes();
 			});
 			recent.getItems().add(item);}

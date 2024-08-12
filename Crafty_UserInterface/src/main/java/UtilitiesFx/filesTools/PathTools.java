@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import main.FxMain;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -44,27 +45,27 @@ public class PathTools {
 
 	}
 
-	static void creatListPaths(final File folder, ArrayList<String> Listpathe) {
+	static void creatListPaths(final File folder, ArrayList<Path> Listpathe) {
 		for (final File fileEntry : folder.listFiles()) {
 			if (fileEntry.isDirectory()) {
 				creatListPaths(fileEntry, Listpathe);
 			} else {
-				Listpathe.add(fileEntry.getPath());
+				Listpathe.add(fileEntry.toPath());
 			}
 		}
 	}
 
-	public static ArrayList<String> fileFilter(String... condition) {
+	public static ArrayList<Path> fileFilter(String... condition) {
 		return fileFilter(false, condition);
 	}
 
-	public static ArrayList<String> fileFilter(boolean ignoreIfFileNotExists, String... condition) {
+	public static ArrayList<Path> fileFilter(boolean ignoreIfFileNotExists, String... condition) {
 
-		ArrayList<String> turn = new ArrayList<>();
-		Paths.getAllfilesPathInData().forEach(e -> {
+		ArrayList<Path> turn = new ArrayList<>();
+		PathsLoader.getAllfilesPathInData().forEach(e -> {
 			boolean testCodition = true;
 			for (int j = 0; j < condition.length; j++) {
-				if (!e.contains(condition[j])) {
+				if (!e.toString().contains(condition[j])) {
 					testCodition = false;
 					break;
 				}
@@ -91,12 +92,14 @@ public class PathTools {
 		}
 	}
 
-	public static ArrayList<String> findAllFiles(String path) {
-		ArrayList<String> Listpathe = new ArrayList<>();
-		final File folder = new File(path);
+	public static ArrayList<Path> findAllFiles(Path path) {
+		ArrayList<Path> Listpathe = new ArrayList<>();
+		final File folder = path.toFile();
 		creatListPaths(folder, Listpathe);
 		return Listpathe;
 	}
+
+	
 
 	public static String read(String filePath) {
 		Scanner scanner;
@@ -172,6 +175,9 @@ public class PathTools {
 		}
 		return filePaths;
 	}
+
+	
+	
 
 	public static String makeDirectory(String dir) {
 		File directory = new File(dir);

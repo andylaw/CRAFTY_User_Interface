@@ -1,5 +1,8 @@
 package fxmlControllers;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +23,7 @@ import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -89,7 +92,7 @@ public class ModelRunnerController {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
 		R = new ModelRunner(M);
-		tick = new AtomicInteger(Paths.getStartYear());
+		tick = new AtomicInteger(PathsLoader.getStartYear());
 		tickTxt.setText(tick.toString());
 
 		lineChart = new ArrayList<>();
@@ -97,7 +100,7 @@ public class ModelRunnerController {
 		// Collections.synchronizedList(lineChart);
 
 		Collections.synchronizedList(lineChart);
-		outPutFolderName = Paths.getScenario();
+		outPutFolderName = PathsLoader.getScenario();
 		initilaseChart(lineChart);
 		initialzeRadioColorBox();
 
@@ -155,11 +158,11 @@ public class ModelRunnerController {
 	@FXML
 	public void oneStep() {
 		System.out.println("------------------- Start of Tick  |" + tick.get() + "| -------------------");
-		Paths.setCurrentYear(tick.get());
+		PathsLoader.setCurrentYear(tick.get());
 		R.go();
 		tickTxt.setText(tick.toString());
-		if (chartSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % chartSynchronisationGap == 0
-				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
+		if (chartSynchronisation && ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % chartSynchronisationGap == 0
+				|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
 			CellsSet.getServicesNames().forEach(name -> {
 				lineChart.get(m.get()).getData().get(0).getData()
@@ -195,14 +198,16 @@ public class ModelRunnerController {
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {
-		if (Paths.getCurrentYear() >= Paths.getEndtYear() - 1) {
+		if (PathsLoader.getCurrentYear() >= PathsLoader.getEndtYear() - 1) {
 			// Stop if max iterations reached
 			displayRunAsOutput();
 			return;
 		}
 		if (ModelRunner.writeCsvFiles) {
-			CsvTools.writeCSVfile(R.compositionAftListener, outPutFolderName + "\\" + Paths.getScenario() + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(R.servicedemandListener, outPutFolderName + "\\" + Paths.getScenario() + "-AggregateServiceDemand.csv");
+			Path aggregateAFTComposition= Paths.get(outPutFolderName + File.separator  + PathsLoader.getScenario() + "-AggregateAFTComposition.csv");
+			CsvTools.writeCSVfile(R.compositionAftListener, aggregateAFTComposition);
+			Path aggregateServiceDemand= Paths.get(outPutFolderName + File.separator  + PathsLoader.getScenario() + "-AggregateServiceDemand.csv");
+			CsvTools.writeCSVfile(R.servicedemandListener,aggregateServiceDemand );
 		}
 		// Stop the old timeline if it's running
 		if (timeline != null) {
@@ -241,8 +246,8 @@ public class ModelRunnerController {
 		} catch (RuntimeException e) {
 		}
 		run.setDisable(false);
-		tick.set(Paths.getStartYear());
-		Paths.setCurrentYear(Paths.getStartYear());
+		tick.set(PathsLoader.getStartYear());
+		PathsLoader.setCurrentYear(PathsLoader.getStartYear());
 		gridPaneLinnChart.getChildren().clear();
 		lineChart.clear();
 		initilaseChart(lineChart);
@@ -262,11 +267,11 @@ public class ModelRunnerController {
 			Series<Number, Number> s2 = new XYChart.Series<Number, Number>();
 			s1.setName("Demand " + name);
 			s2.setName("Supply " + name);
-			LineChart<Number, Number> l = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
+			LineChart<Number, Number> l = new LineChart<>(new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5),
 					new NumberAxis());
 			l.getData().add(s1);
 			l.getData().add(s2);
-			LineChartTools.configurexAxis(l, Paths.getStartYear(), Paths.getEndtYear());
+			LineChartTools.configurexAxis(l, PathsLoader.getStartYear(), PathsLoader.getEndtYear());
 			lineChart.add(l);
 			LineChartTools.addSeriesTooltips(l);
 
@@ -279,7 +284,7 @@ public class ModelRunnerController {
 
 			MousePressed.mouseControle(vbox, l, othersMenuItems);
 		});
-		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(Paths.getStartYear(), Paths.getEndtYear(), 5),
+		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5),
 				new NumberAxis());
 		lineChart.add(l);
 
@@ -325,7 +330,7 @@ public class ModelRunnerController {
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");
-		Text txt = new Text(Paths.getProjectPath() + "\\output\\" + Paths.getScenario() + "\\...");
+		Text txt = new Text(PathsLoader.getProjectPath() + File.separator+"output"+File.separator + PathsLoader.getScenario() + File.separator+"...");
 		TextArea textArea = new TextArea();
 		textArea.setText(cofiguration);
 		VBox v = new VBox(txt, textField, textArea);
@@ -335,11 +340,11 @@ public class ModelRunnerController {
 		((Stage) window).setAlwaysOnTop(true);
 		alert.showAndWait().filter(response -> response == ButtonType.OK).ifPresent(x -> {
 			outPutFolderName = textField.getText();
-			String dir = PathTools.makeDirectory(Paths.getProjectPath() + "\\output\\");
-			dir = PathTools.makeDirectory(dir + Paths.getScenario());
-			dir = PathTools.makeDirectory(dir + "\\" + outPutFolderName);
+			String dir = PathTools.makeDirectory(PathsLoader.getProjectPath() + File.separator+"output"+File.separator);
+			dir = PathTools.makeDirectory(dir + PathsLoader.getScenario());
+			dir = PathTools.makeDirectory(dir + File.separator  + outPutFolderName);
 			outPutFolderName=dir;
-			PathTools.writeFile(outPutFolderName+ "\\readme.txt", textArea.getText(), false);
+			PathTools.writeFile(outPutFolderName+ File.separator+"readme.txt", textArea.getText(), false);
 		});
 
 		return alert;

@@ -120,7 +120,7 @@ public class ImagesToPDF {
 	            }
 
 	            contentStream.close();
-	            document.save(folderPath+"\\"+ PDFname);
+	            document.save(folderPath+File.separator + PDFname);
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }

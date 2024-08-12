@@ -18,7 +18,7 @@ import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.CurvesLoader;
 import dataLoader.DemandModel;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
@@ -112,8 +112,8 @@ public class SpatialDataController {
 				}
 				if (isNotInitialsation) {
 					histogramCapitals.getData().clear();
-					if (!Paths.getScenario().equalsIgnoreCase("Baseline")) {
-						histogrameCapitals(Paths.getCurrentYear() + "", CellsSet.getCapitalsName().get(k));
+					if (!PathsLoader.getScenario().equalsIgnoreCase("Baseline")) {
+						histogrameCapitals(PathsLoader.getCurrentYear() + "", CellsSet.getCapitalsName().get(k));
 					}
 					CellsSet.colorMap(CellsSet.getCapitalsName().get(k));
 
@@ -146,7 +146,7 @@ public class SpatialDataController {
 		XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();
 		List<Integer> numbersInInterval = countNumbersInIntervals(dset, 100);
 
-		dataSeries.setName(capitalName + "_" + year + "_" + Paths.getScenario());
+		dataSeries.setName(capitalName + "_" + year + "_" + PathsLoader.getScenario());
 		for (int i = 0; i < numbersInInterval.size(); i++) {
 			Integer v = numbersInInterval.get(i);
 			dataSeries.getData().add(new XYChart.Data<>((i) + "", v));

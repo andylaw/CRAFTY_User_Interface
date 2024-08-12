@@ -9,7 +9,7 @@ import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.MaskRestrictionDataLoader;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import eu.hansolo.fx.charts.CircularPlot;
 import eu.hansolo.fx.charts.CircularPlotBuilder;
 import eu.hansolo.fx.charts.data.PlotItem;
@@ -124,8 +124,8 @@ public class MasksPaneController {
 
 		List<String> years = new ArrayList<>();
 		MaskRestrictionDataLoader.hashMasks.get(maskType).forEach(path -> {
-			for (int i = Paths.getStartYear(); i < Paths.getEndtYear(); i++) {
-				if (path.contains(i + "")) {
+			for (int i = PathsLoader.getStartYear(); i < PathsLoader.getEndtYear(); i++) {
+				if (path.toString().contains(i + "")) {
 					years.add(i + "");
 					break;
 				}

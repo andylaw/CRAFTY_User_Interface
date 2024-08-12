@@ -1,6 +1,8 @@
 package controllers;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +14,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.PieChartTools;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ScrollPane;
@@ -54,8 +56,8 @@ public class CellWindow {
 //				if (!choiceScenario.getValue().equals("Baseline")) {
 //					Path.scenario = choiceScenario.getValue();
 //					HashMap<String, Number[]>[] CS = outputData();
-////					HashMap<String, Number[]> hash = //sspData(choiceScenario.getValue());
-////					CS[1];
+//					HashMap<String, Number[]> hash = //sspData(choiceScenario.getValue());
+//					CS[1];
 //					NumberAxis X = new NumberAxis(Path.startYear, Path.endtYear, 10);
 //					LineChartTools a = new LineChartTools();
 //					HBox A = (HBox) a.graph(choiceScenario.getValue(), CS[0], X);
@@ -66,7 +68,7 @@ public class CellWindow {
 //			});
 //		});
 
-		box.getChildren().addAll(Tools.hBox(Tools.text(Paths.getScenario()+"  ",Color.BLUE),Tools.text(Paths.getCurrentYear()+"  ",Color.BLUE)),
+		box.getChildren().addAll(Tools.hBox(Tools.text(PathsLoader.getScenario()+"  ",Color.BLUE),Tools.text(PathsLoader.getCurrentYear()+"  ",Color.BLUE)),
 				Tools.hBox(cellDataTable(), pieChart));
 		ScrollPane sp = new ScrollPane();
 		sp.setContent(box);
@@ -106,7 +108,7 @@ public class CellWindow {
 		HashMap<Integer, HashMap<String, Double>> ssp = new HashMap<>();
 		HashMap<String, Number[]> hash = new HashMap<>();
 
-		ArrayList<String> list = PathTools.fileFilter(senario, /* Path.referqnceWorld, */ "capitals");
+		ArrayList<Path> list = PathTools.fileFilter(senario, /* Path.referqnceWorld, */ "capitals");
 		AtomicInteger year = new AtomicInteger(2015);
 		list.forEach(e -> {
 			try {
@@ -151,7 +153,7 @@ public class CellWindow {
 		hash[0] = new HashMap<>();
 		hash[1] = new HashMap<>();
 		hash[2] = new HashMap<>();
-		ArrayList<String> list = PathTools.fileFilter(/* Path.referqnceWorld, */ "\\output\\" + Paths.getScenario(), "-Cell-");
+		ArrayList<Path> list = PathTools.fileFilter( File.separator +"output"+File.separator  + PathsLoader.getScenario(), "-Cell-");
 		System.out.println(list);
 		ArrayList<String> agent = new ArrayList<>();
 		ArrayList<Double> competitiveness = new ArrayList<>();
@@ -219,9 +221,9 @@ public class CellWindow {
 		return " [patch=" + cell + "] \n  ";
 	}
 
-	HashMap<String, Double> RCPi_SSPiCapital(String Path) throws IOException {
+	HashMap<String, Double> RCPi_SSPiCapital(Path path) throws IOException {
 
-		HashMap<String, String> celldata = CsvTools.lineFromscsvHash(cell.getIndex(), Path);
+		HashMap<String, String> celldata = CsvTools.lineFromscsvHash(cell.getIndex(), path);
 		HashMap<String, Double> capitalsV = new HashMap<>();
 		celldata.forEach((key, val) -> {
 			if (CellsSet.getCapitalsName().contains(key.replace("\"", ""))) {
@@ -232,9 +234,9 @@ public class CellWindow {
 
 	}
 
-	HashMap<String, Double> RCPi_SSPiService(String Path) throws IOException {
+	HashMap<String, Double> RCPi_SSPiService(Path path) throws IOException {
 
-		HashMap<String, String> celldata = CsvTools.lineFromscsvHash(cell.getIndex(), Path);
+		HashMap<String, String> celldata = CsvTools.lineFromscsvHash(cell.getIndex(), path);
 		HashMap<String, Double> serviceV = new HashMap<>();
 		celldata.forEach((key, val) -> {
 			if (CellsSet.getServicesNames().contains(key.replace("\"", "").replace(" ", ""))) {

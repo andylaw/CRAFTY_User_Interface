@@ -1,6 +1,7 @@
 package dataLoader;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,29 +19,29 @@ import model.Manager;
 
 public class MaskRestrictionDataLoader {
 
-	public static HashMap<String, List<String>> hashMasks;
+	public static HashMap<String, List<Path>> hashMasks;
 
 	private static final Logger LOGGER = LogManager.getLogger(MaskRestrictionDataLoader.class);
 
 	public static void MaskAndRistrictionLaoderUpdate() {
 		hashMasks = new HashMap<>();
-		List<File> LandUseControlFolder = PathTools.detectFolders(Paths.getProjectPath() + "\\worlds\\LandUseControl");
+		List<File> LandUseControlFolder = PathTools.detectFolders(PathsLoader.getProjectPath() + File.separator+"worlds"+File.separator+"LandUseControl");
 		if (LandUseControlFolder != null) {
 			for (File folder : LandUseControlFolder) {
-				ArrayList<String> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath(),
-						Paths.getScenario());
+				ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath(),
+						PathsLoader.getScenario());
 				if (listOfMaskFilesInScenario != null) {
-					List<String> maks = new ArrayList<>();
-					for (String file : listOfMaskFilesInScenario) {
+					List<Path> maks = new ArrayList<>();
+					for (Path file : listOfMaskFilesInScenario) {
 						maks.add(file);
 					}
 					hashMasks.put(folder.getName(), maks);
 				} else {
 					listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath());
 
-					List<String> maks = new ArrayList<>();
-					for (String csv : listOfMaskFilesInScenario) {
-						if (!csv.contains("Restrictions")) {
+					List<Path> maks = new ArrayList<>();
+					for (Path csv : listOfMaskFilesInScenario) {
+						if (!csv.toString().contains("Restrictions")) {
 							maks.add(csv);
 						}
 						hashMasks.put(folder.getName(), maks);
@@ -52,7 +53,7 @@ public class MaskRestrictionDataLoader {
 	}
 
 	public void CellSetToMaskLoader(String maskType, int year) {
-		String path = hashMasks.get(maskType).stream().filter(filePath -> filePath.contains(String.valueOf(year)))
+		Path path = hashMasks.get(maskType).stream().filter(filePath -> filePath.toString().contains(String.valueOf(year)))
 				.findFirst().orElse(null);
 		if (path != null) {
 			HashMap<String, ArrayList<String>> csv = ReaderFile.ReadAsaHash(path, true);

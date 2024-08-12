@@ -1,5 +1,6 @@
 package model;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +12,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import fxmlControllers.MasksPaneController;
 import fxmlControllers.ModelRunnerController;
 
@@ -54,9 +55,9 @@ public class ModelRunner {
 	}
 
 	private void initializeListeners() {
-		compositionAftListener = new String[Paths.getEndtYear() - Paths.getStartYear() + 2][AFTsLoader.getAftHash()
+		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader.getAftHash()
 				.size()];
-		servicedemandListener = new String[Paths.getEndtYear() - Paths.getStartYear()
+		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
 				+ 2][CellsSet.getServicesNames().size() * 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
 			servicedemandListener[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
@@ -77,7 +78,7 @@ public class ModelRunner {
 	}
 
 	public void go() {
-		int year = Paths.getCurrentYear() < Paths.getEndtYear() ? Paths.getCurrentYear() : Paths.getEndtYear();
+		int year = PathsLoader.getCurrentYear() < PathsLoader.getEndtYear() ? PathsLoader.getCurrentYear() : PathsLoader.getEndtYear();
 		totalSupply = new ConcurrentHashMap<>();
 		LOGGER.info("Cells.updateCapitals");
 		cells.updateCapitals(year);
@@ -108,8 +109,8 @@ public class ModelRunner {
 			writOutPutMap(year);
 		}
 
-		if (mapSynchronisation && ((Paths.getCurrentYear() - Paths.getStartYear()) % mapSynchronisationGap == 0
-				|| Paths.getCurrentYear() == Paths.getEndtYear())) {
+		if (mapSynchronisation && ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % mapSynchronisationGap == 0
+				|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			CellsSet.colorMap(colorDisplay);
 		}
 		AFTsLoader.hashAgentNbr(); 
@@ -117,7 +118,7 @@ public class ModelRunner {
 
 	private void outPutservicedemandToCsv(int year) {
 		AtomicInteger m = new AtomicInteger();
-		int y = year - Paths.getStartYear() + 1;
+		int y = year - PathsLoader.getStartYear() + 1;
 
 		CellsSet.getServicesNames().forEach(name -> {
 			servicedemandListener[y][m.get()] = totalSupply.get(name) + "";
@@ -128,17 +129,17 @@ public class ModelRunner {
 	}
 
 	void compositionAFT(int year) {
-		int y = year - Paths.getStartYear() + 1;
+		int y = year - PathsLoader.getStartYear() + 1;
 		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
 			compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
 		});
 	}
 
 	private void writOutPutMap(int year) {
-		if ((Paths.getCurrentYear() - Paths.getStartYear()) % writeCsvFilesGap == 0
-				|| Paths.getCurrentYear() == Paths.getEndtYear()) {
+		if ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % writeCsvFilesGap == 0
+				|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear()) {
 			CsvTools.exportToCSV(
-					ModelRunnerController.outPutFolderName + "\\" + Paths.getScenario() + "-Cell-" + year + ".csv");
+					ModelRunnerController.outPutFolderName + File.separator  + PathsLoader.getScenario() + "-Cell-" + year + ".csv");
 		}
 	}
 

@@ -3,6 +3,7 @@ package UtilitiesFx.filesTools;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,17 +29,17 @@ import tech.tablesaw.io.AddCellToColumnException;
 public class ReaderFile {
 	private static final Logger LOGGER = LogManager.getLogger(ReaderFile.class);
 
-	public static HashMap<String, ArrayList<String>> ReadAsaHash(String filePath) {
+	public static HashMap<String, ArrayList<String>> ReadAsaHash(Path filePath) {
 		return ReadAsaHash(filePath, false);
 
 	}
 
-	public static HashMap<String, ArrayList<String>> ReadAsaHash(String filePath, boolean ignoreIfFileNotExists) {
+	public static HashMap<String, ArrayList<String>> ReadAsaHash(Path filePath, boolean ignoreIfFileNotExists) {
 		LOGGER.info("Reading : " + filePath);
 		HashMap<String, ArrayList<String>> hash = new HashMap<>();
 		Table T = null;
 		try {
-			T = Table.read().csv(filePath);
+			T = Table.read().csv(filePath.toFile());
 		} catch (AddCellToColumnException s) {
 
 			LOGGER.error(s.getMessage());
@@ -69,11 +70,11 @@ public class ReaderFile {
 		return hash;
 	}
 
-	public static void processCSV(CellsLoader cells, String filePath, String type) {
+	public static void processCSV(CellsLoader cells, Path filePath, String type) {
 		LOGGER.info("Importing data for " + type + " from : " + filePath + "...");
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		ConcurrentHashMap<String, Integer> indexof = new ConcurrentHashMap<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
 			String[] line1 = br.readLine().split(",");
 			for (int i = 0; i < line1.length; i++) {
 				indexof.put(line1[i].replace("Service:", "").replace("\"", "").toUpperCase(), i);

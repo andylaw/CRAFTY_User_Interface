@@ -1,5 +1,6 @@
 package UtilitiesFx.graphicalTools;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public final class CSVTableView extends TableView<String> {
 		return newtable(data, null);
 	}
 
-	public static TableView<ObservableList<String>> newtable(String file) {
+	public static TableView<ObservableList<String>> newtable(Path file) {
 		return newtable(CsvTools.csvReader(file));
 	}
 

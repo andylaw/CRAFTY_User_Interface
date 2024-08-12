@@ -11,7 +11,7 @@ import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
-import dataLoader.Paths;
+import dataLoader.PathsLoader;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
@@ -67,11 +67,11 @@ public class TabPaneController {
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		mapBox.getChildren().add(FxMain.subScene);
-		PathTools.writePathRecentProject("RecentProject.txt", "\n" + Paths.getProjectPath());
-		scenarioschoice.getItems().addAll(Paths.getScenariosList());
-		scenarioschoice.setValue(Paths.getScenario());
+		PathTools.writePathRecentProject("RecentProject.txt", "\n" + PathsLoader.getProjectPath());
+		scenarioschoice.getItems().addAll(PathsLoader.getScenariosList());
+		scenarioschoice.setValue(PathsLoader.getScenario());
 		ArrayList<String> listYears = new ArrayList<>();
-		for (int i = Paths.getStartYear(); i < Paths.getEndtYear(); i++) {
+		for (int i = PathsLoader.getStartYear(); i < PathsLoader.getEndtYear(); i++) {
 			listYears.add(i + "");
 		}
 		yearchoice.getItems().addAll(listYears);
@@ -117,7 +117,7 @@ public class TabPaneController {
 	public void scenarioschoice() {
 		if (isNotInitialsation) {
 			M.loadMap();
-			Paths.setScenario(scenarioschoice.getValue());
+			PathsLoader.setScenario(scenarioschoice.getValue());
 			DemandModel.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
 			DemandModel.updateRegionsDemand();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
@@ -134,15 +134,15 @@ public class TabPaneController {
 	public void yearchoice() {
 		if (isNotInitialsation) {
 			if (yearchoice.getValue() != null) {
-				Paths.setCurrentYear((int) Tools.sToD(yearchoice.getValue()));
-				M.updateCapitals(Paths.getCurrentYear());
+				PathsLoader.setCurrentYear((int) Tools.sToD(yearchoice.getValue()));
+				M.updateCapitals(PathsLoader.getCurrentYear());
 
 				if (dataPane.isSelected()) {
 					for (int i = 0; i < CellsSet.getCapitalsName().size() + 1; i++) {
 						if (SpatialDataController.radioColor[i].isSelected()) {
 							if (i < CellsSet.getCapitalsName().size()) {
 								CellsSet.colorMap(CellsSet.getCapitalsName().get(i));
-								SpatialDataController.getInstance().histogrameCapitals(Paths.getCurrentYear() + "",
+								SpatialDataController.getInstance().histogrameCapitals(PathsLoader.getCurrentYear() + "",
 										CellsSet.getCapitalsName().get(i));
 							} else {
 								CellsSet.colorMap("FR");
