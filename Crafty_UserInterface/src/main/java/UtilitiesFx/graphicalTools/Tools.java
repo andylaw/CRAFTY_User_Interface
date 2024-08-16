@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -24,12 +25,16 @@ import javafx.scene.text.Text;
 
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * @author Mohamed Byari
  *
  */
 
 public class Tools {
+	private static final Logger LOGGER = LogManager.getLogger(Tools.class);
 
 	public static VBox vBox(Node... children) {
 		VBox vbox = new VBox();
@@ -122,7 +127,14 @@ public class Tools {
 		}
 		// The last index is where the child should be inserted
 		int insertIndex = indexPath.get(indexPath.size() - 1);
-		((Pane) currentParent).getChildren().set(insertIndex, child);
+
+		if (currentParent instanceof Pane) {
+		    ((Pane) currentParent).getChildren().set(insertIndex, child);
+		} else if (currentParent instanceof Group) {
+		    ((Group) currentParent).getChildren().set(insertIndex, child);
+		} else {
+			LOGGER.error("The parent is neither a Pane nor a Group, cannot modify children.");
+		}
 	}
 
 	public static List<Integer> findIndexPath(Node child, Parent parent) {
@@ -143,18 +155,10 @@ public class Tools {
 		}
 		// Reverse the list since we built it from child to parent
 		Collections.reverse(indexPath);
-
 		return indexPath;
 	}
 
 	public static int indexof(String s, String[] tmp) {
-		//ArrayList<String> list = Collection.
-		//
-//		for (int i = 0; i < tmp.length; i++) {
-//			if (tmp[i].equalsIgnoreCase(s)) {
-//				return i;
-//			}
-//		}
 		return Arrays.asList(tmp).indexOf(s);
 	}
 

@@ -76,18 +76,12 @@ public class NewRegion_Controller {
 
 	static void CreateRegionMap(Group g) {
 		g.getChildren().clear();
-		ArrayList<Integer> X = new ArrayList<>();
-		ArrayList<Integer> Y = new ArrayList<>();
-		patchsInRergion.forEach(p -> {
-			X.add(p.getX());
-			Y.add(p.getY());
-		});
-		
+
 		canvas = new Canvas(CellsSet.getMaxX()*Cell.getSize(), CellsSet.getMaxY()*Cell.getSize());
         gc = canvas.getGraphicsContext2D();
 		patchsInRergion.forEach(c -> {
 			if(c.getOwner()!=null) {
-			c.ColorP(gc,c.getOwner().getColor());
+			c.ColorP(c.getOwner().getColor());
 			}
 		});
 		g.getChildren().add(canvas);
@@ -100,7 +94,7 @@ public class NewRegion_Controller {
 		if (name.equals("FR")) {
 			patchsInRergion.forEach(p -> {
 				if (p.getOwner() != null) {
-					p.ColorP(gc,p.getOwner().getColor());
+					p.ColorP(p.getOwner().getColor());
 				}
 			});
 		} else {
@@ -114,7 +108,7 @@ public class NewRegion_Controller {
 
 			patchsInRergion.forEach(c -> {
 				if (c.getCapitals().get(name) != null)
-				c.ColorP(gc,ColorsTools.getColorForValue(max, c.getCapitals().get(name)));
+				c.ColorP(ColorsTools.getColorForValue(max, c.getCapitals().get(name)));
 			});
 		}
 	}

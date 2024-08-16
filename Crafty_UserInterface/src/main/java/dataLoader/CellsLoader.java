@@ -84,7 +84,7 @@ public class CellsLoader {
 			Table T = Table.read().csv(path.toFile());
 			GISRegionsNames = T.columnNames();
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
-				String coor = T.column("X").get(i) + "," + T.column("Y").get(i);
+				String coor = T.column("X").get(i) + "," + T.column("Y").get(i); 
 				int ii = i;
 				if (hashCell.get(coor) != null) {
 					GISRegionsNames.forEach(name -> {

@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import dataLoader.AFTsLoader;
 import fxmlControllers.MasksPaneController;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 /**
@@ -27,12 +26,9 @@ public class Cell extends AbstractCell {
 		ColorP(color);
 	}
 
-	public void ColorP(Color color) {
-		this.color = color;
-		ColorP(CellsSet.getGc(), color);
-	}
 
-	public void ColorP(GraphicsContext gc, Color color) {
+
+	public void ColorP( Color color) {
 		// gc.setFill(color);
 		// gc.fillRect(x * Cell.size, (CellsSet.getMaxY() - y) * Cell.size, Cell.size,
 		// Cell.size);
@@ -189,9 +185,18 @@ public class Cell extends AbstractCell {
 
 	@Override
 	public String toString() {
-		return " ------------------------------------------- \n" + "Patch [Index= " + index + "  x=" + x + " y= " + y
-				+ "\n capitalsValue=" + capitals + "\n ow=" + owner.getLabel() + "\n" + owner.toString() + "] \n "
-				+ "------------------------------------------- \n";
+		return "Cell [index=" + index + ", x=" + x + ", y=" + y +  "\n, GisNameValue=" + GisNameValue + ", CurrentRegion=" + CurrentRegion
+				  + "\n, getCurrentRegion()="
+				+ getCurrentRegion() + "\\n,, getMaskType()=" + getMaskType() + ", getX()="
+				+ getX() +", getOwner()=" + (getOwner()!=null? getOwner().getLabel():"Unmanaged") + ", getCapitals()=" + getCapitals() + ", getServices()=" + getServices()
+				+ ", getGisNameValue()=" + getGisNameValue() +  "]";
 	}
+
+//	@Override
+//	public String toString() {
+//		return " ------------------------------------------- \n" + "Patch [Index= " + index + "  x=" + x + " y= " + y
+//				+ "\n capitalsValue=" + capitals + "\n ow=" + owner.getLabel() + "\n" + owner.toString() + "] \n "
+//				+ "------------------------------------------- \n";
+//	}
 
 }

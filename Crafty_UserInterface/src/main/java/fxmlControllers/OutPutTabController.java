@@ -71,7 +71,7 @@ public class OutPutTabController {
 			@Override
 			public void handle(Event t) {
 				if (addTab.isSelected()) {
-					createNewTab( "OutPut " + (tabpane.getTabs().size() - 1));
+					createNewTab("OutPut " + (tabpane.getTabs().size() - 1));
 				}
 			}
 		});

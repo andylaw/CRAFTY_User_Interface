@@ -82,10 +82,9 @@ public class CellsSubSets {
 	        }
 	    }
 	    return neighborhood;
-	}
+	} 
 
 	public static void selectZone(Cell patch, String zonetype) {
-
 		CellsLoader.hashCell.values().forEach(p -> {
 			if (p.getGisNameValue().get(zonetype) != null) {
 				if (p.getGisNameValue().get(zonetype).equals(patch.getGisNameValue().get(zonetype))) {
@@ -95,7 +94,7 @@ public class CellsSubSets {
 			}
 		});
 		NewRegion_Controller.patchsInRergion.forEach(p -> {
-			p.ColorP(Color.BLACK);
+			p.ColorP(Color.GREY);
 		});
 		CellsSet.gc.drawImage(CellsSet.writableImage, 0, 0);
 	}

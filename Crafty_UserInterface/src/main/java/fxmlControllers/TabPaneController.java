@@ -66,7 +66,7 @@ public class TabPaneController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		mapBox.getChildren().add(FxMain.subScene);
+		mapBox.getChildren().add( FxMain.subScene);
 		PathTools.writePathRecentProject("RecentProject.txt", "\n" + PathsLoader.getProjectPath());
 		scenarioschoice.getItems().addAll(PathsLoader.getScenariosList());
 		scenarioschoice.setValue(PathsLoader.getScenario());

@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
+import UtilitiesFx.graphicalTools.NewWindow;
+import UtilitiesFx.graphicalTools.Tools;
 import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
@@ -25,10 +27,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.FxMain;
 
@@ -220,7 +224,7 @@ public class CellsSet {
 				int pixelY = (int) (event.getY() - (event.getY() % Cell.getSize()));
 				// Convert pixel coordinates to cell coordinates
 				int cx = (int) (pixelX / Cell.getSize());
-				int cy = (int) (maxY - pixelY / Cell.getSize());
+				int cy = (int) (/* maxY - */ pixelY / Cell.getSize());
 				if (CellsLoader.hashCell.get(cx + "," + cy) != null) {
 					gc.setFill(Color.RED);
 					gc.fillRect(pixelX, pixelY, Cell.getSize(), Cell.getSize());
@@ -244,15 +248,21 @@ public class CellsSet {
 							CellsSubSets.selectZone(CellsLoader.hashCell.get(cx + "," + cy), regioneselected);
 						});
 
-//						menu.put("Detach", (x) -> {
-//							List<Integer> findpath = Tools.findIndexPath(canvas, canvas.getParent());
-//							Tools.reinsertChildAtIndexPath(new Separator(), canvas.getParent(), findpath);
-//							NewWindow win = new NewWindow();
-//							win.creatwindows("", canvas);
-//							win.setOnCloseRequest(event2 -> {
-//								Tools.reinsertChildAtIndexPath(canvas, canvas.getParent(), findpath);
-//							});
-//						});
+						menu.put("Detach", (x) -> {
+							try {
+								VBox mapBox = (VBox) FxMain.subScene.getParent();
+								VBox parent = (VBox) FxMain.subScene.getParent().getParent();
+								List<Integer> findpath = Tools.findIndexPath(mapBox, parent);
+								Tools.reInsertChildAtIndexPath(new Separator(), parent, findpath);
+								NewWindow win = new NewWindow();
+								win.creatwindows("", mapBox);
+								win.setOnCloseRequest(event2 -> {
+									parent.getChildren().add(mapBox);
+								});
+							} catch (ClassCastException d) {
+								LOGGER.warn(d.getMessage());
+							}
+						});
 
 					} else {
 						menu = NewRegion_Controller.creatMenu();
