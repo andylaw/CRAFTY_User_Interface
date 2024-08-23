@@ -5,11 +5,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,22 +32,37 @@ import javafx.stage.FileChooser;
 public class PathTools {
 
 	private static final Logger LOGGER = LogManager.getLogger(PathTools.class);
-
-	public static ArrayList<String> findFolder(final File folder, String condition, boolean onlyFolder) {
-		ArrayList<String> stringList = new ArrayList<>();
-		for (final File fileEntry : folder.listFiles()) {
-			if (onlyFolder) {
-				if (fileEntry.getName().contains(condition) && !fileEntry.getName().contains(".")) {
-					stringList.add(fileEntry.getName());
-				}
-			} else {
-				if (fileEntry.getName().contains(condition)) {
-					stringList.add(fileEntry.getName().replace(".csv", ""));
-				}
-			}
+	
+	
+	
+	
+    public static String[] aggregateArrays(String[] firstArray, String...secondArray) {
+        String[] result = new String[firstArray.length + secondArray.length];
+        System.arraycopy(firstArray, 0, result, 0, firstArray.length);
+        System.arraycopy(secondArray, 0, result, firstArray.length, secondArray.length);
+        return result;
+    }
+	
+	public static Set<Path> listSubdirectories(Path directoryPath)  {
+        // Use try-with-resources to ensure the stream is closed properly
+        try (Stream<Path> paths = Files.list(directoryPath)) {
+            return paths.filter(Files::isDirectory) // Filter to include only directories
+                        .collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
-		return stringList;
+    }
+	public static Optional<Path> findFolder(Set<Path> paths, String FolderName) {
+        return paths.stream()
+                    .filter(path -> path.getFileName().toString().equals(FolderName))
+                    .findFirst(); // returns an Optional<Path>
+    }
+	
 
+	public static String asFolder(String input) {
+		return File.separator + input + File.separator;
 	}
 
 	static void creatListPaths(final File folder, ArrayList<Path> Listpathe) {
@@ -99,8 +119,6 @@ public class PathTools {
 		return Listpathe;
 	}
 
-	
-
 	public static String read(String filePath) {
 		Scanner scanner;
 		String line = "";
@@ -119,7 +137,7 @@ public class PathTools {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Select Project");
 		File initialDirectory = new File(projectPath);
-		if(initialDirectory.exists())
+		if (initialDirectory.exists())
 			chooser.setInitialDirectory(initialDirectory);
 		File selectedDirectory = chooser.showDialog(FxMain.primaryStage);
 		return selectedDirectory;
@@ -175,9 +193,6 @@ public class PathTools {
 		}
 		return filePaths;
 	}
-
-	
-	
 
 	public static String makeDirectory(String dir) {
 		File directory = new File(dir);

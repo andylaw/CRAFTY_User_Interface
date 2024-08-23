@@ -13,19 +13,21 @@ import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
+import fxmlControllers.MasksPaneController;
 import model.Cell;
 import model.CellsSet;
 import model.Manager;
 
 public class MaskRestrictionDataLoader {
 
-	public static HashMap<String, List<Path>> hashMasks;
+	public static HashMap<String, List<Path>> hashMasksPaths;
 
 	private static final Logger LOGGER = LogManager.getLogger(MaskRestrictionDataLoader.class);
 
 	public static void MaskAndRistrictionLaoderUpdate() {
-		hashMasks = new HashMap<>();
-		List<File> LandUseControlFolder = PathTools.detectFolders(PathsLoader.getProjectPath() + File.separator+"worlds"+File.separator+"LandUseControl");
+		hashMasksPaths = new HashMap<>();
+		List<File> LandUseControlFolder = PathTools
+				.detectFolders(PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl");
 		if (LandUseControlFolder != null) {
 			for (File folder : LandUseControlFolder) {
 				ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath(),
@@ -33,28 +35,28 @@ public class MaskRestrictionDataLoader {
 				if (listOfMaskFilesInScenario != null) {
 					List<Path> maks = new ArrayList<>();
 					for (Path file : listOfMaskFilesInScenario) {
-						maks.add(file);
+						if (!file.toString().contains("Restrictions")) {
+							maks.add(file);
+						}
 					}
-					hashMasks.put(folder.getName(), maks);
+					hashMasksPaths.put(folder.getName(), maks);
 				} else {
 					listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath());
-
 					List<Path> maks = new ArrayList<>();
 					for (Path csv : listOfMaskFilesInScenario) {
 						if (!csv.toString().contains("Restrictions")) {
 							maks.add(csv);
 						}
-						hashMasks.put(folder.getName(), maks);
+						hashMasksPaths.put(folder.getName(), maks);
 					}
 				}
 			}
-
 		}
 	}
 
 	public void CellSetToMaskLoader(String maskType, int year) {
-		Path path = hashMasks.get(maskType).stream().filter(filePath -> filePath.toString().contains(String.valueOf(year)))
-				.findFirst().orElse(null);
+		Path path = hashMasksPaths.get(maskType).stream()
+				.filter(filePath -> filePath.toString().contains(String.valueOf(year))).findFirst().orElse(null);
 		if (path != null) {
 			HashMap<String, ArrayList<String>> csv = ReaderFile.ReadAsaHash(path, true);
 			if (csv != null) {
@@ -65,9 +67,9 @@ public class MaskRestrictionDataLoader {
 					int ii = i;
 					csv.keySet().forEach(key -> {
 						if (key.contains("Year_") && csv.get(key).get(ii).contains("1")) {
-							if(c!=null) {
-							c.setMaskType(maskType);
-							maskToOwner(c, maskType);
+							if (c != null) {
+								c.setMaskType(maskType);
+								maskToOwner(c, maskType);
 							}
 						}
 					});
@@ -94,10 +96,11 @@ public class MaskRestrictionDataLoader {
 	}
 
 	public void CellSetToMaskLoader(int year) {
-		hashMasks.keySet().forEach(maskType -> {
+		hashMasksPaths.keySet().forEach(maskType -> {
 			CellSetToMaskLoader(maskType, year);
+			updateRestrections(maskType, year+"", MasksPaneController.restrictions.get(maskType));
 		});
-
+		
 	}
 
 	public void cleanMaskType(String maskType) {
@@ -111,17 +114,42 @@ public class MaskRestrictionDataLoader {
 		});
 	}
 
-	public HashMap<String, Boolean> restrictionsRulsUpload(String maskType) {
-		// Read the file
-		// put in restriction hashMap owner-competitor - boolean the key it will be the
-		// owner copititro string
+	public HashMap<String, Boolean> restrictionsInitialize(String maskType) {
+		String[] def = { "LandUseControl", "Restrictions", maskType, ".csv" };
+		String[] defInScenario = PathTools.aggregateArrays(def, PathsLoader.getScenario());
+		ArrayList<Path> restrictionsFile = PathTools.fileFilter(defInScenario);
+		if (restrictionsFile == null || restrictionsFile.isEmpty()) {
+			restrictionsFile = PathTools.fileFilter(def);
+		}
+		return importResrection(restrictionsFile.get(0));
+	}
+
+	public void updateRestrections(String maskType, String currentyear, HashMap<String, Boolean> restriction) {
+		ArrayList<Path> restrictionsFile = PathTools.fileFilter(currentyear, PathsLoader.getScenario(),
+				"LandUseControl", "Restrictions", maskType, ".csv");
+		if (restrictionsFile == null || restrictionsFile.isEmpty()) {
+			return;
+		}
+		restriction.clear();
+		String[][] matrix = CsvTools.csvReader(restrictionsFile.get(0));
+		if (matrix != null) {
+			for (int i = 1; i < matrix.length; i++) {
+				for (int j = 1; j < matrix[0].length; j++) {
+					restriction.put(matrix[i][0] + "_" + matrix[0][j], matrix[i][j].contains("1"));
+				}
+			}
+		}
+		LOGGER.info(maskType+" Restrections updated ");
+	}
+
+	HashMap<String, Boolean> importResrection(Path path) {
 		HashMap<String, Boolean> restric = new HashMap<>();
-		String[][] matrix = CsvTools
-				.csvReader(PathTools.fileFilter("LandUseControl", "Restrictions", maskType, ".csv").get(0));
+		String[][] matrix = CsvTools.csvReader(path);
 		if (matrix != null) {
 			for (int i = 1; i < matrix.length; i++) {
 				for (int j = 1; j < matrix[0].length; j++) {
 					restric.put(matrix[i][0] + "_" + matrix[0][j], matrix[i][j].contains("1"));
+//					System.out.println(matrix[i][0] + "_" + matrix[0][j]+"->"+ matrix[i][j].contains("1"));
 				}
 			}
 			return restric;

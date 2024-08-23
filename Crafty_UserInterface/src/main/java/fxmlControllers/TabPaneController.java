@@ -122,8 +122,8 @@ public class TabPaneController {
 			DemandModel.updateRegionsDemand();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
 			new LineChartTools().lineChart(M, (Pane) chart.getParent(), chart, DemandModel.getGolbalDemand());
+			M.AFtsSet.updateAFTsForsenario();
 			yearchoice();
-			M.AFtsSet.updateAFTs();
 			MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
 			MasksPaneController.getInstance().clear(new ActionEvent());
 			MasksPaneController.initialiseMask();
@@ -136,7 +136,7 @@ public class TabPaneController {
 			if (yearchoice.getValue() != null) {
 				PathsLoader.setCurrentYear((int) Tools.sToD(yearchoice.getValue()));
 				M.updateCapitals(PathsLoader.getCurrentYear());
-
+				M.AFtsSet.updateAFTs();
 				if (dataPane.isSelected()) {
 					for (int i = 0; i < CellsSet.getCapitalsName().size() + 1; i++) {
 						if (SpatialDataController.radioColor[i].isSelected()) {

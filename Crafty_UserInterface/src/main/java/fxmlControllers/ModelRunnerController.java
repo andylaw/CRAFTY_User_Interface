@@ -326,7 +326,7 @@ public class ModelRunnerController {
 				+ neighbour + "Percentage of land use that could be changed:  " + (ModelRunner.percentageCells * 100)
 				+ "%" + "\n" + "Number of sub-assemblies and residual demand update during the waiting period: "
 				+ ModelRunner.nbrOfSubSet + "\n" + "Types of land mask restrictions considered:  "
-				+ MaskRestrictionDataLoader.hashMasks.keySet() + "\n \n" + "Add your comments..";
+				+ MaskRestrictionDataLoader.hashMasksPaths.keySet() + "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");

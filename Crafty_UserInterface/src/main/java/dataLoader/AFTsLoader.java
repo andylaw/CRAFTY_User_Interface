@@ -1,13 +1,15 @@
- package dataLoader;
+package dataLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -51,7 +53,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void agentsColorinitialisation() {
-		List<Path> colorFiles = PathTools.fileFilter(File.separator +"csv"+File.separator , "AFTsMetaData");
+		List<Path> colorFiles = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 
@@ -72,7 +74,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void updateColorsInputData() {
-		List<Path> colorFiles = PathTools.fileFilter(File.separator +"csv"+File.separator, "AFTsMetaData");
+		List<Path> colorFiles = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 			ArrayList<String> tmp = new ArrayList<>();
@@ -101,23 +103,40 @@ public class AFTsLoader extends HashSet<Manager> {
 		updateAftTypes();
 		hash.forEach((Label, a) -> {
 			if (a.isActive()) {
-				Path pFile = PathTools.fileFilter(File.separator +"production"+File.separator , PathsLoader.getScenario(), Label, ".csv").get(0);
+				Path pFile = null;
+				try {
+					pFile = PathTools.fileFilter(PathTools.asFolder("default_production"),
+							PathTools.asFolder("production"), PathsLoader.getScenario(), Label, ".csv").get(0);
+				} catch (NullPointerException e) {
+					pFile = PathTools
+							.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), Label, ".csv")
+							.get(0);
+					LOGGER.warn("Default productivity folder not fund, will use: " + pFile);
+				}
 				initializeAFTProduction(pFile);
-				Path bFile = PathTools.fileFilter(File.separator +"agents"+File.separator, PathsLoader.getScenario(), Label, ".csv").get(0);
+
+				Path bFile = null;
+				try {
+					bFile = PathTools.fileFilter(PathTools.asFolder("default_behaviour"), PathTools.asFolder("agents"),
+							PathsLoader.getScenario(), Label, ".csv").get(0);
+				} catch (NullPointerException e) {
+					bFile = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), Label, ".csv")
+							.get(0);
+					LOGGER.warn("Default behaviour folder not fund, will use: " + pFile);
+				}
 				initializeAFTBehevoir(bFile);
 			}
 		});
 //		checkAFTsBehevoireParametres(bFiles);
-
 	}
 
-	public void updateAFTs() {
-		List<Path> pFiles = PathTools.fileFilter(File.separator +"production"+File.separator, PathsLoader.getScenario(), ".csv");
+	public void updateAFTsForsenario() {
+		List<Path> pFiles = PathTools.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), ".csv");
 		pFiles.forEach(f -> {
 			File file = f.toFile();
 			updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
 		});
-		List<Path> bFiles = PathTools.fileFilter(File.separator +"agents"+File.separator, PathsLoader.getScenario(), ".csv");
+		List<Path> bFiles = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), ".csv");
 		bFiles.forEach(f -> {
 			File file = f.toFile();
 			try {
@@ -127,6 +146,36 @@ public class AFTsLoader extends HashSet<Manager> {
 			}
 		});
 		checkAFTsBehevoireParametres(bFiles);
+	}
+
+	public static void updateAFTs() {
+		Path pFolderToUpdate = PathsLoader.getProjectPath().resolve("production", PathsLoader.getScenario(),
+				"update_production_" + PathsLoader.getCurrentYear());
+		if (pFolderToUpdate.toFile().exists()) {
+			List<Path> pFiles = PathTools.fileFilter(pFolderToUpdate.toString());
+			pFiles.forEach(f -> {
+				File file = f.toFile();
+				updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
+			});
+		} else {
+			LOGGER.info("AFT production parameters not updated (no folder found:" + pFolderToUpdate + ")");
+		}
+
+		Path bFolderToUpdate = PathsLoader.getProjectPath().resolve("agents", PathsLoader.getScenario(),
+				"update_behaviour_" + PathsLoader.getCurrentYear());
+		if (bFolderToUpdate.toFile().exists()) {
+			List<Path> bFiles = PathTools.fileFilter(bFolderToUpdate.toString());
+			bFiles.forEach(f -> {
+				File file = f.toFile();
+				try {
+					updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
+				} catch (NullPointerException e) {
+					LOGGER.error("AFT Not in the List: " + file);
+				}
+			});
+		} else {
+			LOGGER.info("AFT behaviour parameters not updated (no folder found:" + bFolderToUpdate + ")");
+		}
 	}
 
 	public void initializeAFTBehevoir(Path aftPath) {
@@ -166,7 +215,8 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	void updateAftTypes() {// mask, AFT, or unmanaged //
 		hash.clear();
-		Path aftsmetadataPath = PathTools.fileFilter(File.separator +"csv"+File.separator, "AFTsMetaData").iterator().next();
+		Path aftsmetadataPath = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData").iterator()
+				.next();
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(aftsmetadataPath);
 		if (matrix.get("Type") != null) {
 			for (int i = 0; i < matrix.get("Label").size(); i++) {
@@ -206,7 +256,7 @@ public class AFTsLoader extends HashSet<Manager> {
 				LOGGER.warn(matrix.get(c0).get(i) + "  is not existe in Services List, will be ignored");
 			}
 		}
-		LOGGER.info(a.getLabel() + " -> ProductivityLevel= " + a.getProductivityLevel());
+		//LOGGER.info(a.getLabel() + " -> ProductivityLevel= " + a.getProductivityLevel());
 		updateSensitivty(a, file);
 	}
 

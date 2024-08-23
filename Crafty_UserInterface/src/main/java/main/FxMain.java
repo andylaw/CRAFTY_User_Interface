@@ -1,12 +1,17 @@
 package main;
 
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.cameraTools.Camera;
+import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
+import dataLoader.PathsLoader;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -36,9 +41,7 @@ public class FxMain extends Application {
 	private static final Logger LOGGER = LogManager.getLogger(FxMain.class);
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		LOGGER.info(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);
-		 
-		
+		LOGGER.info(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);		
 		
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();

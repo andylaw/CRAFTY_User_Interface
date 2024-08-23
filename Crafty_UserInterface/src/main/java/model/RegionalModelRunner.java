@@ -50,8 +50,8 @@ public class RegionalModelRunner {
 	}
 
 	private void initializeListeners() {
-		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader.getAftHash()
-				.size()];
+		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader
+				.getAftHash().size()];
 		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
 				+ 2][CellsSet.getServicesNames().size() * 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
@@ -103,7 +103,7 @@ public class RegionalModelRunner {
 			marg = CurvesLoader.hashServicesCurves.get(serviceName).linearFunction(marg);
 			marginal.put(serviceName, marg);
 		});
-		// LOGGER.trace("Rigion: [" + regionName +"] Marginal" + marginal);
+		// LOGGER.trace("Region: [" + regionName +"] Marginal" + marginal);
 	}
 
 	void takeOverUnmanageCells() {
@@ -116,10 +116,10 @@ public class RegionalModelRunner {
 	}
 
 	public void regionalSupply() {
-		// LOGGER.info("Rigion: [" + regionName + "] Productivity calculation for all
+		// LOGGER.info("Region: [" + regionName + "] Productivity calculation for all
 		// cells ");
 		productivityForAll();
-		// LOGGER.info("Rigion: [" + regionName + "] Total Supply calculation");
+		// LOGGER.info("Region: [" + regionName + "] Total Supply calculation");
 		calculeRegionSupply();
 
 	}
@@ -127,18 +127,18 @@ public class RegionalModelRunner {
 	public void go(int year) {
 		boolean outputFilesCreation = ModelRunner.writeCsvFiles && DemandModel.getDemandsRegions().size() > 1;
 
-		totalSupply.forEach((serviceName, serviceVal) -> {
-		System.out.println("demandFiles(\""+serviceName+"\","+(DemandModel.getRegionalDemand(serviceName, year, regionName)/serviceVal)+");");
-	});
+//		totalSupply.forEach((serviceName, serviceVal) -> {
+//		System.out.println("demandFiles(\""+serviceName+"\","+(DemandModel.getRegionalDemand(serviceName, year, regionName)/serviceVal)+");");
+//	});
 
 		if (outputFilesCreation) {
 			outPutservicedemandToCsv(year);
 			Tracker.trackSupply(year, regionName);
 		}
 
-		 LOGGER.info("Rigion: [" + regionName + "] Total Supply = " + totalSupply);
+		LOGGER.info("Rigion: [" + regionName + "] Total Supply = " + totalSupply);
 		calculeMarginal(year);
-		 LOGGER.info("Rigion: [" + regionName + "] Calculating Distribution Mean & Land abandonment");
+		LOGGER.info("Rigion: [" + regionName + "] Calculating Distribution Mean & Land abandonment");
 		calculeDistributionMean();
 
 		if (ModelRunner.usegiveUp) {
@@ -152,7 +152,7 @@ public class RegionalModelRunner {
 				});
 			}
 		}
-		// LOGGER.info("Rigion: [" + regionName + "] Take over unmanage cells &
+		// LOGGER.info("Region: [" + regionName + "] Take over unmanaged cells &
 		// Launching the competition process...");
 		takeOverUnmanageCells();
 
@@ -184,16 +184,16 @@ public class RegionalModelRunner {
 				calculeMarginal(year);
 			});
 		} else {
-			// LOGGER.error("Rigion: [" + regionName + "] Faild to select a random subset of
+			// LOGGER.error("Region: [" + regionName + "] Failed to select a random subset of
 			// cells");
 		}
-		// LOGGER.info("Rigion: [" + regionName + "] Competition Process Completed");
+		// LOGGER.info("Region: [" + regionName + "] Competition Process Completed");
 		if (outputFilesCreation) {
 			compositionAFT(year);
 			updateCSVFiles();
 		}
 		AFTsLoader.hashAgentNbr(regionName);
-		
+
 	}
 
 	public void main(int nbrOfPartition) {
@@ -249,12 +249,12 @@ public class RegionalModelRunner {
 	}
 
 	private void updateCSVFiles() {
-		String dir = PathTools.makeDirectory(ModelRunnerController.outPutFolderName + File.separator+"region_" + regionName + File.separator+"");
+		String dir = PathTools.makeDirectory(
+				ModelRunnerController.outPutFolderName + File.separator + "region_" + regionName + File.separator + "");
 		if (ModelRunner.writeCsvFiles) {
-			Path aggregateAFTComposition= Paths.get(
-					dir + "region_" + regionName + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(compositionAftListener,aggregateAFTComposition);
-			Path aggregateServiceDemand= Paths.get(dir + "region_" + regionName + "-AggregateServiceDemand.csv");
+			Path aggregateAFTComposition = Paths.get(dir + "region_" + regionName + "-AggregateAFTComposition.csv");
+			CsvTools.writeCSVfile(compositionAftListener, aggregateAFTComposition);
+			Path aggregateServiceDemand = Paths.get(dir + "region_" + regionName + "-AggregateServiceDemand.csv");
 			CsvTools.writeCSVfile(servicedemandListener, aggregateServiceDemand);
 		}
 

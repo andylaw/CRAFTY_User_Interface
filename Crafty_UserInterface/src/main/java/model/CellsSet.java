@@ -195,7 +195,7 @@ public class CellsSet {
 			});
 
 		} else if (colortype.equalsIgnoreCase("Mask")) {
-			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.hashMasks.keySet());
+			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.hashMasksPaths.keySet());
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getMaskType() != null) {
 					c.ColorP(ColorsTools.colorlist(listOfMasks.indexOf(c.getMaskType())));

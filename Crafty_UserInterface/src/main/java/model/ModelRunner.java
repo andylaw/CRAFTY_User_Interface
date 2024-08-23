@@ -55,8 +55,8 @@ public class ModelRunner {
 	}
 
 	private void initializeListeners() {
-		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader.getAftHash()
-				.size()];
+		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader
+				.getAftHash().size()];
 		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
 				+ 2][CellsSet.getServicesNames().size() * 2];
 		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
@@ -78,14 +78,13 @@ public class ModelRunner {
 	}
 
 	public void go() {
-		int year = PathsLoader.getCurrentYear() < PathsLoader.getEndtYear() ? PathsLoader.getCurrentYear() : PathsLoader.getEndtYear();
+		int year = PathsLoader.getCurrentYear() < PathsLoader.getEndtYear() ? PathsLoader.getCurrentYear()
+				: PathsLoader.getEndtYear();
 		totalSupply = new ConcurrentHashMap<>();
 		LOGGER.info("Cells.updateCapitals");
 		cells.updateCapitals(year);
+		AFTsLoader.updateAFTs();
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
-
-		
-		
 		regions.values()/* .parallelStream() */ .forEach(RegionalRunner -> {
 			RegionalRunner.regionalSupply();
 			RegionalRunner.totalSupply.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
@@ -97,23 +96,22 @@ public class ModelRunner {
 				Tracker.trackSupply(year);
 			}
 		}
-	
 
 		regions.values()/* .parallelStream() */ .forEach(RegionalRunner -> {
 			RegionalRunner.go(year);
 		});
-		
 
 		if (writeCsvFiles) {
 			compositionAFT(year);
 			writOutPutMap(year);
 		}
 
-		if (mapSynchronisation && ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % mapSynchronisationGap == 0
-				|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
+		if (mapSynchronisation
+				&& ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % mapSynchronisationGap == 0
+						|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			CellsSet.colorMap(colorDisplay);
 		}
-		AFTsLoader.hashAgentNbr(); 
+		AFTsLoader.hashAgentNbr();
 	}
 
 	private void outPutservicedemandToCsv(int year) {
@@ -138,8 +136,8 @@ public class ModelRunner {
 	private void writOutPutMap(int year) {
 		if ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % writeCsvFilesGap == 0
 				|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear()) {
-			CsvTools.exportToCSV(
-					ModelRunnerController.outPutFolderName + File.separator  + PathsLoader.getScenario() + "-Cell-" + year + ".csv");
+			CsvTools.exportToCSV(ModelRunnerController.outPutFolderName + File.separator + PathsLoader.getScenario()
+					+ "-Cell-" + year + ".csv");
 		}
 	}
 

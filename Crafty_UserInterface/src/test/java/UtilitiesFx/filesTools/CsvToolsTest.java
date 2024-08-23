@@ -3,7 +3,10 @@ package UtilitiesFx.filesTools;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -28,34 +31,64 @@ class CsvToolsTest {
 				CsvTools.writeCSVfile(finalefile, f.toPath());
 			}
 		});
-
 	}
 
 	@Test
+	void switchY() {
+		Path path = Paths.get(
+				"C:\\Users\\byari-m\\Desktop\\data_UK\\GIS");
+		List<File> files = CsvTools.detectFiles(path);
+		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(files.getFirst().toPath());
+		int max = collectionsMax(hash.get("Y"));
+		System.out.println("|max= "+max);
+		files.forEach(p -> {
+			int y=1;
+			String[][] fileReder = CsvTools.csvReader(p.toPath());
+			System.out.println(fileReder[0][y]);
+			for (int i = 1; i < fileReder.length; i++) {
+			//	System.out.print(fileReder[i][y]+"--> ");
+				fileReder[i][y] = max - Integer.parseInt(fileReder[i][y]) + "";
+		//		System.out.println(fileReder[i][y]);
+			}
+	CsvTools.writeCSVfile(fileReder, p.toPath());
+		});
+
+	}
+
+	private static int collectionsMax(ArrayList<String> stringList) throws NumberFormatException {
+		ArrayList<Integer> integerList = new ArrayList<>();
+		for (String item : stringList) {
+			// Parse each string to an integer and add to the new list
+			integerList.add(Integer.parseInt(item));
+		}
+		return Collections.max(integerList);
+	}
+
+	// @Test
 	void controlServiceProductivity() {
 		// t2("ssp1a26", "C3pulses", 1);
-		demandFiles("C3pulses",0.7499999999999999);
-		demandFiles("FloodRegulation",0.9985654713100208);
-		demandFiles("C3fruitveg",0.7193175387101257);
-		demandFiles("Softwood",1.0000000000000007);
-		demandFiles("Hardwood",1.0000000000000004);
-		demandFiles("C3starchyroots",0.7706442560422526);
-		demandFiles("BioenergyG1",1.0);
-		demandFiles("Biodiversity",1.166189837238498);
-		demandFiles("BioenergyG2",1.0);
-		demandFiles("Carbon",1.05154145438215);
-		demandFiles("SusProd",1.1317580367231195);
-		demandFiles("GFmilk",0.7907626004893809);
-		demandFiles("CES",1.1338313890137357);
-		demandFiles("C4crops",0.7497745300851301);
-		demandFiles("Ldiversity",1.0002480773524307);
-		demandFiles("Foddercrops",0.9999999999999996);
-		demandFiles("Recreation",1.0562848787042627);
-		demandFiles("Employment",1.0017711805145526);
-		demandFiles("SolarEnergy",0.9999999999999996);
-		demandFiles("C3cereals",0.6939297578694815);
-		demandFiles("C3oilcrops",0.7572536477419254);
-		demandFiles("GFmeat",0.7820384276249897);
+		demandFiles("C3pulses", 0.7499999999999999);
+		demandFiles("FloodRegulation", 0.9985654713100208);
+		demandFiles("C3fruitveg", 0.7193175387101257);
+		demandFiles("Softwood", 1.0000000000000007);
+		demandFiles("Hardwood", 1.0000000000000004);
+		demandFiles("C3starchyroots", 0.7706442560422526);
+		demandFiles("BioenergyG1", 1.0);
+		demandFiles("Biodiversity", 1.166189837238498);
+		demandFiles("BioenergyG2", 1.0);
+		demandFiles("Carbon", 1.05154145438215);
+		demandFiles("SusProd", 1.1317580367231195);
+		demandFiles("GFmilk", 0.7907626004893809);
+		demandFiles("CES", 1.1338313890137357);
+		demandFiles("C4crops", 0.7497745300851301);
+		demandFiles("Ldiversity", 1.0002480773524307);
+		demandFiles("Foddercrops", 0.9999999999999996);
+		demandFiles("Recreation", 1.0562848787042627);
+		demandFiles("Employment", 1.0017711805145526);
+		demandFiles("SolarEnergy", 0.9999999999999996);
+		demandFiles("C3cereals", 0.6939297578694815);
+		demandFiles("C3oilcrops", 0.7572536477419254);
+		demandFiles("GFmeat", 0.7820384276249897);
 	}
 
 	void demandFiles(String service, double p) {
@@ -64,10 +97,10 @@ class CsvToolsTest {
 		String[][] filereder = CsvTools.csvReader(path);
 		int index = Tools.indexof(service, filereder[0]);
 		for (int i = 1; i < filereder.length; i++) {
-			filereder[i][index] =  Tools.sToD(filereder[i][index])/p+"";
+			filereder[i][index] = Tools.sToD(filereder[i][index]) / p + "";
 		}
-		
-	CsvTools.writeCSVfile(filereder, path);
+
+		CsvTools.writeCSVfile(filereder, path);
 	}
 
 	void t2(String scenario, String service, double p) {
@@ -101,7 +134,8 @@ class CsvToolsTest {
 
 	// @Test
 	void t() {
-		Path p = Paths.get("C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\LandUseControl\\ProtectedAreaMask\\UrbanMask.csv");
+		Path p = Paths
+				.get("C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\LandUseControl\\ProtectedAreaMask\\UrbanMask.csv");
 		String[][] file = CsvTools.csvReader(p);
 		String[][] tmp = new String[file.length][3];
 		for (int k = 3; k < file[0].length; k++) {
