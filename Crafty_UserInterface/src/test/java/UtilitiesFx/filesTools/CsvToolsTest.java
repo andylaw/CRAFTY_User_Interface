@@ -38,7 +38,7 @@ class CsvToolsTest {
 		Path path = Paths.get(
 				"C:\\Users\\byari-m\\Desktop\\data_UK\\GIS");
 		List<File> files = CsvTools.detectFiles(path);
-		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(files.getFirst().toPath());
+		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(files.get(0).toPath());
 		int max = collectionsMax(hash.get("Y"));
 		System.out.println("|max= "+max);
 		files.forEach(p -> {
@@ -50,7 +50,7 @@ class CsvToolsTest {
 				fileReder[i][y] = max - Integer.parseInt(fileReder[i][y]) + "";
 		//		System.out.println(fileReder[i][y]);
 			}
-	CsvTools.writeCSVfile(fileReder, p.toPath());
+	//CsvTools.writeCSVfile(fileReder, p.toPath());
 		});
 
 	}

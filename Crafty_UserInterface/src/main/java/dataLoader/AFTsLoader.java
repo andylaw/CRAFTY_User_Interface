@@ -53,7 +53,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void agentsColorinitialisation() {
-		List<Path> colorFiles = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData");
+		List<Path> colorFiles = PathTools.fileFilter(PathTools.asFolder("csv"), "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 
@@ -74,7 +74,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public void updateColorsInputData() {
-		List<Path> colorFiles = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData");
+		List<Path> colorFiles = PathTools.fileFilter(PathTools.asFolder("csv"), "AFTsMetaData");
 		if (colorFiles.size() > 0) {
 			HashMap<String, ArrayList<String>> T = ReaderFile.ReadAsaHash(colorFiles.iterator().next());
 			ArrayList<String> tmp = new ArrayList<>();
@@ -149,7 +149,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void updateAFTs() {
-		Path pFolderToUpdate = PathsLoader.getProjectPath().resolve("production", PathsLoader.getScenario(),
+		Path pFolderToUpdate = PathsLoader.getProjectPath().resolve("production").resolve( PathsLoader.getScenario()).resolve(
 				"update_production_" + PathsLoader.getCurrentYear());
 		if (pFolderToUpdate.toFile().exists()) {
 			List<Path> pFiles = PathTools.fileFilter(pFolderToUpdate.toString());
@@ -161,7 +161,7 @@ public class AFTsLoader extends HashSet<Manager> {
 			LOGGER.info("AFT production parameters not updated (no folder found:" + pFolderToUpdate + ")");
 		}
 
-		Path bFolderToUpdate = PathsLoader.getProjectPath().resolve("agents", PathsLoader.getScenario(),
+		Path bFolderToUpdate = PathsLoader.getProjectPath().resolve("agents").resolve( PathsLoader.getScenario()).resolve(
 				"update_behaviour_" + PathsLoader.getCurrentYear());
 		if (bFolderToUpdate.toFile().exists()) {
 			List<Path> bFiles = PathTools.fileFilter(bFolderToUpdate.toString());
