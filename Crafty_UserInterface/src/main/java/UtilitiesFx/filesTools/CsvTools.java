@@ -24,13 +24,14 @@ import model.CellsSet;
 
 public class CsvTools {
 	private static final Logger LOGGER = LogManager.getLogger(CsvTools.class);
+
 	/**
 	 * @author Mohamed Byari
 	 *
 	 */
 
 	public static List<String> csvReaderAsVector(Path filePath) {
-		LOGGER.info("Read as a list file:  " + filePath );
+		LOGGER.info("Read as a list file:  " + filePath);
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
 			String line;
@@ -40,7 +41,7 @@ public class CsvTools {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			LOGGER.error("Unable to read : " + filePath );
+			LOGGER.error("Unable to read : " + filePath);
 			return null;
 		}
 
@@ -48,7 +49,7 @@ public class CsvTools {
 	}
 
 	public static String[][] csvReader(Path filePath) {
-		LOGGER.info("Read as a table file: " + filePath );
+		LOGGER.info("Read as a table file: " + filePath);
 		List<String[]> lines = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
 			String line;
@@ -169,8 +170,8 @@ public class CsvTools {
 
 	public static void writeCSVfile(String[][] tabl, Path filePath) {
 		LOGGER.info("writing CSV file: " + filePath);
-		
-		File file =filePath.toFile();
+
+		File file = filePath.toFile();
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
@@ -180,17 +181,16 @@ public class CsvTools {
 
 			for (int i = 0; i < tabl.length; i++) {
 				for (int j = 0; j < tabl[0].length - 1; j++) {
-					bw.write(tabl[i][j]!=null?tabl[i][j] + ",":",");
+					bw.write(tabl[i][j] != null ? tabl[i][j] + "," : ",");
 				}
-				bw.write(tabl[i][tabl[0].length - 1] != null ? tabl[i][tabl[0].length - 1] :   "");
+				bw.write(tabl[i][tabl[0].length - 1] != null ? tabl[i][tabl[0].length - 1] : "");
 				bw.newLine();
 			}
 			bw.close();
 		} catch (IOException e) {
 		}
-	LOGGER.info("Writing CSV file...  Done");
+		LOGGER.info("Writing CSV file...  Done");
 	}
-
 
 	public static void writeNewLineCSVfile(Path filePath, int lineNumber, String... content) {
 		String[][] M = csvReader(filePath);
@@ -216,7 +216,8 @@ public class CsvTools {
 		Bfiles.forEach(file -> {
 			if (file.getName().contains(".csv")) {
 				String[][] M = csvReader(file.toPath());
-				M[1][8] = file.getAbsolutePath().replace("AftParams_", "").replace(File.separator+"agents"+File.separator, File.separator+"production"+File.separator);
+				M[1][8] = file.getAbsolutePath().replace("AftParams_", "").replace(
+						File.separator + "agents" + File.separator, File.separator + "production" + File.separator);
 				writeCSVfile(M, file.toPath());
 			}
 		});
@@ -228,7 +229,7 @@ public class CsvTools {
 
 		if (!folder.isDirectory()) {
 			throw new IllegalArgumentException("Input path is not a directory.");
-			
+
 		}
 
 		File[] files = folder.listFiles();
@@ -253,25 +254,22 @@ public class CsvTools {
 		// Process the cells in parallel to transform each Cell into a CSV string
 		Set<String> csvLines = CellsLoader.hashCell.values().parallelStream().map(c -> {
 			String capitalsFlattened = flattenHashMap(c, serviceImmutableList);
-			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "", c.getOwner() != null ? c.getOwner().getLabel() : "null",capitalsFlattened);
+			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "",
+					c.getOwner() != null ? c.getOwner().getLabel() : "null", capitalsFlattened);
 		}).collect(Collectors.toSet());
-		
-		LOGGER.info("Writing processed lines to the CSV file : "+filePath);
+
+		LOGGER.info("Writing processed lines to the CSV file : " + filePath);
 		// Write the processed lines to the CSV file
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
 			writer.write("Index,X,Y,Agent," + String.join(",", serviceImmutableList) + "\n"); // CSV header
 			for (String line : csvLines) {
-				writer.write(line+"\n");
+				writer.write(line + "\n");
 			}
 
 		} catch (IOException e) {
-			LOGGER.error("Unable to export file: " + filePath+"\n"+ e.getMessage());
+			LOGGER.error("Unable to export file: " + filePath + "\n" + e.getMessage());
 		}
 	}
-
-
-
-
 
 	private static String flattenHashMap(Cell c, List<String> serviceImmutableList) {
 		List<String> service = Collections.synchronizedList(new ArrayList<>());

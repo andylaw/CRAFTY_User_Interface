@@ -109,7 +109,7 @@ public class AFTsLoader extends HashSet<Manager> {
 							PathTools.asFolder("production"), PathsLoader.getScenario(), Label, ".csv").get(0);
 				} catch (NullPointerException e) {
 					pFile = PathTools
-							.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), Label, ".csv")
+							.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), Label+ ".csv")
 							.get(0);
 					LOGGER.warn("Default productivity folder not fund, will use: " + pFile);
 				}
@@ -120,7 +120,7 @@ public class AFTsLoader extends HashSet<Manager> {
 					bFile = PathTools.fileFilter(PathTools.asFolder("default_behaviour"), PathTools.asFolder("agents"),
 							PathsLoader.getScenario(), Label, ".csv").get(0);
 				} catch (NullPointerException e) {
-					bFile = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), Label, ".csv")
+					bFile = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), Label+ ".csv")
 							.get(0);
 					LOGGER.warn("Default behaviour folder not fund, will use: " + pFile);
 				}
@@ -215,7 +215,7 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	void updateAftTypes() {// mask, AFT, or unmanaged //
 		hash.clear();
-		Path aftsmetadataPath = PathTools.fileFilter(File.separator + "csv" + File.separator, "AFTsMetaData").iterator()
+		Path aftsmetadataPath = PathTools.fileFilter(PathTools.asFolder("csv"), "AFTsMetaData").iterator()
 				.next();
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(aftsmetadataPath);
 		if (matrix.get("Type") != null) {

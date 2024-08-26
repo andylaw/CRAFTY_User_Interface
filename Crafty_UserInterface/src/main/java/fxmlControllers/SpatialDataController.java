@@ -164,9 +164,8 @@ public class SpatialDataController {
 	public static List<Integer> countNumbersInIntervals(Set<Double> numbers, int intervalNBR) {
 		int[] counts = new int[intervalNBR];
 		for (Double number : numbers) {
-			if (number >= 0.0 && number <= 1.0) {
+			if (number!=null && number >= 0.0 && number <= 1.0) {
 				int index = (int) (number * intervalNBR);
-				// Handle the edge case where a number is exactly 1.0
 				if (index == intervalNBR) {
 					index = intervalNBR - 1;
 				}

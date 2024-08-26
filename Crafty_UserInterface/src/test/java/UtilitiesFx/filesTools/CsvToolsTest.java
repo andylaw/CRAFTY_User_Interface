@@ -36,13 +36,13 @@ class CsvToolsTest {
 	@Test
 	void switchY() {
 		Path path = Paths.get(
-				"C:\\Users\\byari-m\\Desktop\\data_UK\\GIS");
+				"C:\\Users\\byari-m\\Desktop\\data-DE\\worlds");
 		List<File> files = CsvTools.detectFiles(path);
 		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(files.get(0).toPath());
 		int max = collectionsMax(hash.get("Y"));
 		System.out.println("|max= "+max);
 		files.forEach(p -> {
-			int y=1;
+			int y=3;
 			String[][] fileReder = CsvTools.csvReader(p.toPath());
 			System.out.println(fileReder[0][y]);
 			for (int i = 1; i < fileReder.length; i++) {
@@ -50,7 +50,8 @@ class CsvToolsTest {
 				fileReder[i][y] = max - Integer.parseInt(fileReder[i][y]) + "";
 		//		System.out.println(fileReder[i][y]);
 			}
-	//CsvTools.writeCSVfile(fileReder, p.toPath());
+			Path pp= Paths.get("C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\samaka.csv");
+	CsvTools.writeCSVfile(fileReder, pp/*p.toPath()*/);
 		});
 
 	}
