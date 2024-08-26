@@ -106,7 +106,7 @@ public class AFTsLoader extends HashSet<Manager> {
 				Path pFile = null;
 				try {
 					pFile = PathTools.fileFilter(PathTools.asFolder("default_production"),
-							PathTools.asFolder("production"), PathsLoader.getScenario(), Label, ".csv").get(0);
+							PathTools.asFolder("production"), PathsLoader.getScenario(), Label+ ".csv").get(0);
 				} catch (NullPointerException e) {
 					pFile = PathTools
 							.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), Label+ ".csv")
@@ -118,11 +118,11 @@ public class AFTsLoader extends HashSet<Manager> {
 				Path bFile = null;
 				try {
 					bFile = PathTools.fileFilter(PathTools.asFolder("default_behaviour"), PathTools.asFolder("agents"),
-							PathsLoader.getScenario(), Label, ".csv").get(0);
+							PathsLoader.getScenario(), Label+ ".csv").get(0);
 				} catch (NullPointerException e) {
 					bFile = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), Label+ ".csv")
 							.get(0);
-					LOGGER.warn("Default behaviour folder not fund, will use: " + pFile);
+					LOGGER.warn("Default behaviour folder not fund, will use: " + bFile);
 				}
 				initializeAFTBehevoir(bFile);
 			}
