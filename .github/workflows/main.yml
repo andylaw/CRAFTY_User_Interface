@@ -1,4 +1,4 @@
-name: JavaFX CRAFTY
+name: JavaFX CI with Container
 
 on:
   pull_request:
@@ -7,14 +7,11 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    container:
+      image: maven:3.8.4-openjdk-22
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 22
-      uses: actions/setup-java@v2
-      with:
-        java-version: '22'
-        distribution: 'adopt'
 
     - name: Cache Maven packages
       uses: actions/cache@v2
