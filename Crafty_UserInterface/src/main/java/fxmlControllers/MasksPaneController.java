@@ -61,6 +61,7 @@ public class MasksPaneController {
 		TitledPane[] T = new TitledPane[radioListOfMasks.size()];
 		radioListOfMasks.forEach(r -> {
 			r.setOnAction(e -> {
+				MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate(r.getText());
 				int i = radioListOfMasks.indexOf(r);
 				if (r.isSelected()) {
 					List<String> listOfyears = filePathToYear(r.getText());
@@ -112,6 +113,7 @@ public class MasksPaneController {
 					Maskloader.cleanMaskType(r.getText());
 					restrictions.remove(r.getText());
 					boxMaskTypes.getChildren().removeAll(T[i]);
+					MaskRestrictionDataLoader.hashMasksPaths.remove(r.getText());
 
 				}
 				if (iscolored)

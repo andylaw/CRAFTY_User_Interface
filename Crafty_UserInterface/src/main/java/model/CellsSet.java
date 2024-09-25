@@ -71,6 +71,7 @@ public class CellsSet {
 		System.out.println("||" + (maxX - minX) + "," + (maxY - minY));
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
+		
 		writableImage = new WritableImage(maxX, maxY);
 		pixelWriter = writableImage.getPixelWriter();
 

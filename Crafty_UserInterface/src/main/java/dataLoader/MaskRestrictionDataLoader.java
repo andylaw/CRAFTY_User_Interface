@@ -53,6 +53,21 @@ public class MaskRestrictionDataLoader {
 			}
 		}
 	}
+	public static void MaskAndRistrictionLaoderUpdate(String maskType) {
+		ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true,
+				PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl",
+				PathsLoader.getScenario(), PathTools.asFolder(maskType));
+		if (listOfMaskFilesInScenario != null) {
+			List<Path> mask = new ArrayList<>();
+			for (Path file : listOfMaskFilesInScenario) {
+				if (!file.toString().contains("Restrictions")) {
+					mask.add(file);
+				}
+			}
+			hashMasksPaths.put(maskType, mask);
+		}
+
+	}
 
 	public void CellSetToMaskLoader(String maskType, int year) {
 		Path path = hashMasksPaths.get(maskType).stream()

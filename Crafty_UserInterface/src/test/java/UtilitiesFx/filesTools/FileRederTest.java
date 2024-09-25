@@ -1,17 +1,27 @@
 package UtilitiesFx.filesTools;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.File;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javafx.stage.DirectoryChooser;
+import main.FxMain;
 
 class FileRederTest {
 
-	//@BeforeEach
+//	 @BeforeEach
 	void setUp() throws Exception {
+		System.out.println("s");
 	}
 
-	//@Test
+	@Test
+	void getFile() {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Select Project");
+		chooser.setInitialDirectory(new File("C:\\Users\\byari-m\\Downloads"));
+	}
+
+	// @Test
 //	void test() {
 //		for (int i = 0; i < 10; i++) {
 //			ReaderFile.processCSV(//"C:\\Users\\byari-m\\Downloads\\Baseline_map.csv");
