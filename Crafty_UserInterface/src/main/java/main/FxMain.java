@@ -41,7 +41,7 @@ public class FxMain extends Application {
 	private static final Logger LOGGER = LogManager.getLogger(FxMain.class);
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		LOGGER.info(/* "\u001B[33m"+ */ "--Starting with CRAFTY--" /* +"\u001B[0m" */);		
+		LOGGER.info(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);		
 		
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
