@@ -1,28 +1,23 @@
-name: JavaFX CI with Container
+name: Java CI with Maven
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
   build:
-    runs-on: windows-latest
-    container:
-      image: maven:3.8.4-openjdk-22
-      env:
-        JAVA_HOME: /usr/local/openjdk-22
-        MAVEN_HOME: /usr/share/maven
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Cache Maven packages
-      uses: actions/cache@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
       with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-m2
-
+        java-version: '11'
+        distribution: 'adopt'
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn clean install
+    - name: Test with Maven
+      run: mvn test
