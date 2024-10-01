@@ -4,12 +4,10 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
 
 import UtilitiesFx.graphicalTools.Tools;
 
@@ -33,7 +31,7 @@ class CsvToolsTest {
 		});
 	}
 
-	@Test
+	//@Test
 	void switchY() {
 		Path path = Paths.get(
 				"C:\\Users\\byari-m\\Desktop\\data-DE\\worlds");
@@ -46,7 +44,7 @@ class CsvToolsTest {
 			String[][] fileReder = CsvTools.csvReader(p.toPath());
 			System.out.println(fileReder[0][y]);
 			for (int i = 1; i < fileReder.length; i++) {
-			//	System.out.print(fileReder[i][y]+"--> ");
+		//	System.out.print(fileReder[i][y]+"--> ");
 				fileReder[i][y] = max - Integer.parseInt(fileReder[i][y]) + "";
 		//		System.out.println(fileReder[i][y]);
 			}

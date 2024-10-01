@@ -161,8 +161,9 @@ public class ModelRunnerController {
 		PathsLoader.setCurrentYear(tick.get());
 		R.go();
 		tickTxt.setText(tick.toString());
-		if (chartSynchronisation && ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % chartSynchronisationGap == 0
-				|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
+		if (chartSynchronisation
+				&& ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % chartSynchronisationGap == 0
+						|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
 			CellsSet.getServicesNames().forEach(name -> {
 				lineChart.get(m.get()).getData().get(0).getData()
@@ -170,12 +171,12 @@ public class ModelRunnerController {
 				lineChart.get(m.get()).getData().get(1).getData()
 						.add(new XYChart.Data<>(tick.get(), R.totalSupply.get(name)));
 				m.getAndIncrement();
-			 });
+			});
 			ObservableList<Series<Number, Number>> observable = lineChart.get(lineChart.size() - 1).getData();
 			List<String> listofNames = observable.stream().map(Series::getName).collect(Collectors.toList());
 			AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-				observable.get(listofNames.indexOf(name)).getData().add(new XYChart.Data<>(tick.get(), value));
-
+				if (!name.equals("null"))
+					observable.get(listofNames.indexOf(name)).getData().add(new XYChart.Data<>(tick.get(), value));
 			});
 		}
 		tick.getAndIncrement();
@@ -190,11 +191,12 @@ public class ModelRunnerController {
 		DemandModel.updateRegionsDemand();
 		scheduleIteravitveTicks(Duration.millis(1000));
 	}
+
 	private void displayRunAsOutput() {
-		OutPuterController.isCurrentResult=true;
+		OutPuterController.isCurrentResult = true;
 		OutPutTabController.getInstance().createNewTab("Current simulation");
 		TabPane tab = TabPaneController.getInstance().getTabpane();
-		tab.getSelectionModel().select(tab.getTabs().size()-1);
+		tab.getSelectionModel().select(tab.getTabs().size() - 1);
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {
@@ -204,10 +206,12 @@ public class ModelRunnerController {
 			return;
 		}
 		if (ModelRunner.writeCsvFiles) {
-			Path aggregateAFTComposition= Paths.get(outPutFolderName + File.separator  + PathsLoader.getScenario() + "-AggregateAFTComposition.csv");
+			Path aggregateAFTComposition = Paths.get(
+					outPutFolderName + File.separator + PathsLoader.getScenario() + "-AggregateAFTComposition.csv");
 			CsvTools.writeCSVfile(R.compositionAftListener, aggregateAFTComposition);
-			Path aggregateServiceDemand= Paths.get(outPutFolderName + File.separator  + PathsLoader.getScenario() + "-AggregateServiceDemand.csv");
-			CsvTools.writeCSVfile(R.servicedemandListener,aggregateServiceDemand );
+			Path aggregateServiceDemand = Paths
+					.get(outPutFolderName + File.separator + PathsLoader.getScenario() + "-AggregateServiceDemand.csv");
+			CsvTools.writeCSVfile(R.servicedemandListener, aggregateServiceDemand);
 		}
 		// Stop the old timeline if it's running
 		if (timeline != null) {
@@ -267,8 +271,8 @@ public class ModelRunnerController {
 			Series<Number, Number> s2 = new XYChart.Series<Number, Number>();
 			s1.setName("Demand " + name);
 			s2.setName("Supply " + name);
-			LineChart<Number, Number> l = new LineChart<>(new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5),
-					new NumberAxis());
+			LineChart<Number, Number> l = new LineChart<>(
+					new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5), new NumberAxis());
 			l.getData().add(s1);
 			l.getData().add(s2);
 			LineChartTools.configurexAxis(l, PathsLoader.getStartYear(), PathsLoader.getEndtYear());
@@ -284,8 +288,8 @@ public class ModelRunnerController {
 
 			MousePressed.mouseControle(vbox, l, othersMenuItems);
 		});
-		LineChart<Number, Number> l = new LineChart<>(new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5),
-				new NumberAxis());
+		LineChart<Number, Number> l = new LineChart<>(
+				new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5), new NumberAxis());
 		lineChart.add(l);
 
 		AFTsLoader.getAftHash().forEach((name, a) -> {
@@ -330,7 +334,8 @@ public class ModelRunnerController {
 
 		TextField textField = new TextField();
 		textField.setPromptText("RunName");
-		Text txt = new Text(PathsLoader.getProjectPath() + File.separator+"output"+File.separator + PathsLoader.getScenario() + File.separator+"...");
+		Text txt = new Text(PathsLoader.getProjectPath() + File.separator + "output" + File.separator
+				+ PathsLoader.getScenario() + File.separator + "...");
 		TextArea textArea = new TextArea();
 		textArea.setText(cofiguration);
 		VBox v = new VBox(txt, textField, textArea);
@@ -340,11 +345,12 @@ public class ModelRunnerController {
 		((Stage) window).setAlwaysOnTop(true);
 		alert.showAndWait().filter(response -> response == ButtonType.OK).ifPresent(x -> {
 			outPutFolderName = textField.getText();
-			String dir = PathTools.makeDirectory(PathsLoader.getProjectPath() + File.separator+"output"+File.separator);
+			String dir = PathTools
+					.makeDirectory(PathsLoader.getProjectPath() + File.separator + "output" + File.separator);
 			dir = PathTools.makeDirectory(dir + PathsLoader.getScenario());
-			dir = PathTools.makeDirectory(dir + File.separator  + outPutFolderName);
-			outPutFolderName=dir;
-			PathTools.writeFile(outPutFolderName+ File.separator+"readme.txt", textArea.getText(), false);
+			dir = PathTools.makeDirectory(dir + File.separator + outPutFolderName);
+			outPutFolderName = dir;
+			PathTools.writeFile(outPutFolderName + File.separator + "readme.txt", textArea.getText(), false);
 		});
 
 		return alert;

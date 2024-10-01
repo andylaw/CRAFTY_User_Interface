@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,6 +22,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.Tools;
 import javafx.scene.paint.Color;
 import model.Manager;
+import model.ManagerTypes;
 import model.RegionClassifier;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
@@ -38,18 +38,17 @@ public class AFTsLoader extends HashSet<Manager> {
 	private static final long serialVersionUID = 1L;
 	private static ConcurrentHashMap<String, Manager> hash = new ConcurrentHashMap<>();
 	private static ConcurrentHashMap<String, Manager> activateAFTsHash = new ConcurrentHashMap<>();
-
 	public static ConcurrentHashMap<String, Integer> hashAgentNbr = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> hashAgentNbrRegions = new ConcurrentHashMap<>();
+	public static String unmanagedManagerLabel;
 
 	public AFTsLoader() {
-
 		initializeAFTs();
 		addAll(hash.values());
 		hash.entrySet().stream().filter(entry -> entry.getValue().isActive())
 				.forEach(entry -> activateAFTsHash.put(entry.getKey(), entry.getValue()));
-
 		agentsColorinitialisation();
+
 	}
 
 	public void agentsColorinitialisation() {
@@ -102,14 +101,14 @@ public class AFTsLoader extends HashSet<Manager> {
 	void initializeAFTs() {
 		updateAftTypes();
 		hash.forEach((Label, a) -> {
-			if (a.isActive()) {
+			if (a.isInteract()) {
 				Path pFile = null;
 				try {
 					pFile = PathTools.fileFilter(PathTools.asFolder("default_production"),
-							PathTools.asFolder("production"), PathsLoader.getScenario(), Label+ ".csv").get(0);
+							PathTools.asFolder("production"), PathsLoader.getScenario(), Label + ".csv").get(0);
 				} catch (NullPointerException e) {
 					pFile = PathTools
-							.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), Label+ ".csv")
+							.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), Label + ".csv")
 							.get(0);
 					LOGGER.warn("Default productivity folder not fund, will use: " + pFile);
 				}
@@ -118,10 +117,10 @@ public class AFTsLoader extends HashSet<Manager> {
 				Path bFile = null;
 				try {
 					bFile = PathTools.fileFilter(PathTools.asFolder("default_behaviour"), PathTools.asFolder("agents"),
-							PathsLoader.getScenario(), Label+ ".csv").get(0);
+							PathsLoader.getScenario(), Label + ".csv").get(0);
 				} catch (NullPointerException e) {
-					bFile = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), Label+ ".csv")
-							.get(0);
+					bFile = PathTools
+							.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), Label + ".csv").get(0);
 					LOGGER.warn("Default behaviour folder not fund, will use: " + bFile);
 				}
 				initializeAFTBehevoir(bFile);
@@ -149,8 +148,8 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void updateAFTs() {
-		Path pFolderToUpdate = PathsLoader.getProjectPath().resolve("production").resolve( PathsLoader.getScenario()).resolve(
-				"update_production_" + PathsLoader.getCurrentYear());
+		Path pFolderToUpdate = PathsLoader.getProjectPath().resolve("production").resolve(PathsLoader.getScenario())
+				.resolve("update_production_" + PathsLoader.getCurrentYear());
 		if (pFolderToUpdate.toFile().exists()) {
 			List<Path> pFiles = PathTools.fileFilter(pFolderToUpdate.toString());
 			pFiles.forEach(f -> {
@@ -161,8 +160,8 @@ public class AFTsLoader extends HashSet<Manager> {
 			LOGGER.info("AFT production parameters not updated (no folder found:" + pFolderToUpdate + ")");
 		}
 
-		Path bFolderToUpdate = PathsLoader.getProjectPath().resolve("agents").resolve( PathsLoader.getScenario()).resolve(
-				"update_behaviour_" + PathsLoader.getCurrentYear());
+		Path bFolderToUpdate = PathsLoader.getProjectPath().resolve("agents").resolve(PathsLoader.getScenario())
+				.resolve("update_behaviour_" + PathsLoader.getCurrentYear());
 		if (bFolderToUpdate.toFile().exists()) {
 			List<Path> bFiles = PathTools.fileFilter(bFolderToUpdate.toString());
 			bFiles.forEach(f -> {
@@ -215,15 +214,24 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	void updateAftTypes() {// mask, AFT, or unmanaged //
 		hash.clear();
-		Path aftsmetadataPath = PathTools.fileFilter(PathTools.asFolder("csv"), "AFTsMetaData").iterator()
-				.next();
+		Path aftsmetadataPath = PathTools.fileFilter(PathTools.asFolder("csv"), "AFTsMetaData").iterator().next();
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(aftsmetadataPath);
 		if (matrix.get("Type") != null) {
 			for (int i = 0; i < matrix.get("Label").size(); i++) {
 				String label = matrix.get("Label").get(i);
 				Manager a = new Manager(label);
 				hash.put(label, a);
-				a.setActive(matrix.get("Type").get(i).equals("AFT"));
+				switch (matrix.get("Type").get(i)) {
+				case "Mask":
+					a.setType(ManagerTypes.MASK);
+					break;
+				case "Unmanaged":
+					a.setType(ManagerTypes.UNMANAGED);
+					unmanagedManagerLabel = a.getLabel();
+					break;
+				default:
+					a.setType(ManagerTypes.AFT);
+				}
 			}
 		}
 
@@ -256,7 +264,8 @@ public class AFTsLoader extends HashSet<Manager> {
 				LOGGER.warn(matrix.get(c0).get(i) + "  is not existe in Services List, will be ignored");
 			}
 		}
-		//LOGGER.info(a.getLabel() + " -> ProductivityLevel= " + a.getProductivityLevel());
+		// LOGGER.info(a.getLabel() + " -> ProductivityLevel= " +
+		// a.getProductivityLevel());
 		updateSensitivty(a, file);
 	}
 
@@ -266,6 +275,9 @@ public class AFTsLoader extends HashSet<Manager> {
 		CellsLoader.hashCell.values().forEach(c -> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
+			else {
+				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "null", 1, Integer::sum);
+			}
 		});
 	}
 
@@ -280,6 +292,9 @@ public class AFTsLoader extends HashSet<Manager> {
 		RegionClassifier.regions.get(regionName).values().forEach(c -> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
+			else {
+				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "null", 1, Integer::sum);
+			}
 		});
 		hashAgentNbrRegions.put(regionName, hashAgentNbr);
 

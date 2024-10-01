@@ -80,6 +80,7 @@ public class ModelRunner {
 	public void go() {
 		int year = PathsLoader.getCurrentYear() < PathsLoader.getEndtYear() ? PathsLoader.getCurrentYear()
 				: PathsLoader.getEndtYear();
+//		ConcurrentHashMap<String, Cell> tmp1 = trackeMasks();/////
 		totalSupply = new ConcurrentHashMap<>();
 		LOGGER.info("Cells.updateCapitals");
 		cells.updateCapitals(year);
@@ -112,7 +113,35 @@ public class ModelRunner {
 			CellsSet.colorMap(colorDisplay);
 		}
 		AFTsLoader.hashAgentNbr();
+//		 trackeMasksNBR() ;
+//		ConcurrentHashMap<String, Cell> tmp2 = trackeMasks();
+//		 System.out.println("--> tmp1.size"+ tmp1.size()+"  tmp2.size="+ tmp2.size());
+//		Set<String> difference = new HashSet<>(tmp1.keySet());
+//        difference.removeAll(tmp2.keySet());
+//        System.out.println("|| "+difference);
+//        difference.forEach(coor->{
+//        	System.out.println(CellsLoader.hashCell.get(coor).getOwner()!=null?
+//        			coor+": "+CellsLoader.hashCell.get(coor).getOwner().getLabel():coor+": Null");
+//        });
+
 	}
+
+//	ConcurrentHashMap<String, Cell> trackeMasks() {
+//		ConcurrentHashMap<String, Cell> hashMask = new ConcurrentHashMap<>();
+//		CellsLoader.hashCell.values().forEach(c -> {
+//			if (c.getOwner() != null&& c.getOwner().getLabel().equals("Water"))
+//				hashMask.put(c.getX()+","+c.getY(), c);
+//		});
+//		return hashMask;
+//	}
+//	void trackeMasksNBR() {
+//		ConcurrentHashMap<String, Integer> hashMaskNbr = new ConcurrentHashMap<>();
+//		CellsLoader.hashCell.values().forEach(c -> {
+//			if (c.getOwner() != null&& !c.getOwner().isActive())
+//				hashMaskNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
+//		});
+//		System.out.println("|| "+hashMaskNbr);
+//	}
 
 	private void outPutservicedemandToCsv(int year) {
 		AtomicInteger m = new AtomicInteger();
@@ -129,7 +158,8 @@ public class ModelRunner {
 	void compositionAFT(int year) {
 		int y = year - PathsLoader.getStartYear() + 1;
 		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-			compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
+			if (!name.equals("null"))
+				compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
 		});
 	}
 

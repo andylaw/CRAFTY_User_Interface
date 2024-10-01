@@ -107,4 +107,5 @@ public class AbstractCell {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+
 }

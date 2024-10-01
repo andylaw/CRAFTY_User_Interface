@@ -65,7 +65,7 @@ public class RegionalModelRunner {
 		}
 	}
 
-	private void calculeRegionSupply() {
+	private void calculeRegionsSupply() {
 		totalSupply = new ConcurrentHashMap<>();
 		hashRegionCell.values().parallelStream().forEach(c -> {
 			c.currentProductivity.forEach((s, v) -> {
@@ -120,7 +120,7 @@ public class RegionalModelRunner {
 		// cells ");
 		productivityForAll();
 		// LOGGER.info("Region: [" + regionName + "] Total Supply calculation");
-		calculeRegionSupply();
+		calculeRegionsSupply();
 
 	}
 
@@ -146,7 +146,7 @@ public class RegionalModelRunner {
 					ModelRunner.percentageOfGiveUp);
 			if (randomCellsubSetForGiveUp != null) {
 				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
-					if (c.getOwner() != null) {
+					if (c.getOwner() != null && c.getOwner().isInteract()) {
 						c.giveUp(marginal, distributionMean, regionName);
 					}
 				});
@@ -184,7 +184,8 @@ public class RegionalModelRunner {
 				calculeMarginal(year);
 			});
 		} else {
-			// LOGGER.error("Region: [" + regionName + "] Failed to select a random subset of
+			// LOGGER.error("Region: [" + regionName + "] Failed to select a random subset
+			// of
 			// cells");
 		}
 		// LOGGER.info("Region: [" + regionName + "] Competition Process Completed");
