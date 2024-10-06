@@ -40,7 +40,8 @@ public class CellsLoader {
 		AFtsSet = new AFTsLoader();
 		hashCell.clear();
 
-		Path baseLindPath = PathTools.fileFilter(File.separator +"worlds"+File.separator, "Baseline_map").iterator().next();
+		Path baseLindPath = PathTools.fileFilter(File.separator + "worlds" + File.separator, "Baseline_map").iterator()
+				.next();
 
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
 
@@ -60,7 +61,7 @@ public class CellsLoader {
 	}
 
 	public void loadCapitalsAndServiceList() {
-		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator +"Capitals.csv").get(0));
+		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Capitals.csv").get(0));
 		CellsSet.getCapitalsName().clear();
 		for (int n = 1; n < line0.length; n++) {
 			CellsSet.getCapitalsName().add(line0[n]);
@@ -68,7 +69,7 @@ public class CellsLoader {
 		LOGGER.info("Capitals size=" + CellsSet.getCapitalsName().size() + " CellsSet.getCapitalsName() "
 				+ CellsSet.getCapitalsName());
 		CellsSet.getServicesNames().clear();
-		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator +"Services.csv").get(0));
+		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Services.csv").get(0));
 		for (int n = 1; n < line0s.length; n++) {
 			CellsSet.getServicesNames().add(line0s[n]);
 		}
@@ -78,29 +79,35 @@ public class CellsLoader {
 
 	public void loadGisData() {
 		try {
-			Path path = PathTools.fileFilter(true, File.separator +"GIS"+File.separator).get(0);
+			Path path = PathTools.fileFilter(true, File.separator + "GIS" + File.separator).get(0);
 			PathsLoader.WorldName = path.toFile().getName().replace("_Regions", "").replace(".csv", "");
 			LOGGER.info("WorldName = " + PathsLoader.WorldName);
 			Table T = Table.read().csv(path.toFile());
 			GISRegionsNames = T.columnNames();
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
-				String coor = T.column("X").get(i) + "," + T.column("Y").get(i); 
+				String coor = T.column("X").get(i) + "," + T.column("Y").get(i);
 				int ii = i;
 				if (hashCell.get(coor) != null) {
 					GISRegionsNames.forEach(name -> {
-						if (T.column(name).get(ii) != null && name.contains("Region_Code"))
-							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
+						if (T.column(name).get(ii) != null && name.contains("Region_Code")) {
+							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());// create
+																												// a
+																												// "list"
+																												// of
+																												// regions
+							hashCell.get(coor).setCurrentRegion(T.column(name).get(ii).toString());
+						}
 					});
 				}
 			}
-			hashCell.values().forEach(c -> {
-				c.setCurrentRegion(c.getGisNameValue().values().iterator().next());
-			});
+//			hashCell.values().forEach(c -> {
+//				c.setCurrentRegion(c.getGisNameValue().values().iterator().next());
+//			});
 		} catch (NullPointerException | IOException e) {
 			regionalization = false;
 			LOGGER.warn(
 					"The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
-			
+
 		}
 	}
 
@@ -108,7 +115,8 @@ public class CellsLoader {
 		year = Math.min(year, PathsLoader.getEndtYear());
 
 		if (!PathsLoader.getScenario().equalsIgnoreCase("Baseline")) {
-			Path path = PathTools.fileFilter(year + "", PathsLoader.getScenario(), File.separator +"capitals"+File.separator).get(0);
+			Path path = PathTools.fileFilter(year + "", PathsLoader.getScenario(), PathTools.asFolder("capitals"))
+					.get(0);
 			ReaderFile.processCSV(this, path, "Capitals");
 		}
 	}

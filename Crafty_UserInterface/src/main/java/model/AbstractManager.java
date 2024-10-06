@@ -11,13 +11,12 @@ import javafx.scene.paint.Color;
 public abstract class AbstractManager {
 	String label;
 	String completeName;
-	ManagerTypes type = ManagerTypes.AFT;
+	ManagerTypes type;
 	ConcurrentHashMap<String, Double> sensitivity = new ConcurrentHashMap<>();
 	ConcurrentHashMap<String, Double> productivityLevel = new ConcurrentHashMap<>();
 	double giveInMean = 0, giveInSD = 0, giveUpMean = 0, giveUpSD = 0, serviceLevelNoiseMin = 0,
 			serviceLevelNoiseMax = 0, giveUpProbabilty = 0;
 	Color color;
-	
 
 	public ManagerTypes getType() {
 		return type;
@@ -26,19 +25,18 @@ public abstract class AbstractManager {
 	public void setType(ManagerTypes type) {
 		this.type = type;
 	}
-	
+
 	public boolean isActive() {
-		return type == ManagerTypes.AFT || type == ManagerTypes.UNMANAGED;
+		return type == ManagerTypes.AFT || type == ManagerTypes.Abandoned;
 	}
+
 	public boolean isInteract() {
 		return type == ManagerTypes.AFT;
 	}
 
-	public boolean isUnmanaged() {
-		return type == ManagerTypes.UNMANAGED;
+	public boolean isAbandoned() {
+		return type == ManagerTypes.Abandoned;
 	}
-
-
 
 	public ConcurrentHashMap<String, Double> getSensitivity() {
 		return sensitivity;

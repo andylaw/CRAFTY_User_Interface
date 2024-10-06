@@ -40,7 +40,7 @@ public class CellsSubSets {
 		Set<Manager> neighborhoodAFts = Collections.synchronizedSet(new HashSet<>());
 		Set<Cell> neighborhoodCells = getMooreNeighborhood(c);
 		neighborhoodCells.forEach(vc -> {
-			if (vc.getOwner() != null && vc.getOwner().getType() == ManagerTypes.AFT)
+			if (vc.getOwner() != null && vc.getOwner().isInteract())
 				neighborhoodAFts.add(vc.getOwner());
 		});
 		return neighborhoodAFts;
@@ -64,7 +64,7 @@ public class CellsSubSets {
 		Set<Manager> neighborhoodAFts = Collections.synchronizedSet(new HashSet<>());
 		Set<Cell> neighborhoodCells = getExtendedMooreNeighborhood(c, r);
 		neighborhoodCells.forEach(vc -> {
-			if (vc.getOwner() != null && vc.getOwner().getType() == ManagerTypes.AFT)
+			if (vc.getOwner() != null && vc.getOwner().isInteract())
 				neighborhoodAFts.add(vc.getOwner());
 		});
 		return neighborhoodAFts;

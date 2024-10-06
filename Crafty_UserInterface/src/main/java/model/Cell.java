@@ -67,7 +67,7 @@ public class Cell extends AbstractCell {
 	}
 
 	double utility(ConcurrentHashMap<String, Double> marginal) {
-		if (owner == null) {
+		if (owner == null || !owner.isInteract()) {
 			return 0;
 		}
 		try {
@@ -155,14 +155,12 @@ public class Cell extends AbstractCell {
 
 	void giveUp(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
 			String region) {
-		if (owner != null) {
+		if (getOwner() != null && getOwner().isInteract()) {
 			double cUtility = utility(marginal);
-
 			double averageutility = distributionMean.get(getOwner());
-
 			if ((cUtility < averageutility
 					* (getOwner().getGiveUpMean() + getOwner().getGiveUpSD() * new Random().nextGaussian())
-					&& getOwner().getGiveUpProbabilty() > Math.random())) {
+					&& getOwner().getGiveUpProbabilty() > Math.random()) || cUtility <= 0/**/) {
 				setOwner(null);
 				RegionClassifier.unmanageCellsR.get(region).add(this);
 			}

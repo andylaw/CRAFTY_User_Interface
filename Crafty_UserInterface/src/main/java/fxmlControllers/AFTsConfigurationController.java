@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
@@ -131,7 +132,10 @@ public class AFTsConfigurationController {
 		sensitivtyTable.setEditable(true);
 		productivityTable.setEditable(true);
 
-		Tools.choiceBox(AFTChoisButton, new ArrayList<>(AFTsLoader.getActivateAFTsHash().keySet()));
+		ConcurrentHashMap<String, Manager> InteractAFTs = new ConcurrentHashMap<>();
+		AFTsLoader.getActivateAFTsHash().entrySet().stream().filter(entry -> entry.getValue().isInteract())
+				.forEach(entry -> InteractAFTs.put(entry.getKey(), entry.getValue()));
+		Tools.choiceBox(AFTChoisButton, new ArrayList<>(InteractAFTs.keySet()));
 
 		sensitivtyFire.setOnAction(e2 -> {
 			updateSensitivty(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), radarChartsGridPane,
@@ -371,7 +375,7 @@ public class AFTsConfigurationController {
 
 		String folder = PathTools.fileFilter(File.separator + "production" + File.separator, PathsLoader.getScenario())
 				.get(0).toFile().getParent();
-		CsvTools.writeCSVfile(tab,Paths.get(folder + File.separator + a.getLabel() + ".csv") );
+		CsvTools.writeCSVfile(tab, Paths.get(folder + File.separator + a.getLabel() + ".csv"));
 		String[][] tab2 = new String[2][7];
 		tab2[0] = "givingInDistributionMean,givingInDistributionSD,givingUpDistributionMean,givingUpDistributionSD,serviceLevelNoiseMin,serviceLevelNoiseMax,givingUpProb"
 				.split(",");

@@ -158,7 +158,6 @@ public class ModelRunner {
 	void compositionAFT(int year) {
 		int y = year - PathsLoader.getStartYear() + 1;
 		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-			if (!name.equals("null"))
 				compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
 		});
 	}

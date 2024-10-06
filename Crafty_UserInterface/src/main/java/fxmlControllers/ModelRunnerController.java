@@ -175,8 +175,7 @@ public class ModelRunnerController {
 			ObservableList<Series<Number, Number>> observable = lineChart.get(lineChart.size() - 1).getData();
 			List<String> listofNames = observable.stream().map(Series::getName).collect(Collectors.toList());
 			AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-				if (!name.equals("null"))
-					observable.get(listofNames.indexOf(name)).getData().add(new XYChart.Data<>(tick.get(), value));
+				observable.get(listofNames.indexOf(name)).getData().add(new XYChart.Data<>(tick.get(), value));
 			});
 		}
 		tick.getAndIncrement();

@@ -22,6 +22,7 @@ import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
+import dataLoader.CellsLoader;
 import dataLoader.CurvesLoader;
 import dataLoader.DemandModel;
 import dataLoader.PathsLoader;
@@ -101,7 +102,7 @@ public class RegionalModelRunner {
 				marg = marg / hashRegionCell.size();
 			}
 			marg = CurvesLoader.hashServicesCurves.get(serviceName).linearFunction(marg);
-			marginal.put(serviceName, marg);
+			marginal.put(serviceName, marg);// 0.);//
 		});
 		// LOGGER.trace("Region: [" + regionName +"] Marginal" + marginal);
 	}
@@ -118,7 +119,12 @@ public class RegionalModelRunner {
 	public void regionalSupply() {
 		// LOGGER.info("Region: [" + regionName + "] Productivity calculation for all
 		// cells ");
-		productivityForAll();
+		if (CellsLoader.regionalization) {
+			productivityForAll();
+		} else {
+			productivityForAllExecutor();
+		}
+
 		// LOGGER.info("Region: [" + regionName + "] Total Supply calculation");
 		calculeRegionsSupply();
 
@@ -146,16 +152,14 @@ public class RegionalModelRunner {
 					ModelRunner.percentageOfGiveUp);
 			if (randomCellsubSetForGiveUp != null) {
 				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
-					if (c.getOwner() != null && c.getOwner().isInteract()) {
-						c.giveUp(marginal, distributionMean, regionName);
-					}
+					c.giveUp(marginal, distributionMean, regionName);
+					// System.out.println("giveUp"+ RegionClassifier.unmanageCellsR.size());
 				});
 			}
 		}
 		// LOGGER.info("Region: [" + regionName + "] Take over unmanaged cells &
 		// Launching the competition process...");
-		takeOverUnmanageCells();
-
+		// takeOverUnmanageCells();
 		// Randomly select % of the land available for competition
 		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(hashRegionCell,
 				ModelRunner.percentageCells);
@@ -168,15 +172,17 @@ public class RegionalModelRunner {
 			subsubsets.forEach(subsubset -> {
 				if (subsubset != null) {
 					subsubset.values().parallelStream().forEach(c -> {
-						c.getServices()
-								.forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
-						if (ModelRunner.usegiveUp) {
-							c.giveUp(marginal, distributionMean, regionName);
+						if (c.getOwner() != null && c.getOwner().isActive()) {
+							c.getServices()
+									.forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
+							if (ModelRunner.usegiveUp) {
+								c.giveUp(marginal, distributionMean, regionName);
+							}
+							c.competition(marginal, distributionMean);
+							c.getCurrentProductivity();
+							c.getServices()
+									.forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
 						}
-						c.competition(marginal, distributionMean);
-						c.getCurrentProductivity();
-						c.getServices()
-								.forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
 					});
 				}
 				servicesBeforeCompetition.forEach((key, value) -> totalSupply.merge(key, -value, Double::sum));
@@ -197,11 +203,11 @@ public class RegionalModelRunner {
 
 	}
 
-	public void main(int nbrOfPartition) {
+	private void productivityForAllExecutor() {
 		LOGGER.info("Productivity calculation for all cells ");
 		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		List<Map<String, Cell>> partitions = partitionMap(hashRegionCell, nbrOfPartition); // Partition into 10
-																							// sub-maps
+		List<Map<String, Cell>> partitions = partitionMap(hashRegionCell, 10); // Partition into 10
+																				// sub-maps
 		try {
 			for (Map<String, Cell> subMap : partitions) {
 				executor.submit(() -> subMap.values().parallelStream().forEach(Cell::getCurrentProductivity));

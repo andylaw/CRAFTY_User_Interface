@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,7 +35,7 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	private static final Logger LOGGER = LogManager.getLogger(AFTsLoader.class);
 	private static final long serialVersionUID = 1L;
-	private static ConcurrentHashMap<String, Manager> hash = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<String, Manager> hashAFTs = new ConcurrentHashMap<>();
 	private static ConcurrentHashMap<String, Manager> activateAFTsHash = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<String, Integer> hashAgentNbr = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> hashAgentNbrRegions = new ConcurrentHashMap<>();
@@ -44,11 +43,13 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public AFTsLoader() {
 		initializeAFTs();
-		addAll(hash.values());
-		hash.entrySet().stream().filter(entry -> entry.getValue().isActive())
+		addAll(hashAFTs.values());
+		addAbandonedAftIfNotExiste();
+		hashAFTs.entrySet().stream().filter(entry -> entry.getValue().isActive())
 				.forEach(entry -> activateAFTsHash.put(entry.getKey(), entry.getValue()));
 		agentsColorinitialisation();
-
+		LOGGER.info(" AFTs: "+hashAFTs.keySet());
+		LOGGER.info("Active AFTs: "+activateAFTsHash.keySet());
 	}
 
 	public void agentsColorinitialisation() {
@@ -100,7 +101,7 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	void initializeAFTs() {
 		updateAftTypes();
-		hash.forEach((Label, a) -> {
+		hashAFTs.forEach((Label, a) -> {
 			if (a.isInteract()) {
 				Path pFile = null;
 				try {
@@ -133,13 +134,13 @@ public class AFTsLoader extends HashSet<Manager> {
 		List<Path> pFiles = PathTools.fileFilter(PathTools.asFolder("production"), PathsLoader.getScenario(), ".csv");
 		pFiles.forEach(f -> {
 			File file = f.toFile();
-			updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
+			updateAFTProduction(hashAFTs.get(file.getName().replace(".csv", "")), file);
 		});
 		List<Path> bFiles = PathTools.fileFilter(PathTools.asFolder("agents"), PathsLoader.getScenario(), ".csv");
 		bFiles.forEach(f -> {
 			File file = f.toFile();
 			try {
-				updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
+				updateAFTBehevoir(hashAFTs.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
 			} catch (NullPointerException e) {
 				LOGGER.error("AFT Not in the List: " + file);
 			}
@@ -154,7 +155,7 @@ public class AFTsLoader extends HashSet<Manager> {
 			List<Path> pFiles = PathTools.fileFilter(pFolderToUpdate.toString());
 			pFiles.forEach(f -> {
 				File file = f.toFile();
-				updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
+				updateAFTProduction(hashAFTs.get(file.getName().replace(".csv", "")), file);
 			});
 		} else {
 			LOGGER.info("AFT production parameters not updated (no folder found:" + pFolderToUpdate + ")");
@@ -167,7 +168,7 @@ public class AFTsLoader extends HashSet<Manager> {
 			bFiles.forEach(f -> {
 				File file = f.toFile();
 				try {
-					updateAFTBehevoir(hash.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
+					updateAFTBehevoir(hashAFTs.get(file.getName().replace(".csv", "").replace("AftParams_", "")), file);
 				} catch (NullPointerException e) {
 					LOGGER.error("AFT Not in the List: " + file);
 				}
@@ -179,17 +180,16 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public void initializeAFTBehevoir(Path aftPath) {
 		File file = aftPath.toFile();
-		Manager a = hash.get(file.getName().replace(".csv", "").replace("AftParams_", ""));
+		Manager a = hashAFTs.get(file.getName().replace(".csv", "").replace("AftParams_", ""));
 		updateAFTBehevoir(a, file);
 	}
 
 	private void checkAFTsBehevoireParametres(List<Path> bFiles) {
-
 		List<String> bf = new ArrayList<>();
 		bFiles.forEach(f -> {
 			bf.add(f.toFile().getName().replace(".csv", "").replace("AftParams_", ""));
 		});
-		hash.keySet().forEach(label -> {
+		hashAFTs.keySet().forEach(label -> {
 			if (!bf.contains(label)) {
 				LOGGER.warn("no behevoir parametrs for the AFT:  " + label);
 			}
@@ -209,24 +209,24 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public void initializeAFTProduction(Path aftPath) {
 		File file = aftPath.toFile();
-		updateAFTProduction(hash.get(file.getName().replace(".csv", "")), file);
+		updateAFTProduction(hashAFTs.get(file.getName().replace(".csv", "")), file);
 	}
 
 	void updateAftTypes() {// mask, AFT, or unmanaged //
-		hash.clear();
+		hashAFTs.clear();
 		Path aftsmetadataPath = PathTools.fileFilter(PathTools.asFolder("csv"), "AFTsMetaData").iterator().next();
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(aftsmetadataPath);
 		if (matrix.get("Type") != null) {
 			for (int i = 0; i < matrix.get("Label").size(); i++) {
 				String label = matrix.get("Label").get(i);
 				Manager a = new Manager(label);
-				hash.put(label, a);
+				hashAFTs.put(label, a);
 				switch (matrix.get("Type").get(i)) {
 				case "Mask":
 					a.setType(ManagerTypes.MASK);
 					break;
-				case "Unmanaged":
-					a.setType(ManagerTypes.UNMANAGED);
+				case "Abandoned":
+					a.setType(ManagerTypes.Abandoned);
 					unmanagedManagerLabel = a.getLabel();
 					break;
 				default:
@@ -235,6 +235,14 @@ public class AFTsLoader extends HashSet<Manager> {
 			}
 		}
 
+	}
+
+	void addAbandonedAftIfNotExiste() {
+		Manager a = new Manager("Abandoned");
+		a.setType(ManagerTypes.Abandoned);
+		unmanagedManagerLabel = a.getLabel();
+		a.setColor(Color.GREY);
+		hashAFTs.put(a.getLabel(), a);
 	}
 
 	public static void updateSensitivty(Manager a, File file) {
@@ -305,7 +313,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static ConcurrentHashMap<String, Manager> getAftHash() {
-		return hash;
+		return hashAFTs;
 	}
 
 	public static ConcurrentHashMap<String, Manager> getActivateAFTsHash() {
