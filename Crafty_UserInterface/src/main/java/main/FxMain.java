@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-
 /*
  * @author Mohamed Byari
  *
@@ -36,10 +35,11 @@ public class FxMain extends Application {
 	public static AnchorPane anchor = new AnchorPane();
 	public static Scene scene = new Scene(anchor);
 	private static final Logger LOGGER = LogManager.getLogger(FxMain.class);
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		LOGGER.info(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);		
-		
+		LOGGER.info(/* "\u001B[33m"+ */"--Starting with CRAFTY--"/* +"\u001B[0m" */);
+
 		double w = Screen.getPrimary().getBounds().getWidth();
 		double h = Screen.getPrimary().getBounds().getHeight();
 		FxMain.primaryStage = primaryStage;
@@ -50,7 +50,9 @@ public class FxMain extends Application {
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 
-		//VBox vbox = new VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")), anchor);
+		// VBox vbox = new
+		// VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")),
+		// anchor);
 		VBox vbox = new VBox();
 		vbox.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")));
 		vbox.getChildren().add(anchor);

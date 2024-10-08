@@ -3,6 +3,8 @@ package fxmlControllers;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,6 +78,7 @@ public class ModelRunnerController {
 	CellsLoader M;
 	public static String outPutFolderName;
 	public ModelRunner R;
+
 	Timeline timeline;
 	AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
@@ -87,6 +90,8 @@ public class ModelRunnerController {
 //	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
+
+	private boolean startRunin = true;
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
@@ -186,9 +191,11 @@ public class ModelRunnerController {
 //		popUpRunWindowz();
 		run.setDisable(true);
 		simulationFolderName();
-		DemandModel.updateDemand();
-		DemandModel.updateRegionsDemand();
-		scheduleIteravitveTicks(Duration.millis(1000));
+		if (startRunin || !ModelRunner.writeCsvFiles) {
+			DemandModel.updateDemand();
+			DemandModel.updateRegionsDemand();
+			scheduleIteravitveTicks(Duration.millis(1000));
+		}
 	}
 
 	private void displayRunAsOutput() {
@@ -201,7 +208,8 @@ public class ModelRunnerController {
 	private void scheduleIteravitveTicks(Duration delay) {
 		if (PathsLoader.getCurrentYear() >= PathsLoader.getEndtYear() - 1) {
 			// Stop if max iterations reached
-			displayRunAsOutput();
+			if (ModelRunner.writeCsvFiles)
+				displayRunAsOutput();
 			return;
 		}
 		if (ModelRunner.writeCsvFiles) {
@@ -310,6 +318,7 @@ public class ModelRunnerController {
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setHeaderText("Please enter OutPut folder name and any comments");
+		// String runTitel ="outPutFolderName="+ outPutFolderName +"\n";
 		String competitionType = "Select The most competitive AFT for land competition Percentage: "
 				+ (ModelRunner.MostCompetitorAFTProbability * 100) + "% \n"
 				+ "Randomly select an AFT for land competition Percentage: "
@@ -320,8 +329,8 @@ public class ModelRunnerController {
 						+ ModelRunner.NeighborRaduis + "\n"
 				: "";
 
-		String cofiguration = "Remove negative marginal utility values:   " + ModelRunner.removeNegative + "\n"
-				+ "Land abondenmant (Give-up mechanism):  " + ModelRunner.usegiveUp + "\n"
+		String cofiguration = /* runTitel+ */"Remove negative marginal utility values:   " + ModelRunner.removeNegative
+				+ "\n" + "Land abondenmant (Give-up mechanism):  " + ModelRunner.usegiveUp + "\n"
 				+ "Land abondenmant percentage: " + (ModelRunner.percentageOfGiveUp * 100) + "\n"
 				+ "Averaged Per Cell Residual Demand: " + ModelRunner.isAveragedPerCellResidualDemand + "\n"
 				+ "Considering mutation:  " + ModelRunner.isMutated + "\n" + competitionType + "\n"
@@ -332,9 +341,9 @@ public class ModelRunnerController {
 				+ MaskRestrictionDataLoader.hashMasksPaths.keySet() + "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
-		textField.setPromptText("RunName");
-		Text txt = new Text(PathsLoader.getProjectPath() + File.separator + "output" + File.separator
-				+ PathsLoader.getScenario() + File.separator + "...");
+		textField.setPromptText("Output_Folder_Name (if not specified, a default name will be created)");
+		Text txt = new Text(PathsLoader.getProjectPath() + PathTools.asFolder("output") + PathsLoader.getScenario()
+				+ File.separator + "...");
 		TextArea textArea = new TextArea();
 		textArea.setText(cofiguration);
 		VBox v = new VBox(txt, textField, textArea);
@@ -342,47 +351,33 @@ public class ModelRunnerController {
 		dialogPane.setContent(v);
 		Window window = alert.getDialogPane().getScene().getWindow();
 		((Stage) window).setAlwaysOnTop(true);
-		alert.showAndWait().filter(response -> response == ButtonType.OK).ifPresent(x -> {
-			outPutFolderName = textField.getText();
-			String dir = PathTools
-					.makeDirectory(PathsLoader.getProjectPath() + File.separator + "output" + File.separator);
-			dir = PathTools.makeDirectory(dir + PathsLoader.getScenario());
-			dir = PathTools.makeDirectory(dir + File.separator + outPutFolderName);
-			outPutFolderName = dir;
-			PathTools.writeFile(outPutFolderName + File.separator + "readme.txt", textArea.getText(), false);
-		});
 
+		alert.showAndWait().ifPresent(response -> {
+			if (response == ButtonType.OK) {
+				outputfolderPath(textField.getText());
+				PathTools.writeFile(outPutFolderName + File.separator + "readme.txt", textArea.getText(), false);
+				startRunin = true;
+			} else if (response == ButtonType.CANCEL) {
+				startRunin = false;
+				stop();
+			}
+		});
 		return alert;
 	}
 
-//	private void popUpRunWindowz() {
-//		NewWindow dialog = new NewWindow();
-//		if (!dialog.isShowing()) {
-//				
-//			Button yes= new Button("Yes");
-//			Slider CSV_GapS= Tools.slider(1, 30, 15) ;
-//			CSV_GapS.setValue(R.writeCsvFilesGap);
-//			CSV_GapS.valueProperty().addListener((ov, oldval, newval) -> {
-//				R.writeCsvFilesGap = (int) CSV_GapS.getValue();
-//			});
-//			Button no= new Button("No");
-//				yes.setOnAction(e -> {
-//					dialog.close();
-//					R.writeCsvFiles=true;
-//					simulationFolderName();
-//				});
-//				no.setOnAction(e -> {
-//					dialog.close();
-//				});
-//				
-//				VBox vbox= Tools.vBox(
-//						Tools.text("save Output into CSV Files", Color.BLUE)
-//						,
-//						Tools.hBox(yes,CSV_GapS,new Separator(),no)
-//						);
-//				Group g = new Group(vbox);
-//				dialog.creatwindows("Run Configuration", g);
-//		}
-//	}
+	void outputfolderPath(String textFieldGetText) {
+		if (textFieldGetText.equals("")) {
+			outPutFolderName = "Default simulation folder";
+			LocalDateTime now = LocalDateTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
+			String formattedDate = now.format(formatter);
+			outPutFolderName = "Run_Output_" + formattedDate;
+		}
+
+		String dir = PathTools.makeDirectory(PathsLoader.getProjectPath() + PathTools.asFolder("output"));
+		dir = PathTools.makeDirectory(dir + PathsLoader.getScenario());
+		dir = PathTools.makeDirectory(dir + File.separator + outPutFolderName);
+		outPutFolderName = dir;
+	}
 
 }

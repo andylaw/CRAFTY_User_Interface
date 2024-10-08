@@ -1,10 +1,12 @@
 package fxmlControllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -138,13 +140,16 @@ public class SpatialDataController {
 
 	void histogrameCapitals(String year, String capitalName) {
 
-		Set<Double> dset = new HashSet<>();
-		CellsLoader.hashCell.values().forEach(c -> {
-			dset.add(c.getCapitals().get(capitalName));
-		});
-
+		Set<Double> dset  = CellsLoader.hashCell.values().stream()
+                .map(c -> c.getCapitals().get(capitalName))
+                .collect(Collectors.toSet());
+		System.out.println(dset);
 		XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();
 		List<Integer> numbersInInterval = countNumbersInIntervals(dset, 100);
+//		System.out.println(numbersInInterval);
+//		System.out.println(numbersInInterval.stream()
+//                                   .mapToInt(Integer::intValue) // converts Integer to int
+//                                   .sum());
 
 		dataSeries.setName(capitalName + "_" + year + "_" + PathsLoader.getScenario());
 		for (int i = 0; i < numbersInInterval.size(); i++) {
@@ -162,20 +167,17 @@ public class SpatialDataController {
 	}
 
 	public static List<Integer> countNumbersInIntervals(Set<Double> numbers, int intervalNBR) {
-		int[] counts = new int[intervalNBR];
+		int[] counts = new int[intervalNBR+1];
 		for (Double number : numbers) {
 			if (number!=null && number >= 0.0 && number <= 1.0) {
 				int index = (int) (number * intervalNBR);
-				if (index == intervalNBR) {
-					index = intervalNBR - 1;
-				}
 				counts[index]++;
 			}
 		}
-
+		OptionalInt max = Arrays.stream(counts).max();
 		List<Integer> result = new ArrayList<>();
 		for (int count : counts) {
-			result.add(count);
+			result.add((count*100)/max.getAsInt());
 		}
 		return result;
 	}
