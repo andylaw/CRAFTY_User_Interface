@@ -140,7 +140,7 @@
 
 										<fx:include
 											source="/fxmlControllers/OutPutTab.fxml" /> <!---->
-										<!--<fx:include source="/plumLinking/PlumPane.fxml" /> -->
+										<fx:include source="/plumLinking/PlumPane.fxml" /> <!---->
 
 									</tabs>
 								</TabPane>
