@@ -1,6 +1,7 @@
 package dataLoader;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,7 @@ import UtilitiesFx.graphicalTools.Tools;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,22 +27,22 @@ public final class PathsLoader {
 	private static int startYear;
 	private static int endtYear;
 	private static int currentYear = startYear;
-	private static Path projectPath ;
-	
+	private static Path projectPath;
+
 	private static ArrayList<String> scenariosList = new ArrayList<>();
 	private static HashMap<String, String> scenariosHash = new HashMap<>();
 	static ArrayList<Path> allfilesPathInData;
 	private static String scenario;
 	public static String WorldName = "";
+
 	public static void initialisation(Path p) {
 		projectPath = p;
 		allfilesPathInData = PathTools.findAllFiles(projectPath);
 		initialSenarios();
 	}
-	
 
 	static void initialSenarios() {
-		Path path = PathTools.fileFilter(File.separator+"scenarios.csv").iterator().next();
+		Path path = PathTools.fileFilter(File.separator + "scenarios.csv").iterator().next();
 		HashMap<String, ArrayList<String>> hash = ReaderFile.ReadAsaHash(path);
 		setScenariosList(hash.get("Name"));
 		for (String scenario : scenariosList) {
@@ -48,7 +50,8 @@ public final class PathsLoader {
 				scenariosHash.put(scenario, hash.get("startYear").get(hash.get("Name").indexOf(scenario)) + "_"
 						+ hash.get("endtYear").get(hash.get("Name").indexOf(scenario)));
 			} catch (NullPointerException e) {
-				LOGGER.fatal("cannot find \"Name\", \"startYear\" and/or \"endtYear\" in the head of the file :"+ path);
+				LOGGER.fatal(
+						"cannot find \"Name\", \"startYear\" and/or \"endtYear\" in the head of the file :" + path);
 				break;
 			}
 		}
@@ -56,16 +59,16 @@ public final class PathsLoader {
 
 	}
 
-	static public List<String> checkfolders(String path) {
+	static public List<String> checkfolders(String path) {// need to be tested
 		List<String> listOfFilesMissing = new ArrayList<>();
-		List<File> folders = PathTools.detectFolders(path);
+		Set<Path> folders = PathTools.listSubdirectories(Paths.get(path));
 		List<String> foldersname = new ArrayList<>();
 		folders.forEach(e -> {
-			foldersname.add(e.getName());
+			foldersname.add(e.toString());
 		});
 		for (int i = 0; i < foldersNecessary.length; i++) {
 			if (!foldersname.contains(foldersNecessary[i])) {
-				listOfFilesMissing.add(folders.get(0).getParent() + File.separator + foldersNecessary[i]);
+				listOfFilesMissing.add(folders.iterator().next().getParent() + File.separator + foldersNecessary[i]);
 			}
 		}
 
@@ -125,8 +128,7 @@ public final class PathsLoader {
 		String[] temp = scenariosHash.get(scenario).split("_");
 		startYear = (int) Tools.sToD(temp[0]);
 		endtYear = (int) Tools.sToD(temp[1]);
-		 System.out.println(scenario+"--> startYear= "+ startYear+", endtYear "+
-		 endtYear);
+		System.out.println(scenario + "--> startYear= " + startYear + ", endtYear " + endtYear);
 	}
 
 }

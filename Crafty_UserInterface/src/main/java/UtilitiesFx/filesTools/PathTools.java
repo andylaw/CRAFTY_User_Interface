@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,34 +33,33 @@ import javafx.stage.FileChooser;
 public class PathTools {
 
 	private static final Logger LOGGER = LogManager.getLogger(PathTools.class);
-	
-	
-	
-	
-    public static String[] aggregateArrays(String[] firstArray, String...secondArray) {
-        String[] result = new String[firstArray.length + secondArray.length];
-        System.arraycopy(firstArray, 0, result, 0, firstArray.length);
-        System.arraycopy(secondArray, 0, result, firstArray.length, secondArray.length);
-        return result;
-    }
-	
-	public static Set<Path> listSubdirectories(Path directoryPath)  {
-        // Use try-with-resources to ensure the stream is closed properly
-        try (Stream<Path> paths = Files.list(directoryPath)) {
-            return paths.filter(Files::isDirectory) // Filter to include only directories
-                        .collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
-        } catch (IOException e) {
+
+	public static String[] aggregateArrays(String[] firstArray, String... secondArray) {
+		String[] result = new String[firstArray.length + secondArray.length];
+		System.arraycopy(firstArray, 0, result, 0, firstArray.length);
+		System.arraycopy(secondArray, 0, result, firstArray.length, secondArray.length);
+		return result;
+	}
+
+	public static Set<Path> listSubdirectories(Path directoryPath) {
+		try (Stream<Path> paths = Files.list(directoryPath)) {
+			return paths.filter(Files::isDirectory) // Filter to include only directories
+					.collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
+		} catch (NoSuchFileException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.warn("NoSuchFileException= " + directoryPath);
+			return null;
+		} catch (IOException s) {
+			System.out.println("IOException");
 			return null;
 		}
-    }
+	}
+
 	public static Optional<Path> findFolder(Set<Path> paths, String FolderName) {
-        return paths.stream()
-                    .filter(path -> path.getFileName().toString().equals(FolderName))
-                    .findFirst(); // returns an Optional<Path>
-    }
-	
+		return paths.stream().filter(path -> path.getFileName().toString().equals(FolderName)).findFirst(); // returns
+																											// an
+																											// Optional<Path>
+	}
 
 	public static String asFolder(String input) {
 		return File.separator + input + File.separator;
@@ -80,9 +80,18 @@ public class PathTools {
 	}
 
 	public static ArrayList<Path> fileFilter(boolean ignoreIfFileNotExists, String... condition) {
+		return fileFilter(PathsLoader.getAllfilesPathInData(), ignoreIfFileNotExists, condition);
+	}
+
+	public static ArrayList<Path> fileFilter(ArrayList<Path> getAllfilesPathInFolder, String... condition) {
+		return fileFilter(getAllfilesPathInFolder, false, condition);
+	}
+
+	public static ArrayList<Path> fileFilter(ArrayList<Path> getAllfilesPathInFolder, boolean ignoreIfFileNotExists,
+			String... condition) {
 
 		ArrayList<Path> turn = new ArrayList<>();
-		PathsLoader.getAllfilesPathInData().forEach(e -> {
+		getAllfilesPathInFolder.forEach(e -> {
 			boolean testCodition = true;
 			for (int j = 0; j < condition.length; j++) {
 				if (!e.toString().contains(condition[j])) {
@@ -171,27 +180,6 @@ public class PathTools {
 				LOGGER.error("Error writing to file: " + ex.getMessage());
 			}
 		}
-	}
-
-	public static List<File> detectFolders(String folderPath) {
-		List<File> filePaths = new ArrayList<>();
-		File folder = new File(folderPath);
-
-		// Check if the folder exists and is a directory
-		if (folder.exists() && folder.isDirectory()) {
-			File[] files = folder.listFiles();
-
-			// Iterate over the files in the folder
-			for (File file : files) {
-				// Check if it is a directory
-				if (file.isDirectory()) {
-					filePaths.add(file);
-				}
-			}
-		} else {
-			LOGGER.error("Folder not found: " + folderPath);
-		}
-		return filePaths;
 	}
 
 	public static String makeDirectory(String dir) {

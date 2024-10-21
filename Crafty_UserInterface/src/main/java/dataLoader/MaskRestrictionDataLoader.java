@@ -2,9 +2,11 @@ package dataLoader;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,11 +28,11 @@ public class MaskRestrictionDataLoader {
 
 	public static void MaskAndRistrictionLaoderUpdate() {
 		hashMasksPaths = new HashMap<>();
-		List<File> LandUseControlFolder = PathTools
-				.detectFolders(PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl");
+		Set<Path> LandUseControlFolder = PathTools.listSubdirectories(
+				Paths.get(PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl"));
 		if (LandUseControlFolder != null) {
-			for (File folder : LandUseControlFolder) {
-				ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath(),
+			LandUseControlFolder.forEach(folder -> {
+				ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.toString(),
 						PathsLoader.getScenario());
 				if (listOfMaskFilesInScenario != null) {
 					List<Path> maks = new ArrayList<>();
@@ -39,20 +41,21 @@ public class MaskRestrictionDataLoader {
 							maks.add(file);
 						}
 					}
-					hashMasksPaths.put(folder.getName(), maks);
+					hashMasksPaths.put(folder.getFileName().toString(), maks);
 				} else {
-					listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.getAbsolutePath());
+					listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.toString());
 					List<Path> maks = new ArrayList<>();
 					for (Path csv : listOfMaskFilesInScenario) {
 						if (!csv.toString().contains("Restrictions")) {
 							maks.add(csv);
 						}
-						hashMasksPaths.put(folder.getName(), maks);
+						hashMasksPaths.put(folder.getFileName().toString(), maks);
 					}
 				}
-			}
+			});
 		}
 	}
+
 	public static void MaskAndRistrictionLaoderUpdate(String maskType) {
 		ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true,
 				PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl",
@@ -113,9 +116,9 @@ public class MaskRestrictionDataLoader {
 	public void CellSetToMaskLoader(int year) {
 		hashMasksPaths.keySet().forEach(maskType -> {
 			CellSetToMaskLoader(maskType, year);
-			updateRestrections(maskType, year+"", MasksPaneController.restrictions.get(maskType));
+			updateRestrections(maskType, year + "", MasksPaneController.restrictions.get(maskType));
 		});
-		
+
 	}
 
 	public void cleanMaskType(String maskType) {
@@ -154,7 +157,7 @@ public class MaskRestrictionDataLoader {
 				}
 			}
 		}
-		LOGGER.info(maskType+" Restrections updated ");
+		LOGGER.info(maskType + " Restrections updated ");
 	}
 
 	HashMap<String, Boolean> importResrection(Path path) {

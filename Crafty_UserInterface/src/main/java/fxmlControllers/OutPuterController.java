@@ -94,10 +94,10 @@ public class OutPuterController {
 	}
 
 	void initialiseregionBox() {
-		List<File> folders = PathTools.detectFolders(outputpath.toString());
+		Set<Path> folders = PathTools.listSubdirectories(outputpath);
 		folders.forEach(e -> {
-			if (e.getName().contains("region_")) {
-				regionsBox.getItems().addAll(e.getName());
+			if (e.getFileName().toString().contains("region_")) {
+				regionsBox.getItems().addAll(e.getFileName().toString());
 			}
 		});
 		if (regionsBox.getItems().size() == 0) {
@@ -153,7 +153,7 @@ public class OutPuterController {
 
 	public void selectoutPut() {
 		if (!isCurrentResult) {
-			File selectedDirectory = PathTools.selectFolder(PathsLoader.getProjectPath() +File.separator + "output");
+			File selectedDirectory = PathTools.selectFolder(PathsLoader.getProjectPath() + File.separator + "output");
 			if (selectedDirectory != null) {
 				outputpath = Paths.get(selectedDirectory.getAbsolutePath());
 			} else {
@@ -169,7 +169,7 @@ public class OutPuterController {
 			ArrayList<String> yearList = new ArrayList<>();
 			PathTools.findAllFiles(outputpath).forEach(str -> {
 				File file = str.toFile();
-				String tmp = new File(file.getParent()).getName() + File.separator  + file.getName();
+				String tmp = new File(file.getParent()).getName() + File.separator + file.getName();
 
 				if (tmp.contains("-Cell-"))
 					yearList.add(tmp);
@@ -190,7 +190,7 @@ public class OutPuterController {
 		ArrayList<String> yearList = new ArrayList<>();
 		PathTools.findAllFiles(outputpath).forEach(str -> {
 			File file = str.toFile();
-			String tmp = new File(file.getParent()).getName() + File.separator  + file.getName();
+			String tmp = new File(file.getParent()).getName() + File.separator + file.getName();
 			if (tmp.contains("-Cell-"))
 				yearList.add(tmp);
 		});
@@ -211,7 +211,7 @@ public class OutPuterController {
 			int ii = i;
 			if (OutPutTabController.radioColor[i].getText().contains("Agent")) {
 				String newfolder = PathTools
-						.makeDirectory(outputpath + File.separator  + OutPutTabController.radioColor[ii].getText());
+						.makeDirectory(outputpath + File.separator + OutPutTabController.radioColor[ii].getText());
 				yearChoice.getItems().forEach(filepath -> {
 					M.servicesAndOwneroutPut(filepath, outputpath.toString());
 					OutPutTabController.radioColor[ii].fire();
@@ -219,11 +219,11 @@ public class OutPuterController {
 					for (String scenario : PathsLoader.getScenariosList()) {
 						fileyear = fileyear.replace(scenario, "");
 					}
-					ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + File.separator  + fileyear + ".PNG");
+					ImageExporter.NodeToImage(CellsSet.getCanvas(), newfolder + File.separator + fileyear + ".PNG");
 				});
 			}
 		}
-		String newfolder = PathTools.makeDirectory(outputpath + File.separator  + "Charts");
+		String newfolder = PathTools.makeDirectory(outputpath + File.separator + "Charts");
 
 		// First, create a snapshot of the children with their positions
 		List<Node> children = new ArrayList<>(gridChart.getChildren());
@@ -251,7 +251,7 @@ public class OutPuterController {
 			Group rootPane = new Group();
 			rootPane.getChildren().add(child); // Temporarily add to another group
 
-			ImageExporter.NodeToImage(rootPane, newfolder + File.separator  + ch.getTitle() + ".PNG");
+			ImageExporter.NodeToImage(rootPane, newfolder + File.separator + ch.getTitle() + ".PNG");
 
 			// Now re-add the child to the grid at its original position
 			GridPane.setRowIndex(child, rowIndexes.get(i));
@@ -270,10 +270,10 @@ public class OutPuterController {
 //			ImageExporter.NodeToImage(rootPane, newfolder + File.separator  + ch.getTitle() + ".PNG");
 //
 //		});
-		List<File> foders = PathTools.detectFolders(outputpath.toString());
-		for (File folder : foders) {
-			ImagesToPDF.createPDFWithImages(folder.getAbsolutePath(), folder.getName() + ".pdf", 4, 4);
-		}
+		Set<Path> foders = PathTools.listSubdirectories(outputpath);
+		foders.forEach(folder -> {
+			ImagesToPDF.createPDFWithImages(folder.toString(), folder.getFileName() + ".pdf", 4, 4);
+		});
 	}
 
 	@FXML

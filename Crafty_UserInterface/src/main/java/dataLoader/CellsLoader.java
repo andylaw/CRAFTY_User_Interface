@@ -40,7 +40,7 @@ public class CellsLoader {
 		AFtsSet = new AFTsLoader();
 		hashCell.clear();
 
-		Path baseLindPath = PathTools.fileFilter(File.separator + "worlds" + File.separator, "Baseline_map").iterator()
+		Path baseLindPath = PathTools.fileFilter(PathTools.asFolder("worlds"), "Baseline_map").iterator()
 				.next();
 
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
@@ -90,11 +90,7 @@ public class CellsLoader {
 				if (hashCell.get(coor) != null) {
 					GISRegionsNames.forEach(name -> {
 						if (T.column(name).get(ii) != null && name.contains("Region_Code")) {
-							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());// create
-																												// a
-																												// "list"
-																												// of
-																												// regions
+							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());
 							hashCell.get(coor).setCurrentRegion(T.column(name).get(ii).toString());
 						}
 					});

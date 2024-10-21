@@ -63,7 +63,7 @@ public class DemandModel {
 			path.set(
 					PathTools
 							.fileFilter(PathsLoader.getScenario(),
-									File.separator + "worlds" + File.separator + "demand", PathsLoader.WorldName)
+									PathTools.asFolder("worlds") + "demand", PathsLoader.WorldName)
 							.get(0).toString());
 		} catch (NullPointerException e) {
 			String txt = "The GIS data file name does not match any of the demand file names. \n"
@@ -74,15 +74,12 @@ public class DemandModel {
 				PathsLoader.allfilesPathInData = PathTools.findAllFiles(PathsLoader.getProjectPath());
 				Path p = PathTools.fileFilter(true, File.separator + "GIS" + File.separator + "").get(0);
 				PathsLoader.WorldName = p.toFile().getName().replace("_Regions", "").replace(".csv", "");
-				path.set(
-						PathTools
-								.fileFilter(PathsLoader.getScenario(),
-										File.separator + "worlds" + File.separator + "demand", PathsLoader.WorldName)
-								.get(0).toString());
+				path.set(PathTools.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("worlds") + "demand",
+						PathsLoader.WorldName).get(0).toString());
 				RegionClassifier.initialation(false);
 			});
 		}
-		return Paths.get(path.get()) ;
+		return Paths.get(path.get());
 	}
 
 	public static void updateDemand() {
@@ -121,6 +118,7 @@ public class DemandModel {
 			ArrayList<Path> paths = PathTools.fileFilter(PathsLoader.getScenario(),
 					File.separator + "worlds" + File.separator + "demand", r);
 			if (paths == null) {
+				LOGGER.warn("Regionalization is not possible. The demand for the region "+r+" does not exist.");
 				return false;
 			}
 		}
@@ -128,7 +126,7 @@ public class DemandModel {
 	}
 
 	private static void updateDemand(String region) {
-		Path path ;
+		Path path;
 		try {
 			path = PathTools.fileFilter(PathsLoader.getScenario(),
 					File.separator + "worlds" + File.separator + "demand", region).get(0);
