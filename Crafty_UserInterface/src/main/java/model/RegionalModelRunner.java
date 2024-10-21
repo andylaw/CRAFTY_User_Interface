@@ -159,7 +159,7 @@ public class RegionalModelRunner {
 		}
 		// LOGGER.info("Region: [" + regionName + "] Take over unmanaged cells &
 		// Launching the competition process...");
-		// takeOverUnmanageCells();
+		 takeOverUnmanageCells();
 		// Randomly select % of the land available for competition
 		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(hashRegionCell,
 				ModelRunner.percentageCells);
