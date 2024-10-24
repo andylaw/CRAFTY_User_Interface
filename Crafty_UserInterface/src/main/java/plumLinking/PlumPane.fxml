@@ -28,44 +28,59 @@
 		<Tooltip text="Model OutPut" />
 	</tooltip>
 	<content>
-		<VBox spacing="15.0">
+		<VBox spacing="10">
 			<children>
-				<HBox spacing="15.0">
-					<children>
-						<Button onAction="#link" mnemonicParsing="false"
-							styleClass="button-icon"
-							text="Initialise PLUM for execution and link with CRAFTY">
+				<VBox spacing="15.0">
+					<HBox spacing="15.0">
+						<children>
+							<Button onAction="#plumInitialsation" mnemonicParsing="false"
+								styleClass="button-icon" text="PLUM Setup">
+								<graphic>
+									<FontIcon iconLiteral="fas-power-off" iconSize="22" />
+								</graphic>
+							</Button>
+							<Button onAction="#oneTick" mnemonicParsing="false"
+								text="RUN PPLUM one tick" styleClass="button-icon">
+								<graphic>
+									<FontIcon iconLiteral="fas-step-forward" iconSize="22" />
+								</graphic>
+							</Button>
+							<Button mnemonicParsing="false" text="PLUM Run"
+								styleClass="button-icon">
+								<graphic>
+									<FontIcon iconLiteral="far-play-circle" iconSize="22" />
+								</graphic>
+							</Button>
+
+							<Button mnemonicParsing="false" text="Pause"
+								styleClass="button-icon">
+								<graphic>
+									<FontIcon iconLiteral="far-pause-circle" iconSize="22" />
+								</graphic>
+							</Button>
+							<Button mnemonicParsing="false" text="Stop &amp; Reset"
+								styleClass="button-icon">
+								<graphic>
+									<FontIcon iconLiteral="far-stop-circle" iconSize="22" />
+								</graphic>
+							</Button>
+						</children>
+					</HBox>
+					<HBox spacing="15.0">
+						<Button onAction="#initCoupling" mnemonicParsing="false"
+							styleClass="button-icon" text="Coupling setup">
 							<graphic>
 								<FontIcon iconLiteral="fas-link" iconSize="22" />
 							</graphic>
 						</Button>
-						<Button onAction="#oneTick" mnemonicParsing="false"
-							text="RUN PPLUM one tick" styleClass="button-icon">
-							<graphic>
-								<FontIcon iconLiteral="fas-step-forward" iconSize="22" />
-							</graphic>
-						</Button>
-						<Button mnemonicParsing="false" text="RUN"
-							styleClass="button-icon">
+						<Button mnemonicParsing="false"
+							text="Run Coupling" styleClass="button-icon">
 							<graphic>
 								<FontIcon iconLiteral="far-play-circle" iconSize="22" />
 							</graphic>
 						</Button>
-						<Button mnemonicParsing="false" text="Pause"
-							styleClass="button-icon">
-							<graphic>
-								<FontIcon iconLiteral="far-pause-circle" iconSize="22" />
-							</graphic>
-						</Button>
-						<Button mnemonicParsing="false" text="Stop &amp; Reset"
-							styleClass="button-icon">
-							<graphic>
-								<FontIcon iconLiteral="far-stop-circle" iconSize="22" />
-							</graphic>
-						</Button>
-					</children>
-				</HBox>
-
+					</HBox>
+				</VBox>
 				<ScrollPane fx:id="scroll" fitToWidth="true"
 					prefHeight="700.0" prefWidth="700.0">
 					<VBox fx:id="box" spacing="5.0" />

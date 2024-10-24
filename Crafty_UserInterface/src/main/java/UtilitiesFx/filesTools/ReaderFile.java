@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -169,6 +171,30 @@ public class ReaderFile {
 		});
 		// System.out.println(c.getServices());
 
+	}
+	
+	public static List<Map<String, String>> filterMapsByCriteria(List<Map<String, String>> listMaps,
+			HashMap<String, Set<String>> hash) {
+		List<Map<String, String>> returnlistMaps = new ArrayList<>();
+		listMaps.forEach(map -> {
+			boolean tmp1 = true;
+			for (String key : hash.keySet()) {
+				boolean tmp0 = false;
+				for (String v : hash.get(key)) {
+					if (map.get(key).equals(v)) {
+						tmp0 = true;
+						break;
+					}
+				}
+				tmp1 = tmp0;
+				if (!tmp1) {
+					break;
+				}
+			}
+			if (tmp1)
+				returnlistMaps.add(map);
+		});
+		return returnlistMaps;
 	}
 
 }
