@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import dataLoader.AFTsLoader;
+import dataLoader.ServiceSet;
 import fxmlControllers.MasksPaneController;
 import javafx.scene.paint.Color;
 
@@ -27,42 +28,38 @@ public class Cell extends AbstractCell {
 	}
 
 	public void ColorP(Color color) {
-		// gc.setFill(color);
-		// gc.fillRect(x * Cell.size, (CellsSet.getMaxY() - y) * Cell.size, Cell.size,
-		// Cell.size);
 		CellsSet.pixelWriter.setColor(getX(), /* CellsSet.getMaxY() - */getY(), color);
 	}
 
 	// ----------------------------------//
-
-	public double productivity(Manager a, String serviceName) {
+	public double productivity(Manager a, String service) {
 		if (a == null || !a.isInteract())
 			return 0;
 		double product = capitals.entrySet().stream()
-				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + serviceName)))
+				.mapToDouble(e -> Math.pow(e.getValue(), a.getSensitivity().get(e.getKey() + "_" + service)))
 				.reduce(1.0, (x, y) -> x * y);
-		return product * a.getProductivityLevel().get(serviceName);
+		return product * a.getProductivityLevel().get(service);
 	}
 
-	public void productivity(String serviceName) {
+	public void productivity(Service service) {
 		if (owner == null || !owner.isInteract())
 			return;
-
 		double pr = 1.0;
 		for (Map.Entry<String, Double> entry : capitals.entrySet()) {
-			double value = Math.pow(entry.getValue(), owner.getSensitivity().get(entry.getKey() + "_" + serviceName));
+			double value = Math.pow(entry.getValue(),
+					owner.getSensitivity().get(entry.getKey() + "_" + service.getName()));
 			pr *= value;
 		}
-		pr = pr * owner.getProductivityLevel().get(serviceName);
+		pr = pr * owner.getProductivityLevel().get(service.getName());
 
-		currentProductivity.put(serviceName, pr);
+		currentProductivity.put(service.getName(), pr);
 	}
 
 	double utility(Manager a, ConcurrentHashMap<String, Double> marginal) {
 		if (a == null || !a.isInteract()) {
 			return 0;
 		}
-		return CellsSet.getServicesNames().stream().mapToDouble(sname -> marginal.get(sname) * productivity(a, sname))
+		return ServiceSet.getServicesList().stream().mapToDouble(sname -> marginal.get(sname) * productivity(a, sname))
 				.sum();
 	}
 
@@ -71,7 +68,7 @@ public class Cell extends AbstractCell {
 			return 0;
 		}
 		try {
-			return CellsSet.getServicesNames().stream()
+			return ServiceSet.getServicesList().stream()
 					.mapToDouble(sname -> marginal.get(sname) * currentProductivity.get(sname)).sum();
 		} catch (NullPointerException e) {
 			return 0;
@@ -83,9 +80,7 @@ public class Cell extends AbstractCell {
 		if (competitor == null || !competitor.isInteract()) {
 			return;
 		}
-//		if (owner != null && !owner.isActive()) {
-//			return;
-//		}
+
 		boolean makeCopetition = true;
 		if (getMaskType() != null) {
 			HashMap<String, Boolean> mask = MasksPaneController.restrictions.get(getMaskType());
@@ -102,7 +97,7 @@ public class Cell extends AbstractCell {
 			double uC = utility(competitor, marginal);
 			double uO = utility(marginal);
 
-			if (owner == null) {
+			if (owner == null || owner.isAbandoned()) {
 				if (uC > 0)
 					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 			} else {
@@ -110,7 +105,7 @@ public class Cell extends AbstractCell {
 						? (distributionMean.get(owner)
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
-				if ((uC - uO) > nbr) {
+				if ((uC - uO > nbr) && uC > 0) {
 					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
 				}
 			}
@@ -133,7 +128,8 @@ public class Cell extends AbstractCell {
 		return theBestAFT;
 	}
 
-	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean) {
+	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
+			Region R) {
 		boolean Neighboor = ModelRunner.NeighboorEffect && ModelRunner.probabilityOfNeighbor > Math.random();
 		Collection<Manager> afts = Neighboor
 				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.NeighborRaduis)
@@ -146,44 +142,44 @@ public class Cell extends AbstractCell {
 		}
 	}
 
-	public void getCurrentProductivity() {
+	public void calculateCurrentProductivity(Region R) {
 		currentProductivity.clear();
-		CellsSet.getServicesNames().forEach(serviceName -> {
+		R.getServicesHash().values().forEach(serviceName -> {
 			productivity(serviceName);
 		});
 	}
 
 	void giveUp(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
-			String region) {
+			Region R) {
 		if (getOwner() != null && getOwner().isInteract()) {
-			double cUtility = utility(marginal);
+			double utility = utility(marginal);
 			double averageutility = distributionMean.get(getOwner());
-			if ((cUtility < averageutility
+			if ((utility < averageutility
 					* (getOwner().getGiveUpMean() + getOwner().getGiveUpSD() * new Random().nextGaussian())
-					&& getOwner().getGiveUpProbabilty() > Math.random()) || cUtility <= 0/**/) {
+					&& getOwner().getGiveUpProbabilty() > Math.random())) {
 				setOwner(null);
-				RegionClassifier.unmanageCellsR.get(region).add(this);
+				R.getUnmanageCellsR().add(this);
 			}
 		}
 	}
 //------------------------------------------//
 
-	public void landStored(Manager a) {
+	public void landStored(Manager a, Region R) {
 		double sum = 0;
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			String sname = CellsSet.getServicesNames().get(i);
-			sum += productivity(a, sname) * a.getProductivityLevel().get(sname);
+
+		for (String s : ServiceSet.getServicesList()) {
+			sum += productivity(a, s) * a.getProductivityLevel().get(s);
 		}
 		setTmpValueCell(sum);
 	}
 
 	@Override
 	public String toString() {
-		return "Cell [index=" + index + ", x=" + x + ", y=" + y + "\n, GisNameValue=" + GisNameValue
-				+ ", CurrentRegion=" + CurrentRegion + "\n, getCurrentRegion()=" + getCurrentRegion()
-				+ "\\n,, getMaskType()=" + getMaskType() + ", getX()=" + getX() + ", getOwner()="
-				+ (getOwner() != null ? getOwner().getLabel() : "Unmanaged") + ", getCapitals()=" + getCapitals()
-				+ ", getServices()=" + getServices() + ", getGisNameValue()=" + getGisNameValue() + "]";
+		return "Cell [index=" + index + ", x=" + x + ", y=" + y + ", CurrentRegion=" + CurrentRegion + "\n, Mask="
+				+ getMaskType() + ", getOwner()=" + (getOwner() != null ? getOwner().getLabel() : "Unmanaged")
+				+  ", getCapitals()=" + getCapitals() + ", getCurrentProductivity()=" +
+				getCurrentProductivity() +
+					  "]";
 	}
 
 //	@Override

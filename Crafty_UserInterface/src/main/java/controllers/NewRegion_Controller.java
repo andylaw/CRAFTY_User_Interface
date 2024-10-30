@@ -16,6 +16,7 @@ import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.PieChartTools;
 import UtilitiesFx.graphicalTools.Tools;
+import dataLoader.CellsLoader;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -120,16 +121,16 @@ public class NewRegion_Controller {
 	public static TitledPane colorWorld() {
 		VBox vbox = new VBox();
 
-		int length = CellsSet.getCapitalsName().size() + 1;
+		int length = CellsLoader.getCapitalsName().size() + 1;
 
 		RadioButton[] radioColor = new RadioButton[length];
 
 	
 
 		for (int i = 0; i < length; i++) {
-			if (i < CellsSet.getCapitalsName().size()) {
-				radioColor[i] = new RadioButton(CellsSet.getCapitalsName().get(i));
-			} else if (i == CellsSet.getCapitalsName().size()) {
+			if (i < CellsLoader.getCapitalsName().size()) {
+				radioColor[i] = new RadioButton(CellsLoader.getCapitalsName().get(i));
+			} else if (i == CellsLoader.getCapitalsName().size()) {
 				radioColor[i] = new RadioButton("FR");
 			} 
 			vbox.getChildren().add(radioColor[i]);
@@ -140,9 +141,9 @@ public class NewRegion_Controller {
 						radioColor[j].setSelected(false);
 					}
 				}
-				if (k < CellsSet.getCapitalsName().size()) {
-					colorMap(CellsSet.getCapitalsName().get(k));
-				} else if (k == CellsSet.getCapitalsName().size()) {
+				if (k < CellsLoader.getCapitalsName().size()) {
+					colorMap(CellsLoader.getCapitalsName().get(k));
+				} else if (k == CellsLoader.getCapitalsName().size()) {
 					colorMap("FR");
 				} 
 			});

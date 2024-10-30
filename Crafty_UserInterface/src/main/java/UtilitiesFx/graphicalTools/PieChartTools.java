@@ -3,18 +3,14 @@ package UtilitiesFx.graphicalTools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-//import javafx.collections.FXCollections;
 //import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -112,7 +108,7 @@ public class PieChartTools {
 						for (Node n : chart.lookupAll(".data" + j)) {
 							n.setStyle("-fx-pie-color: " + ColorsTools.getStringColor(colorPicker.getValue()) + ";");
 						}
-						M.AFtsSet.getAftHash().get(data.get(j).getName()).setColor(colorPicker.getValue());
+						AFTsLoader.getAftHash().get(data.get(j).getName()).setColor(colorPicker.getValue());
 						CellsSet.colorMap("FR");
 //						Agents.aftReSet.forEach((name,agent) -> {
 //							if (dataName.equals(name)) {

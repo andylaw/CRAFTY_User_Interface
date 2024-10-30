@@ -23,7 +23,6 @@ import javafx.scene.paint.Color;
 import model.Manager;
 import model.ManagerTypes;
 import model.RegionClassifier;
-import model.CellsSet;
 import tech.tablesaw.api.Table;
 
 /**
@@ -45,11 +44,12 @@ public class AFTsLoader extends HashSet<Manager> {
 		initializeAFTs();
 		addAll(hashAFTs.values());
 		addAbandonedAftIfNotExiste();
+		activateAFTsHash.clear();
 		hashAFTs.entrySet().stream().filter(entry -> entry.getValue().isActive())
 				.forEach(entry -> activateAFTsHash.put(entry.getKey(), entry.getValue()));
 		agentsColorinitialisation();
-		LOGGER.info(" AFTs: "+hashAFTs.keySet());
-		LOGGER.info("Active AFTs: "+activateAFTsHash.keySet());
+		LOGGER.info(" AFTs: " + hashAFTs.keySet());
+		LOGGER.info("Active AFTs: " + activateAFTsHash.keySet());
 	}
 
 	public void agentsColorinitialisation() {
@@ -250,8 +250,8 @@ public class AFTsLoader extends HashSet<Manager> {
 		try {
 			T = Table.read().csv(file);
 
-			CellsSet.getCapitalsName().forEach((Cn) -> {
-				CellsSet.getServicesNames().forEach((Sn) -> {
+			CellsLoader.getCapitalsName().forEach((Cn) -> {
+				ServiceSet.getServicesList().forEach((Sn) -> {
 					a.getSensitivity().put((Cn + "_" + Sn),
 							Tools.sToD(T.column(Cn).getString(T.column(0).indexOf(Sn))));
 				});
@@ -266,7 +266,7 @@ public class AFTsLoader extends HashSet<Manager> {
 		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(file.toPath());
 		String c0 = matrix.keySet().contains("C0") ? "C0" : "Unnamed: 0";
 		for (int i = 0; i < matrix.get(c0).size(); i++) {
-			if (CellsSet.getServicesNames().contains(matrix.get(c0).get(i))) {
+			if (ServiceSet.getServicesList().contains(matrix.get(c0).get(i))) {
 				a.getProductivityLevel().put(matrix.get(c0).get(i), Tools.sToD(matrix.get("Production").get(i)));
 			} else {
 				LOGGER.warn(matrix.get(c0).get(i) + "  is not existe in Services List, will be ignored");
@@ -284,7 +284,8 @@ public class AFTsLoader extends HashSet<Manager> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 			else {
-				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "null", 1, Integer::sum);
+				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "Abandoned", 1,
+						Integer::sum);
 			}
 		});
 	}
@@ -297,11 +298,12 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public static void hashAgentNbr(String regionName) {
 		ConcurrentHashMap<String, Integer> hashAgentNbr = new ConcurrentHashMap<>();
-		RegionClassifier.regions.get(regionName).values().forEach(c -> {
+		RegionClassifier.regions.get(regionName).getCells().values().forEach(c -> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 			else {
-				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "null", 1, Integer::sum);
+				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "Abandoned", 1,
+						Integer::sum);
 			}
 		});
 		hashAgentNbrRegions.put(regionName, hashAgentNbr);

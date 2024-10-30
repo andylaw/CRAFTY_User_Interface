@@ -27,6 +27,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
+import dataLoader.ServiceSet;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -174,7 +175,7 @@ public class OutPuterController {
 				if (tmp.contains("-Cell-"))
 					yearList.add(tmp);
 			});
-			LOGGER.info("output files List---> " + yearList);
+			LOGGER.info("output files List: " + yearList);
 			yearChoice.getItems().addAll(yearList);
 			yearChoice.setValue(yearList.get(0));
 			sankeyBox.getItems().addAll(yearList);
@@ -347,21 +348,21 @@ public class OutPuterController {
 		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(servicepath.get(0));
 
 		ArrayList<HashMap<String, ArrayList<Double>>> has = new ArrayList<>();
-		CellsSet.getServicesNames().forEach(servicename -> {
+		ServiceSet.getServicesList().forEach(serviceName -> {
 			HashMap<String, ArrayList<Double>> ha = new HashMap<>();
 			reder.forEach((name, value) -> {
 				ArrayList<Double> tmp = new ArrayList<>();
 				for (int i = 0; i < value.size() - 2; i++) {
 					tmp.add(Tools.sToD(value.get(i)));
 				}
-				if (name.contains(servicename)) {
+				if (name.contains(serviceName)) {
 					ha.put(name, tmp);
 				}
 			});
 
 			has.add(ha);
 			LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(), new NumberAxis());
-			chart.setTitle(servicename);
+			chart.setTitle(serviceName);
 			lineChart.add(chart);
 		});
 

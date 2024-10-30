@@ -15,8 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 /**
  * @author Mohamed Byari
@@ -35,14 +33,13 @@ public final class CSVTableView extends TableView<String> {
 			tableView.getItems().add(FXCollections.observableArrayList(data[i]));
 		}
 
-	//	double height = 25 * (data.length + 1);
+		// double height = 25 * (data.length + 1);
 		// double width = 100 * data[0].length;
-		//tableView.setPrefHeight(height);
+		// tableView.setPrefHeight(height);
 		// tableView.setPrefWidth(width);
 		return tableView;
 	}
 
-	
 	public static TableView<ObservableList<String>> newtable(String[][] data) {
 		return newtable(data, null);
 	}
@@ -53,7 +50,7 @@ public final class CSVTableView extends TableView<String> {
 
 	public static void updateTableView(String[][] data, Consumer<String> action,
 			TableView<ObservableList<String>> tableView) {
-		
+
 		if (data == null || data.length == 0 || data[0].length == 0) {
 			return;
 		}
@@ -71,12 +68,15 @@ public final class CSVTableView extends TableView<String> {
 		// Create columns and set them to be editable
 		for (int i = 0; i < data[0].length; i++) {
 			final int colIndex = i;
-			Rectangle[] rec = new Rectangle[data[0].length];
-			for (int j = 0; j < rec.length; j++) {
-				rec[j] = new Rectangle(10, 10, Color.BLUE);
-			}
 			TableColumn<ObservableList<String>, String> column = new TableColumn<>(data[0][i]);
-			column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(colIndex)));
+			column.setCellValueFactory(param -> {
+				ObservableList<String> rowData = param.getValue();
+				if (colIndex < rowData.size()) {
+					return new SimpleStringProperty(rowData.get(colIndex));
+				} else {
+					return new SimpleStringProperty("");
+				}
+			});
 			if (action != null) {
 				column.setCellFactory(TextFieldTableCell.forTableColumn());
 			}

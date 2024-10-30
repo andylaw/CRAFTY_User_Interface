@@ -53,6 +53,7 @@ public class MaskRestrictionDataLoader {
 			}
 		}
 	}
+
 	public static void MaskAndRistrictionLaoderUpdate(String maskType) {
 		ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true,
 				PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl",
@@ -113,10 +114,11 @@ public class MaskRestrictionDataLoader {
 	public void CellSetToMaskLoader(int year) {
 		hashMasksPaths.keySet().forEach(maskType -> {
 			CellSetToMaskLoader(maskType, year);
-			updateRestrections(maskType, year+"", MasksPaneController.restrictions.get(maskType));
+			updateRestrections(maskType, year + "", MasksPaneController.restrictions.get(maskType));
 		});
-		
+
 	}
+
 
 	public void cleanMaskType(String maskType) {
 		CellsLoader.hashCell.values().parallelStream().forEach(c -> {
@@ -154,7 +156,7 @@ public class MaskRestrictionDataLoader {
 				}
 			}
 		}
-		LOGGER.info(maskType+" Restrections updated ");
+		LOGGER.info(maskType + " Restrections updated ");
 	}
 
 	HashMap<String, Boolean> importResrection(Path path) {
@@ -164,7 +166,6 @@ public class MaskRestrictionDataLoader {
 			for (int i = 1; i < matrix.length; i++) {
 				for (int j = 1; j < matrix[0].length; j++) {
 					restric.put(matrix[i][0] + "_" + matrix[0][j], matrix[i][j].contains("1"));
-//					System.out.println(matrix[i][0] + "_" + matrix[0][j]+"->"+ matrix[i][j].contains("1"));
 				}
 			}
 			return restric;

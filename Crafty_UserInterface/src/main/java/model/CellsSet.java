@@ -23,6 +23,7 @@ import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
+import dataLoader.ServiceSet;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -53,8 +54,6 @@ public class CellsSet {
 	private static String regioneselected = "Region_Code";
 	private static String colortype = "FR";
 	private static CellsLoader cellsSet;
-	private static List<String> capitalsName = Collections.synchronizedList(new ArrayList<>());
-	private static List<String> servicesNames = Collections.synchronizedList(new ArrayList<>());
 
 	public static void plotCells() {
 		isPlotedMap = true;
@@ -71,7 +70,7 @@ public class CellsSet {
 		System.out.println("||" + (maxX - minX) + "," + (maxY - minY));
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
-		
+
 		writableImage = new WritableImage(maxX, maxY);
 		pixelWriter = writableImage.getPixelWriter();
 
@@ -142,11 +141,9 @@ public class CellsSet {
 	public static void showOnlyOneAFT(Manager a) {
 		CellsLoader.hashCell.values().parallelStream().forEach(cell -> {
 			if (cell.getOwner() == null || !cell.getOwner().getLabel().equals(a.getLabel())) {
-//				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), Color.gray(0.65));
 				cell.ColorP(Color.gray(0.65));
 			} else {
 				cell.ColorP(a.getColor());
-//				pixelWriter.setColor(cell.getX(), maxY - cell.getY(), a.getColor());
 			}
 		});
 		gc.drawImage(writableImage, 0, 0);
@@ -156,35 +153,38 @@ public class CellsSet {
 		if (!isPlotedMap) {
 			return;
 		}
-		;
 		LOGGER.info("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
 		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getOwner() != null) {
-					// pixelWriter.setColor(c.getX(), maxY - c.getY(), );
 					c.ColorP(c.getOwner().getColor());
 				} else {
 					c.ColorP(Color.WHITE);
 				}
 			});
-		} else if (capitalsName.contains(colortype)) {
+		} else if (CellsLoader.getCapitalsName().contains(colortype)) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
 
 			});
 
-		} else if (servicesNames.contains(colortype)) {
-			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				if (c.getServices().get(colortype) != null)
-					values.add(c.getServices().get(colortype));
-			});
-			double max = values.size() > 0 ? Collections.max(values) : 0;
-
-			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				c.ColorP(ColorsTools.getColorForValue(max, c.getServices().get(colortype)));
-			});
-		} else if (colortype.equalsIgnoreCase("tmp")) {
+		} /*
+			 * else if (ServiceSet.getServicesList().contains(colortype)) {
+			 * CellsLoader.hashCell.values().parallelStream().forEach(c -> { Service s =
+			 * ServiceSet.getServicesHash().get(colortype); if
+			 * (c.getCurrentProductivity().get(ServiceSet.getServicesHash().get(colortype))
+			 * != null) values.add(c.getCurrentProductivity().get(s)); }); double max =
+			 * values.size() > 0 ? Collections.max(values) : 0;
+			 * 
+			 * CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+			 * 
+			 * if
+			 * (c.getCurrentProductivity().get(ServiceSet.getServicesHash().get(colortype))
+			 * != null) { c.ColorP(ColorsTools.getColorForValue(max,
+			 * c.getCurrentProductivity().get(ServiceSet.getServicesHash().get(colortype))))
+			 * ; } else { c.ColorP(ColorsTools.getColorForValue(max, 0)); } }); }
+			 */ else if (colortype.equalsIgnoreCase("tmp")) {
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				values.add(c.getTmpValueCell());
@@ -208,10 +208,10 @@ public class CellsSet {
 			HashMap<String, Color> colorGis = new HashMap<>();
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				colorGis.put(c.getGisNameValue().get(colortype), ColorsTools.RandomColor());
+				colorGis.put(c.getCurrentRegion()/* .get(colortype) */, ColorsTools.RandomColor());
 			});
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				c.ColorP(colorGis.get(c.getGisNameValue().get(colortype)));
+				c.ColorP(colorGis.get(c.getCurrentRegion()/* .getGisNameValue().get(colortype) */));
 			});
 		}
 		gc.drawImage(writableImage, 0, 0);
@@ -305,14 +305,6 @@ public class CellsSet {
 
 	public static void setCellsSet(CellsLoader cellsSet) {
 		CellsSet.cellsSet = cellsSet;
-	}
-
-	public static List<String> getCapitalsName() {
-		return capitalsName;
-	}
-
-	public static List<String> getServicesNames() {
-		return servicesNames;
 	}
 
 	public static Canvas getCanvas() {

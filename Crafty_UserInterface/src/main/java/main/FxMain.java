@@ -6,9 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import UtilitiesFx.cameraTools.Camera;
-import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
-import dataLoader.PathsLoader;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

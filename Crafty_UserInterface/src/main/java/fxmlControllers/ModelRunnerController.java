@@ -26,6 +26,8 @@ import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
+import dataLoader.S_WeightLoader;
+import dataLoader.ServiceSet;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -56,13 +58,10 @@ import model.ModelRunner;
 import javafx.scene.layout.GridPane;
 
 public class ModelRunnerController {
-
 	@FXML
 	private VBox vbox;
-
 	@FXML
 	private Label tickTxt;
-
 	@FXML
 	private Button oneStep;
 	@FXML
@@ -77,7 +76,7 @@ public class ModelRunnerController {
 	private ScrollPane scroll;
 	CellsLoader M;
 	public static String outPutFolderName;
-	public ModelRunner R;
+	private ModelRunner runner;
 
 	Timeline timeline;
 	AtomicInteger tick;
@@ -87,7 +86,6 @@ public class ModelRunnerController {
 	public static int chartSynchronisationGap = 5;
 
 	double KeyFramelag = 1;
-//	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
 
@@ -96,13 +94,10 @@ public class ModelRunnerController {
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		M = TabPaneController.M;
-		R = new ModelRunner(M);
+		runner = new ModelRunner(M);
 		tick = new AtomicInteger(PathsLoader.getStartYear());
 		tickTxt.setText(tick.toString());
-
 		lineChart = new ArrayList<>();
-		// lineChart = (ArrayList<LineChart<Number, Number>>)
-		// Collections.synchronizedList(lineChart);
 
 		Collections.synchronizedList(lineChart);
 		outPutFolderName = PathsLoader.getScenario();
@@ -130,16 +125,16 @@ public class ModelRunnerController {
 	}
 
 	void initialzeRadioColorBox() {
-		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
+		radioColor = new RadioButton[ServiceSet.getServicesList().size() + 1];
 		radioColor[radioColor.length - 1] = new RadioButton("FR");
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
+			radioColor[i] = new RadioButton(ServiceSet.getServicesList().get(i));
 		}
 
 		for (int i = 0; i < radioColor.length; i++) {
 			int m = i;
 			radioColor[i].setOnAction(e -> {
-				R.colorDisplay = radioColor[m].getText();
+				runner.colorDisplay = radioColor[m].getText();
 				CellsSet.colorMap(radioColor[m].getText());
 				for (int I = 0; I < radioColor.length; I++) {
 					if (I != m) {
@@ -164,17 +159,23 @@ public class ModelRunnerController {
 	public void oneStep() {
 		System.out.println("------------------- Start of Tick  |" + tick.get() + "| -------------------");
 		PathsLoader.setCurrentYear(tick.get());
-		R.go();
+		runner.go();
 		tickTxt.setText(tick.toString());
+		updateSupplyDemandLineChart();
+		tick.getAndIncrement();
+	}
+
+	private void updateSupplyDemandLineChart() {
 		if (chartSynchronisation
 				&& ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % chartSynchronisationGap == 0
 						|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
-			CellsSet.getServicesNames().forEach(name -> {
+			ServiceSet.getServicesList().forEach(service -> {
 				lineChart.get(m.get()).getData().get(0).getData()
-						.add(new XYChart.Data<>(tick.get(), DemandModel.getGolbalDemand(name, tick.get())));
+						.add(new XYChart.Data<>(tick.get(), DemandModel.worldService.get(service).getDemands()
+								.get(tick.get() - PathsLoader.getStartYear())));
 				lineChart.get(m.get()).getData().get(1).getData()
-						.add(new XYChart.Data<>(tick.get(), R.totalSupply.get(name)));
+						.add(new XYChart.Data<>(tick.get(), runner.totalSupply.get(service)));
 				m.getAndIncrement();
 			});
 			ObservableList<Series<Number, Number>> observable = lineChart.get(lineChart.size() - 1).getData();
@@ -183,17 +184,20 @@ public class ModelRunnerController {
 				observable.get(listofNames.indexOf(name)).getData().add(new XYChart.Data<>(tick.get(), value));
 			});
 		}
-		tick.getAndIncrement();
 	}
 
 	@FXML
 	public void run() {
-//		popUpRunWindowz();
 		run.setDisable(true);
 		simulationFolderName();
 		if (startRunin || !ModelRunner.writeCsvFiles) {
-			DemandModel.updateDemand();
+			if (ModelRunner.initialDSEquilibrium) {
+				ModelRunner.regions.values().forEach(RegionalRunner -> {
+					RegionalRunner.initialDSEquilibrium();
+				});
+			}
 			DemandModel.updateRegionsDemand();
+			S_WeightLoader.updateRegionsWeight();
 			scheduleIteravitveTicks(Duration.millis(1000));
 		}
 	}
@@ -215,10 +219,10 @@ public class ModelRunnerController {
 		if (ModelRunner.writeCsvFiles) {
 			Path aggregateAFTComposition = Paths.get(
 					outPutFolderName + File.separator + PathsLoader.getScenario() + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(R.compositionAftListener, aggregateAFTComposition);
+			CsvTools.writeCSVfile(runner.compositionAftListener, aggregateAFTComposition);
 			Path aggregateServiceDemand = Paths
 					.get(outPutFolderName + File.separator + PathsLoader.getScenario() + "-AggregateServiceDemand.csv");
-			CsvTools.writeCSVfile(R.servicedemandListener, aggregateServiceDemand);
+			CsvTools.writeCSVfile(runner.servicedemandListener, aggregateServiceDemand);
 		}
 		// Stop the old timeline if it's running
 		if (timeline != null) {
@@ -231,13 +235,11 @@ public class ModelRunnerController {
 			Platform.runLater(() -> {
 				oneStep();
 			});
-			long endTime = System.currentTimeMillis();
 			// Calculate the delay for the next tick to maintain the rhythm
-			long delayForNextTick = Math.max(300, (endTime - startTime) / 3);
-
+			long delayForNextTick = Math.max(300, (System.currentTimeMillis() - startTime) / 3);
 			// Schedule the next tick
 			scheduleIteravitveTicks(Duration.millis(delayForNextTick));
-			System.out.println("Delay For Last Tick=  " + delay + " Delay For Next Tick " + delayForNextTick + " ms");
+			System.out.println("Delay For Last Tick=...." + " ms");
 		}));
 		timeline.play();
 	}
@@ -250,7 +252,7 @@ public class ModelRunnerController {
 
 	@FXML
 	public void stop() {
-		R.cells.loadMap();
+		runner.cells.loadMap();
 		CellsSet.colorMap();
 		try {
 			timeline.stop();
@@ -273,11 +275,11 @@ public class ModelRunnerController {
 	}
 
 	void initilaseChart(ArrayList<LineChart<Number, Number>> lineChart) {
-		CellsSet.getServicesNames().forEach(name -> {
+		ServiceSet.getServicesList().forEach(service -> {
 			Series<Number, Number> s1 = new XYChart.Series<Number, Number>();
 			Series<Number, Number> s2 = new XYChart.Series<Number, Number>();
-			s1.setName("Demand " + name);
-			s2.setName("Supply " + name);
+			s1.setName("Demand " + service);
+			s2.setName("Supply " + service);
 			LineChart<Number, Number> l = new LineChart<>(
 					new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5), new NumberAxis());
 			l.getData().add(s1);
@@ -309,7 +311,7 @@ public class ModelRunnerController {
 		l.setCreateSymbols(false);
 		LineChartTools.addSeriesTooltips(l);
 		MousePressed.mouseControle(vbox, l);
-		LineChartTools.labelcolor(R.cells, l);
+		LineChartTools.labelcolor(runner.cells, l);
 	}
 
 	Alert simulationFolderName() {
@@ -372,6 +374,8 @@ public class ModelRunnerController {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
 			String formattedDate = now.format(formatter);
 			outPutFolderName = "Run_Output_" + formattedDate;
+		} else {
+			outPutFolderName = textFieldGetText;
 		}
 
 		String dir = PathTools.makeDirectory(PathsLoader.getProjectPath() + PathTools.asFolder("output"));

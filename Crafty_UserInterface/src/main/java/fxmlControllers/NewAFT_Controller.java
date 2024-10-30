@@ -6,6 +6,9 @@ import UtilitiesFx.graphicalTools.CSVTableView;
 import UtilitiesFx.graphicalTools.Histogram;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
+import dataLoader.AFTsLoader;
+import dataLoader.CellsLoader;
+import dataLoader.ServiceSet;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -21,7 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Manager;
-import model.CellsSet;
 
 /**
  * @author Mohamed Byari
@@ -52,7 +54,7 @@ public class NewAFT_Controller extends AFTsConfigurationController {
 			newAFT.setColor(colorPicker.getValue());
 		});
 		
-		String[][] production = new String[2][CellsSet.getServicesNames().size()];
+		String[][] production = new String[2][ServiceSet.getServicesList().size()];
 	
 		for (int j = 0; j < newAFT.getProductivityLevel().keySet().toArray().length; j++) {
 			production[0][j] = (String) newAFT.getProductivityLevel().keySet().toArray()[j];
@@ -71,11 +73,11 @@ public class NewAFT_Controller extends AFTsConfigurationController {
 			Histogram.histo(vbox, "Productivity levels", histogram, newAFT.getProductivityLevel());
 		});
 
-		String[][] sensetivtyTable = new String[CellsSet.getServicesNames().size() + 1][CellsSet.getCapitalsName().size() + 1];
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			sensetivtyTable[i + 1][0] = CellsSet.getServicesNames().get(i);
-			for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
-				sensetivtyTable[0][j + 1] = CellsSet.getCapitalsName().get(j);
+		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsName().size() + 1];
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
+			sensetivtyTable[i + 1][0] = ServiceSet.getServicesList().get(i);
+			for (int j = 0; j < CellsLoader.getCapitalsName().size(); j++) {
+				sensetivtyTable[0][j + 1] = CellsLoader.getCapitalsName().get(j);
 				sensetivtyTable[i + 1][j + 1] = "0.0";
 			}
 		}
@@ -110,7 +112,7 @@ public class NewAFT_Controller extends AFTsConfigurationController {
 		
 		addToThisSimulation.setOnAction(e -> {
 			System.out.println(newAFT);
-			parent.M.AFtsSet.getAftHash().put(newAFT.getLabel(), newAFT);
+			AFTsLoader.getAftHash().put(newAFT.getLabel(), newAFT);
 			parent.updaChoisButton();
 		 });
 

@@ -2,6 +2,8 @@ package model;
 
 import java.util.Random;
 
+import dataLoader.CellsLoader;
+import dataLoader.ServiceSet;
 import javafx.scene.paint.Color;
 
 /**
@@ -14,14 +16,14 @@ public class Manager extends AbstractManager{
 	public Manager() {
 		label = "";
 		completeName = "";
-		CellsSet.getCapitalsName().forEach((Cn) -> {
-			CellsSet.getServicesNames().forEach((Sn) -> {
+		CellsLoader.getCapitalsName().forEach((Cn) -> {
+			ServiceSet.getServicesList().forEach((Sn) -> {
 				sensitivity.put((Cn + "_" + Sn), 0.);
 			});
 		});
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			productivityLevel.put(CellsSet.getServicesNames().get(i), 0.0);
-		}
+		ServiceSet.getServicesList().forEach(servicename->{
+			productivityLevel.put(servicename, 0.0);
+		});
 	}
 
 	public Manager(Manager other) {
@@ -46,12 +48,12 @@ public class Manager extends AbstractManager{
 		this.label = label;
 		this.color = Color.color(Math.random(), Math.random(), Math.random());// ColorsTools.colorlist(new
 																				// Random().nextInt(17));
-		CellsSet.getCapitalsName().forEach((Cn) -> {
-			CellsSet.getServicesNames().forEach((Sn) -> {
+		CellsLoader.getCapitalsName().forEach((Cn) -> {
+			ServiceSet.getServicesList().forEach((Sn) -> {
 				this.sensitivity.put((Cn + "_" + Sn), Math.random() > 0.5 ? Math.random() : 0);
 			});
 		});
-		CellsSet.getServicesNames().forEach((Sn) -> {
+		ServiceSet.getServicesList().forEach((Sn) -> {
 			this.productivityLevel.put(Sn, LevelIntervale * Math.random());
 		});
 		this.giveInMean = Math.random();

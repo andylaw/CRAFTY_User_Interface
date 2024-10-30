@@ -13,6 +13,7 @@ import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.PathsLoader;
+import dataLoader.ServiceSet;
 import fxmlControllers.MasksPaneController;
 import fxmlControllers.ModelRunnerController;
 
@@ -29,6 +30,7 @@ public class ModelRunner {
 	public static int mapSynchronisationGap = 5;
 	public static boolean writeCsvFiles = true;
 	public static int writeCsvFilesGap = 10;
+	public static boolean initialDSEquilibrium = true;
 	public static boolean removeNegative = false;
 	public static boolean usegiveUp = true;
 	public static boolean isMutated = false;
@@ -40,7 +42,7 @@ public class ModelRunner {
 	public static double percentageCells = 0.01;
 	public static int nbrOfSubSet = 10;
 	public static double mutationIntval = 0.1;
-	public static double percentageOfGiveUp = 0.05;
+	public static double percentageOfGiveUp = 0.01;
 	public static boolean traker = false;
 	public ConcurrentHashMap<String, Double> totalSupply;
 
@@ -58,11 +60,11 @@ public class ModelRunner {
 		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader
 				.getAftHash().size()];
 		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
-				+ 2][CellsSet.getServicesNames().size() * 2];
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			servicedemandListener[0][i] = "ServiceSupply:" + CellsSet.getServicesNames().get(i);
-			servicedemandListener[0][i + CellsSet.getServicesNames().size()] = "Demand:"
-					+ CellsSet.getServicesNames().get(i);
+				+ 2][ServiceSet.getServicesList().size() * 2];
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
+			servicedemandListener[0][i] = "ServiceSupply:" + ServiceSet.getServicesList().get(i);
+			servicedemandListener[0][i + ServiceSet.getServicesList().size()] = "Demand:"
+					+ ServiceSet.getServicesList().get(i);
 		}
 		int i = 0;
 		for (String label : AFTsLoader.getAftHash().keySet()) {
@@ -76,6 +78,8 @@ public class ModelRunner {
 			regions.put(regionName, new RegionalModelRunner(regionName));
 		});
 	}
+
+
 
 	public void go() {
 		int year = PathsLoader.getCurrentYear() < PathsLoader.getEndtYear() ? PathsLoader.getCurrentYear()
@@ -92,7 +96,7 @@ public class ModelRunner {
 		});
 
 		if (writeCsvFiles) {
-			outPutservicedemandToCsv(year);
+			outPutserviceDemandToCsv(year);
 			if (traker) {
 				Tracker.trackSupply(year);
 			}
@@ -113,17 +117,6 @@ public class ModelRunner {
 			CellsSet.colorMap(colorDisplay);
 		}
 		AFTsLoader.hashAgentNbr();
-//		 trackeMasksNBR() ;
-//		ConcurrentHashMap<String, Cell> tmp2 = trackeMasks();
-//		 System.out.println("--> tmp1.size"+ tmp1.size()+"  tmp2.size="+ tmp2.size());
-//		Set<String> difference = new HashSet<>(tmp1.keySet());
-//        difference.removeAll(tmp2.keySet());
-//        System.out.println("|| "+difference);
-//        difference.forEach(coor->{
-//        	System.out.println(CellsLoader.hashCell.get(coor).getOwner()!=null?
-//        			coor+": "+CellsLoader.hashCell.get(coor).getOwner().getLabel():coor+": Null");
-//        });
-
 	}
 
 //	ConcurrentHashMap<String, Cell> trackeMasks() {
@@ -143,14 +136,14 @@ public class ModelRunner {
 //		System.out.println("|| "+hashMaskNbr);
 //	}
 
-	private void outPutservicedemandToCsv(int year) {
+	private void outPutserviceDemandToCsv(int year) {
 		AtomicInteger m = new AtomicInteger();
 		int y = year - PathsLoader.getStartYear() + 1;
 
-		CellsSet.getServicesNames().forEach(name -> {
-			servicedemandListener[y][m.get()] = totalSupply.get(name) + "";
-			servicedemandListener[y][m.get() + CellsSet.getServicesNames().size()] = DemandModel.getGolbalDemand(name,
-					year) + "";
+		ServiceSet.getServicesList().forEach(service -> {
+			servicedemandListener[y][m.get()] = totalSupply.get(service) + "";
+			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = DemandModel.worldService
+					.get(service).getDemands().get(y) + "";
 			m.getAndIncrement();
 		});
 	}
@@ -158,7 +151,7 @@ public class ModelRunner {
 	void compositionAFT(int year) {
 		int y = year - PathsLoader.getStartYear() + 1;
 		AFTsLoader.hashAgentNbr.forEach((name, value) -> {
-				compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
+			compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
 		});
 	}
 

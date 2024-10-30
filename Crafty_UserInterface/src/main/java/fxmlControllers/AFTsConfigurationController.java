@@ -21,6 +21,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
+import dataLoader.ServiceSet;
 import eu.hansolo.fx.charts.Category;
 import eu.hansolo.fx.charts.ChartType;
 import eu.hansolo.fx.charts.YChart;
@@ -179,7 +180,7 @@ public class AFTsConfigurationController {
 
 	void colorland(Manager a) {
 		CellsLoader.hashCell.values().forEach(C -> {
-			C.landStored(a);
+		//	C.landStored(a);
 		});
 		CellsSet.colorMap("tmp");
 	}
@@ -228,16 +229,15 @@ public class AFTsConfigurationController {
 	static void ubdateRadarchart(Manager newAFT, GridPane grid) {
 		grid.getChildren().clear();
 		int j = 0, k = 0, nbrColumn = 4;
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
+
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
 			VBox vbox = new VBox();
 			vbox.setAlignment(Pos.CENTER);
-			Text text = new Text(CellsSet.getServicesNames().get(i));
+			Text text = new Text(ServiceSet.getServicesList().get(i));
 			text.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
 			text.setFill(Color.BLUE);
-			vbox.getChildren()
-					.addAll(ychart(vbox, newAFT,
-							CellsSet.getServicesNames().get(i)/* , (FxMain.sceneWidth * 1.3 - 100) / nbrColumn */),
-							text);
+			vbox.getChildren().addAll(
+					ychart(vbox, newAFT, ServiceSet.getServicesList().get(i)/* , (FxMain.sceneWidth * 1.3 - 100) / nbrColumn */), text);
 			grid.add(vbox, j++, k);
 			if (j % nbrColumn == 0) {
 				k++;
@@ -249,7 +249,7 @@ public class AFTsConfigurationController {
 
 	public static YChart<ValueChartItem> ychart(Pane box, Manager agent, String servicesName) {
 		List<ValueChartItem> listvalues = new ArrayList<>();
-		CellsSet.getCapitalsName().forEach(cname -> {
+		CellsLoader.getCapitalsName().forEach(cname -> {
 			double y = Math.min(100, agent.getSensitivity().get(cname + "_" + servicesName) * 100);
 			listvalues.add(new ValueChartItem(y, ""));
 		});
@@ -259,8 +259,8 @@ public class AFTsConfigurationController {
 						ColorsTools.colorYchart(new Random().nextInt(4))),
 				Color.GRAY);
 		List<Category> categories = new ArrayList<>();
-		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
-			categories.add(new Category(CellsSet.getCapitalsName().get(i)));
+		for (int i = 0; i < CellsLoader.getCapitalsName().size(); i++) {
+			categories.add(new Category(CellsLoader.getCapitalsName().get(i)));
 		}
 		YChart<ValueChartItem> chart = new YChart(new YPane(categories, series));
 		// chart.setPrefSize(scale, scale);
@@ -269,14 +269,14 @@ public class AFTsConfigurationController {
 	}
 
 	String[][] sensitivityTable(Manager a) {
-		String[][] sensetivtyTable = new String[CellsSet.getServicesNames().size()
-				+ 1][CellsSet.getCapitalsName().size() + 1];
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			sensetivtyTable[i + 1][0] = CellsSet.getServicesNames().get(i);
-			for (int j = 0; j < CellsSet.getCapitalsName().size(); j++) {
-				sensetivtyTable[0][j + 1] = CellsSet.getCapitalsName().get(j);
+		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsName().size()
+				+ 1];
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
+			sensetivtyTable[i + 1][0] = ServiceSet.getServicesList().get(i);
+			for (int j = 0; j < CellsLoader.getCapitalsName().size(); j++) {
+				sensetivtyTable[0][j + 1] = CellsLoader.getCapitalsName().get(j);
 				sensetivtyTable[i + 1][j + 1] = a.getSensitivity()
-						.get(CellsSet.getCapitalsName().get(j) + "_" + CellsSet.getServicesNames().get(i)) + "";
+						.get(CellsLoader.getCapitalsName().get(j) + "_" + ServiceSet.getServicesList().get(i)) + "";
 			}
 
 		}
@@ -284,11 +284,10 @@ public class AFTsConfigurationController {
 	}
 
 	String[][] productionTable(Manager a) {
-		String[][] production = new String[2][CellsSet.getServicesNames().size()];
-
-		for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
-			production[0][j] = (String) CellsSet.getServicesNames().toArray()[j];
-			production[1][j] = a.getProductivityLevel().get(CellsSet.getServicesNames().get(j)) + "";
+		String[][] production = new String[2][ServiceSet.getServicesList().size()];
+		for (int j = 0; j < ServiceSet.getServicesList().size(); j++) {
+			production[0][j] = ServiceSet.getServicesList().get(j);
+			production[1][j] = a.getProductivityLevel().get(ServiceSet.getServicesList().get(j)) + "";
 		}
 		return production;
 	}
@@ -358,18 +357,18 @@ public class AFTsConfigurationController {
 	}
 
 	static void creatCsvFiles(Manager a, String descreption) {
-		String[][] tab = new String[CellsSet.getServicesNames().size() + 1][CellsSet.getCapitalsName().size() + 2];
+		String[][] tab = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsName().size() + 2];
 		tab[0][0] = "";
-		tab[0][CellsSet.getCapitalsName().size() + 1] = "Production";
-		for (int i = 0; i < CellsSet.getCapitalsName().size(); i++) {
-			tab[0][i + 1] = CellsSet.getCapitalsName().get(i);
+		tab[0][CellsLoader.getCapitalsName().size() + 1] = "Production";
+		for (int i = 0; i < CellsLoader.getCapitalsName().size(); i++) {
+			tab[0][i + 1] = CellsLoader.getCapitalsName().get(i);
 
-			for (int j = 0; j < CellsSet.getServicesNames().size(); j++) {
-				tab[j + 1][0] = CellsSet.getServicesNames().get(j);
+			for (int j = 0; j < ServiceSet.getServicesList().size(); j++) {
+				tab[j + 1][0] = ServiceSet.getServicesList().get(j);
 				tab[j + 1][i + 1] = a.getSensitivity()
-						.get(CellsSet.getCapitalsName().get(i) + "_" + CellsSet.getServicesNames().get(j)) + "";
-				tab[j + 1][CellsSet.getCapitalsName().size() + 1] = a.getProductivityLevel()
-						.get(CellsSet.getServicesNames().get(j)) + "";
+						.get(CellsLoader.getCapitalsName().get(i) + "_" + ServiceSet.getServicesList().get(j)) + "";
+				tab[j + 1][CellsLoader.getCapitalsName().size() + 1] = a.getProductivityLevel()
+						.get(ServiceSet.getServicesList().get(j)) + "";
 			}
 		}
 

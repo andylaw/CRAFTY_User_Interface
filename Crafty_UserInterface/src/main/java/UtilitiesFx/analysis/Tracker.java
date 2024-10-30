@@ -29,7 +29,7 @@ public class Tracker {
 				container.put(a.getLabel(), tmp);
 			});
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				c.currentProductivity.forEach((s, v) -> {
+				c.getCurrentProductivity().forEach((s, v) -> {
 					if (c.getOwner() != null)
 						container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
 				});
@@ -49,8 +49,8 @@ public class Tracker {
 				ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
 				container.put(a.getLabel(), tmp);
 			});
-			RegionClassifier.regions.get(regionName).values().parallelStream().forEach(c -> {
-				c.currentProductivity.forEach((s, v) -> {
+			RegionClassifier.regions.get(regionName).getCells().values().parallelStream().forEach(c -> {
+				c.getCurrentProductivity().forEach((s, v) -> {
 					if (c.getOwner() != null)
 						container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
 				});

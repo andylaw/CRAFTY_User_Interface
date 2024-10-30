@@ -4,14 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import model.Cell;
-import model.CellsSet;
 import model.RegionClassifier;
 import tech.tablesaw.api.Table;
 import UtilitiesFx.filesTools.CsvTools;
@@ -25,12 +27,10 @@ import UtilitiesFx.filesTools.PathTools;
 
 public class CellsLoader {
 	private static final Logger LOGGER = LogManager.getLogger(CellsLoader.class);
-	public static List<String> GISRegionsNames = new ArrayList<>();
+	public static Set<String> regionsNamesSet = new HashSet<>();
 	public static ConcurrentHashMap<String, Cell> hashCell = new ConcurrentHashMap<>();
 	public static boolean regionalization = true;
-//	private static Set<Cell> unmanageCells = ConcurrentHashMap.newKeySet();
-
-//	public Set<Cell> cells = Collections.synchronizedSet(new HashSet<>());
+	private static List<String> capitalsList;
 	public AFTsLoader AFtsSet;
 
 	private static int nbrOfCells = 0;
@@ -39,12 +39,8 @@ public class CellsLoader {
 
 		AFtsSet = new AFTsLoader();
 		hashCell.clear();
-
-		Path baseLindPath = PathTools.fileFilter(File.separator + "worlds" + File.separator, "Baseline_map").iterator()
-				.next();
-
+		Path baseLindPath = PathTools.fileFilter(PathTools.asFolder("worlds"), "Baseline_map").iterator().next();
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
-
 		nbrOfCells = hashCell.size();
 		if (nbrOfCells < 1000) {
 			Cell.setSize(200);
@@ -52,7 +48,8 @@ public class CellsLoader {
 
 		loadGisData();
 		RegionClassifier.initialation(false);
-		DemandModel.updateDemand();
+//		DemandModel.updateWorldDemand();
+		S_WeightLoader.updateWorldWeight();
 		AFTsLoader.hashAgentNbr();
 		AFTsLoader.hashAgentNbrRegions();
 
@@ -60,21 +57,19 @@ public class CellsLoader {
 
 	}
 
-	public void loadCapitalsAndServiceList() {
+	public static void loadCapitalsList() {
+		capitalsList = Collections.synchronizedList(new ArrayList<>());
 		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Capitals.csv").get(0));
-		CellsSet.getCapitalsName().clear();
+		getCapitalsName().clear();
 		for (int n = 1; n < line0.length; n++) {
-			CellsSet.getCapitalsName().add(line0[n]);
+			getCapitalsName().add(line0[n]);
 		}
-		LOGGER.info("Capitals size=" + CellsSet.getCapitalsName().size() + " CellsSet.getCapitalsName() "
-				+ CellsSet.getCapitalsName());
-		CellsSet.getServicesNames().clear();
-		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Services.csv").get(0));
-		for (int n = 1; n < line0s.length; n++) {
-			CellsSet.getServicesNames().add(line0s[n]);
-		}
-		LOGGER.info("Services size=" + CellsSet.getServicesNames().size() + "CellsSet.getServicesNames()="
-				+ CellsSet.getServicesNames());
+		LOGGER.info("Capitals size=" + getCapitalsName().size() + " CellsSet.getCapitalsName() " + getCapitalsName());
+
+	}
+
+	public static List<String> getCapitalsName() {
+		return capitalsList;
 	}
 
 	public void loadGisData() {
@@ -83,26 +78,18 @@ public class CellsLoader {
 			PathsLoader.WorldName = path.toFile().getName().replace("_Regions", "").replace(".csv", "");
 			LOGGER.info("WorldName = " + PathsLoader.WorldName);
 			Table T = Table.read().csv(path.toFile());
-			GISRegionsNames = T.columnNames();
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
 				String coor = T.column("X").get(i) + "," + T.column("Y").get(i);
 				int ii = i;
 				if (hashCell.get(coor) != null) {
-					GISRegionsNames.forEach(name -> {
+					T.columnNames().forEach(name -> {
 						if (T.column(name).get(ii) != null && name.contains("Region_Code")) {
-							hashCell.get(coor).getGisNameValue().put(name, T.column(name).get(ii).toString());// create
-																												// a
-																												// "list"
-																												// of
-																												// regions
 							hashCell.get(coor).setCurrentRegion(T.column(name).get(ii).toString());
+							regionsNamesSet.add(T.column(name).get(ii).toString());
 						}
 					});
 				}
 			}
-//			hashCell.values().forEach(c -> {
-//				c.setCurrentRegion(c.getGisNameValue().values().iterator().next());
-//			});
 		} catch (NullPointerException | IOException e) {
 			regionalization = false;
 			LOGGER.warn(
@@ -135,9 +122,5 @@ public class CellsLoader {
 	public static int getNbrOfCells() {
 		return nbrOfCells;
 	}
-
-//	public static Set<Cell> getUnmanageCells() {
-//		return unmanageCells;
-//	}
 
 }

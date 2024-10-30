@@ -10,6 +10,9 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.CheckBox;
 
 public class RunCofigController {
+
+	@FXML
+	private CheckBox InitialEquilibrium;
 	@FXML
 	private CheckBox removeNegative;
 	@FXML
@@ -76,6 +79,7 @@ public class RunCofigController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
+		InitialEquilibrium.setSelected(ModelRunner.initialDSEquilibrium);
 		removeNegative.setSelected(ModelRunner.removeNegative);
 		MapSync.setSelected(ModelRunner.mapSynchronisation);
 		neighbours.setSelected(ModelRunner.NeighboorEffect);
@@ -148,7 +152,12 @@ public class RunCofigController {
 			BestAftT.setText(Math.round(1000 - RandomAftS.getValue() * 10) / 10. + "");
 			BestAftS.setValue(Tools.sToD(BestAftT.getText()));
 		});
-		 traker.setSelected(ModelRunner.traker);
+		traker.setSelected(ModelRunner.traker);
+	}
+
+	@FXML
+	public void initialEquilibrium(ActionEvent event) {
+		ModelRunner.initialDSEquilibrium = InitialEquilibrium.isSelected();
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction

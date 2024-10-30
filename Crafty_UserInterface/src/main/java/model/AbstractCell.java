@@ -8,13 +8,12 @@ import javafx.scene.paint.Color;
  * @author Mohamed Byari
  *
  */
-public class AbstractCell {
+public abstract class AbstractCell {
 	static int size = 1;
 	int index;
 	int x, y;
 	ConcurrentHashMap<String, Double> capitals = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<String, Double> currentProductivity = new ConcurrentHashMap<>();
-	ConcurrentHashMap<String, String> GisNameValue = new ConcurrentHashMap<>();
+	ConcurrentHashMap<String, Double> currentProductivity = new ConcurrentHashMap<>();
 	String CurrentRegion;
 	Manager owner;
 	double tmpValueCell = 0;// a changer
@@ -84,13 +83,10 @@ public class AbstractCell {
 		return capitals;
 	}
 
-	public ConcurrentHashMap<String, Double> getServices() {
+	public ConcurrentHashMap<String, Double> getCurrentProductivity() {
 		return currentProductivity;
 	}
 
-	public ConcurrentHashMap<String, String> getGisNameValue() {
-		return GisNameValue;
-	}
 
 	public static int getSize() {
 		return size;

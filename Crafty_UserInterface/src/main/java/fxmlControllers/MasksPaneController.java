@@ -31,7 +31,7 @@ public class MasksPaneController {
 	@FXML
 	ScrollPane scroll;
 	public static MaskRestrictionDataLoader Maskloader = new MaskRestrictionDataLoader();
-	static ArrayList<CheckBox> radioListOfMasks = new ArrayList<>();
+	static ArrayList<CheckBox> radioListOfMasks ;
 	// cell.getMaskTyp->hash(owner_competitor-> true or false)
 	public static HashMap<String, HashMap<String, Boolean>> restrictions = new HashMap<>();
 	CircularPlot[] circularPlot;
@@ -49,6 +49,7 @@ public class MasksPaneController {
 
 	@SuppressWarnings("unchecked")
 	public void initialize() {
+		radioListOfMasks = new ArrayList<>();
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * .9);
 		// Maskloader.MaskAndRistrictionLaoder();
 		MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
