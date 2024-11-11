@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import dataLoader.AFTsLoader;
-import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
+import fxmlControllers.TabPaneController;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -28,8 +28,7 @@ import javafx.util.Duration;
 
 public class LineChartTools {
 
-	public void lineChart(CellsLoader M, Pane box, LineChart<Number, Number> lineChart,
-			Map<String, ArrayList<Double>> hash) {
+	public void lineChart(Pane box, LineChart<Number, Number> lineChart, Map<String, ArrayList<Double>> hash) {
 		if (hash == null) {
 			return;
 		}
@@ -56,7 +55,7 @@ public class LineChartTools {
 		sortedKeys.forEach((key) -> {
 			ArrayList<Double> value = hash.get(key);
 			if (value != null) {
-				for (int j = 1; j < value.size(); j++) {
+				for (int j = 0; j < value.size(); j++) {
 					series[k.get()].getData().add(new XYChart.Data<>(
 							j + ((NumberAxis) lineChart.getXAxis()).getLowerBound(), (Number) (value.get(j))));
 				}
@@ -68,7 +67,7 @@ public class LineChartTools {
 			sortedKeys.forEach((key) -> {
 				ArrayList<Double> value = hash.get(key);
 				if (value != null) {
-					for (int j = 1; j < value.size(); j++) {
+					for (int j = 0; j < value.size(); j++) {
 						series[K.get()].getData().add(new XYChart.Data<>(j, +value.get(j)));
 						series[K.get()].getNode().lookup(".chart-series-line").setStyle(
 								"-fx-stroke: " + ColorsTools.getStringColor(ColorsTools.colorlist(K.get())) + ";");
@@ -76,8 +75,8 @@ public class LineChartTools {
 					K.getAndIncrement();
 				}
 			});
-			if (M != null)
-				labelcolor(M, lineChart);
+			if (TabPaneController.cellsLoader != null)
+				labelcolor( lineChart);
 			lineChart.setCreateSymbols(false);
 		}
 //		if (box != null) {
@@ -111,7 +110,7 @@ public class LineChartTools {
 		}
 	}
 
-	public static void labelcolor(CellsLoader M, LineChart<Number, Number> lineChart) {
+	public static void labelcolor(LineChart<Number, Number> lineChart) {
 		int m = 0;
 		for (Node item : lineChart.lookupAll("Label.chart-legend-item")) {
 			Label label = (Label) item;

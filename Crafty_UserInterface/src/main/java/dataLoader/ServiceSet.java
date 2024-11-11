@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,28 +17,27 @@ import model.Service;
 
 public class ServiceSet {
 	private static final Logger LOGGER = LogManager.getLogger(ServiceSet.class);
-	//private static ConcurrentHashMap<String, Service> servicesHash;
 	private static List<String> servicesList;
-	
+	public static ConcurrentHashMap<String, Service> worldService = new ConcurrentHashMap<>();
+
 	public static void initialseServices() {
 		RegionClassifier.regions.values().forEach(r -> {
-			ServiceSet.getServicesList().forEach(n -> {
+			getServicesList().forEach(n -> {
 				r.getServicesHash().put(n, new Service(n));
 			});
+		});
+		getServicesList().forEach((ns) -> {
+			worldService.put(ns, new Service(ns));
 		});
 	}
 
 	public static void loadServiceList() {
-	//	servicesHash = new ConcurrentHashMap<>();
 		servicesList = Collections.synchronizedList(new ArrayList<>());
-	//	servicesHash.clear();
 		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Services.csv").get(0));
 		for (int n = 1; n < line0s.length; n++) {
-//			servicesHash.put(line0s[n], new Service(line0s[n]));
 			servicesList.add(line0s[n]);
 		}
-		LOGGER.info("Services size=" + servicesList.size() + "CellsSet.getServicesNames()=" + servicesList);
-//		servicesList.addAll(servicesHash.keySet());
+		LOGGER.info("Services size=  " + servicesList.size() + "  CellsSet.getServicesList()=" + servicesList);
 	}
 
 	public static boolean isRegionalServicesExisted() {

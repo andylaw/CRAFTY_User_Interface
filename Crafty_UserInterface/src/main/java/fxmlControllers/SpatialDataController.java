@@ -44,7 +44,6 @@ public class SpatialDataController {
 	@FXML
 	private LineChart<Number, Number> demandsChart;
 
-	CellsLoader M;
 	private boolean isNotInitialsation = false;
 
 	private static SpatialDataController instance;
@@ -67,16 +66,14 @@ public class SpatialDataController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		M = TabPaneController.M;
 		CellsLoader.loadCapitalsList();
 		ServiceSet.loadServiceList();
 
-		M.loadMap();
-
-		CellsSet.setCellsSet(M);
+		TabPaneController.cellsLoader.loadMap();
+		CellsSet.setCellsSet(TabPaneController.cellsLoader);
 		CellsSet.plotCells();
 
-		new LineChartTools().lineChart(M, (Pane) demandsChart.getParent(), demandsChart, DemandModel.serialisationWorldDemand());
+		new LineChartTools().lineChart( (Pane) demandsChart.getParent(), demandsChart, DemandModel.serialisationWorldDemand());
 		String ItemName = "Save as CSV";
 		Consumer<String> action = x -> {
 			SaveAs.exportLineChartDataToCSV(demandsChart);
@@ -93,14 +90,14 @@ public class SpatialDataController {
 
 	private void mapColorAndCapitalHistogrameInitialisation() {
 
-		radioColor = new RadioButton[CellsLoader.getCapitalsName().size() + 1];
-		for (int i = 0; i < CellsLoader.getCapitalsName().size(); i++) {
-			radioColor[i] = new RadioButton(CellsLoader.getCapitalsName().get(i));
+		radioColor = new RadioButton[CellsLoader.getCapitalsList().size() + 1];
+		for (int i = 0; i < CellsLoader.getCapitalsList().size(); i++) {
+			radioColor[i] = new RadioButton(CellsLoader.getCapitalsList().get(i));
 			vboxForSliderColors.getChildren().add(radioColor[i]);
 
 			int k = i;
 			radioColor[k].setOnAction(e -> {
-				for (int j = 0; j < CellsLoader.getCapitalsName().size() + 1; j++) {
+				for (int j = 0; j < CellsLoader.getCapitalsList().size() + 1; j++) {
 					if (j != k) {
 						if (radioColor[j] != null) {
 							radioColor[j].setSelected(false);
@@ -113,19 +110,19 @@ public class SpatialDataController {
 				if (isNotInitialsation) {
 					histogramCapitals.getData().clear();
 					if (!PathsLoader.getScenario().equalsIgnoreCase("Baseline")) {
-						histogrameCapitals(PathsLoader.getCurrentYear() + "", CellsLoader.getCapitalsName().get(k));
+						histogrameCapitals(PathsLoader.getCurrentYear() + "", CellsLoader.getCapitalsList().get(k));
 					}
-					CellsSet.colorMap(CellsLoader.getCapitalsName().get(k));
+					CellsSet.colorMap(CellsLoader.getCapitalsList().get(k));
 
 				}
 			});
 		}
-		radioColor[CellsLoader.getCapitalsName().size()] = new RadioButton("AFTs Distribution");
-		radioColor[CellsLoader.getCapitalsName().size()].setSelected(true);
-		vboxForSliderColors.getChildren().add(radioColor[CellsLoader.getCapitalsName().size()]);
-		radioColor[CellsLoader.getCapitalsName().size()].setOnAction(e -> {
-			for (int j = 0; j < CellsLoader.getCapitalsName().size() + 1; j++) {
-				if (j != CellsLoader.getCapitalsName().size()) {
+		radioColor[CellsLoader.getCapitalsList().size()] = new RadioButton("AFTs Distribution");
+		radioColor[CellsLoader.getCapitalsList().size()].setSelected(true);
+		vboxForSliderColors.getChildren().add(radioColor[CellsLoader.getCapitalsList().size()]);
+		radioColor[CellsLoader.getCapitalsList().size()].setOnAction(e -> {
+			for (int j = 0; j < CellsLoader.getCapitalsList().size() + 1; j++) {
+				if (j != CellsLoader.getCapitalsList().size()) {
 					if (radioColor[j] != null) {
 						radioColor[j].setSelected(false);
 					}
@@ -186,21 +183,21 @@ public class SpatialDataController {
 			color.put(name, a.getColor());
 		});
 
-		new PieChartTools().updateChart(M, convertedMap, color, chart);
+		new PieChartTools().updateChart( convertedMap, color, chart);
 		chart.setLegendSide(Side.LEFT);
 		// * add menu to PiChart*//
 		HashMap<String, Consumer<String>> newItemMenu = new HashMap<>();
 		Consumer<String> reset = x -> {
-			M.AFtsSet.agentsColorinitialisation();
-			M.AFtsSet.forEach((a) -> {
+			TabPaneController.cellsLoader.AFtsSet.agentsColorinitialisation();
+			TabPaneController.cellsLoader.AFtsSet.forEach((a) -> {
 				color.put(a.getLabel(), a.getColor());
 			});
-			new PieChartTools().updateChart(M, convertedMap, color, chart);
+			new PieChartTools().updateChart(convertedMap, color, chart);
 			CellsSet.colorMap("FR");
 		};
 
 		Consumer<String> saveInPutData = x -> {
-			M.AFtsSet.updateColorsInputData();
+			TabPaneController.cellsLoader.AFtsSet.updateColorsInputData();
 		};
 
 		newItemMenu.put("Reset Colors", reset);

@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
+import fxmlControllers.TabPaneController;
 //import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
@@ -45,7 +46,7 @@ public class PieChartTools {
 			legendColorStatic(color, chart) ;
 	}
 	
-	public void updateChart(CellsLoader M,ConcurrentHashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
+	public void updateChart(ConcurrentHashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
 		updateChart(hash, chart);
 		for (int i = 0; i < data.size(); i++) {
 			for (Node n : chart.lookupAll(".data" + i)) {
@@ -53,7 +54,7 @@ public class PieChartTools {
 			}
 		}
 
-		legendColorPicker(M,color, chart);
+		legendColorPicker(TabPaneController.cellsLoader,color, chart);
 
 	}
 	

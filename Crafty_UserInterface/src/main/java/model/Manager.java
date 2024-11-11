@@ -16,7 +16,7 @@ public class Manager extends AbstractManager{
 	public Manager() {
 		label = "";
 		completeName = "";
-		CellsLoader.getCapitalsName().forEach((Cn) -> {
+		CellsLoader.getCapitalsList().forEach((Cn) -> {
 			ServiceSet.getServicesList().forEach((Sn) -> {
 				sensitivity.put((Cn + "_" + Sn), 0.);
 			});
@@ -31,15 +31,15 @@ public class Manager extends AbstractManager{
 			this.label = other.label;
 			this.color = other.color;
 			other.sensitivity.forEach((n, v) -> {
-				this.sensitivity.put(n, v * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1)));
+				this.sensitivity.put(n, v * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1)));
 
 			});
 			other.productivityLevel.forEach((n, v) -> {
-				this.productivityLevel.put(n, v * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1)));
+				this.productivityLevel.put(n, v * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1)));
 			});
-			this.giveInMean = other.giveInMean * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1));
-			this.giveUpMean = other.giveUpMean * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1));
-			this.giveUpProbabilty = other.giveUpProbabilty * (1 + ModelRunner.mutationIntval * (2*new Random().nextDouble() - 1));
+			this.giveInMean = other.giveInMean * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1));
+			this.giveUpMean = other.giveUpMean * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1));
+			this.giveUpProbabilty = other.giveUpProbabilty * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1));
 		}
 
 	}
@@ -48,7 +48,7 @@ public class Manager extends AbstractManager{
 		this.label = label;
 		this.color = Color.color(Math.random(), Math.random(), Math.random());// ColorsTools.colorlist(new
 																				// Random().nextInt(17));
-		CellsLoader.getCapitalsName().forEach((Cn) -> {
+		CellsLoader.getCapitalsList().forEach((Cn) -> {
 			ServiceSet.getServicesList().forEach((Sn) -> {
 				this.sensitivity.put((Cn + "_" + Sn), Math.random() > 0.5 ? Math.random() : 0);
 			});

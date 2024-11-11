@@ -18,7 +18,7 @@ import model.Service;
 
 public class DemandModel {
 	private static final Logger LOGGER = LogManager.getLogger(DemandModel.class);
-	public static ConcurrentHashMap<String, Service> worldService = new ConcurrentHashMap<>();
+	
 
 	public static void updateRegionsDemand() {
 		RegionClassifier.regions.values().forEach(r -> {
@@ -42,8 +42,9 @@ public class DemandModel {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();
 				for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
 					if (i < vect.size()) {
-						dv.put(i,
-								Tools.sToD(vect.get(i)) / R.getServicesHash().get(serviceName).getCalibration_Factor());
+						dv.put(i, Tools.sToD(vect.get(i)));
+//						dv.put(i,
+//								Tools.sToD(vect.get(i)) / R.getServicesHash().get(serviceName).getCalibration_Factor());
 					}
 				}
 				R.getServicesHash().get(serviceName).setDemands(dv);
@@ -53,9 +54,9 @@ public class DemandModel {
 
 	public static Map<String, ArrayList<Double>> serialisationWorldDemand() {
 		Map<String, ArrayList<Double>> serviceSerialisation = new HashMap<>();
-		DemandModel.worldService.forEach((serviceName, service) -> {
+		ServiceSet.worldService.forEach((serviceName, service) -> {
 			ArrayList<Double> sv = new ArrayList<Double>();
-			for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
+			for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear()+1; i++) {
 				sv.add(service.getDemands().get(i));
 			}
 			serviceSerialisation.put(serviceName, sv);

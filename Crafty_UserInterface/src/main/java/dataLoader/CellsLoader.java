@@ -29,7 +29,6 @@ public class CellsLoader {
 	private static final Logger LOGGER = LogManager.getLogger(CellsLoader.class);
 	public static Set<String> regionsNamesSet = new HashSet<>();
 	public static ConcurrentHashMap<String, Cell> hashCell = new ConcurrentHashMap<>();
-	public static boolean regionalization = true;
 	private static List<String> capitalsList;
 	public AFTsLoader AFtsSet;
 
@@ -42,12 +41,12 @@ public class CellsLoader {
 		Path baseLindPath = PathTools.fileFilter(PathTools.asFolder("worlds"), "Baseline_map").iterator().next();
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
 		nbrOfCells = hashCell.size();
-		if (nbrOfCells < 1000) {
+		if (nbrOfCells < 1000) {// temporal for very small maps visualization
 			Cell.setSize(200);
 		}
 
 		loadGisData();
-		RegionClassifier.initialation(false);
+		RegionClassifier.initialation();
 //		DemandModel.updateWorldDemand();
 		S_WeightLoader.updateWorldWeight();
 		AFTsLoader.hashAgentNbr();
@@ -60,15 +59,15 @@ public class CellsLoader {
 	public static void loadCapitalsList() {
 		capitalsList = Collections.synchronizedList(new ArrayList<>());
 		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Capitals.csv").get(0));
-		getCapitalsName().clear();
+		getCapitalsList().clear();
 		for (int n = 1; n < line0.length; n++) {
-			getCapitalsName().add(line0[n]);
+			getCapitalsList().add(line0[n]);
 		}
-		LOGGER.info("Capitals size=" + getCapitalsName().size() + " CellsSet.getCapitalsName() " + getCapitalsName());
+		LOGGER.info("Capitals size=" + getCapitalsList().size() + " CellsSet.getCapitalsName() " + getCapitalsList());
 
 	}
 
-	public static List<String> getCapitalsName() {
+	public static List<String> getCapitalsList() {
 		return capitalsList;
 	}
 
@@ -91,7 +90,7 @@ public class CellsLoader {
 				}
 			}
 		} catch (NullPointerException | IOException e) {
-			regionalization = false;
+			RegionClassifier.regionalization = false;
 			LOGGER.warn(
 					"The Regionalization File is not Found in the GIS Folder, this Data Will be Ignored - No Regionalization Will be Possible.");
 

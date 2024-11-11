@@ -128,7 +128,7 @@ public class AFTsConfigurationController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		M = TabPaneController.M;
+		M = TabPaneController.cellsLoader;
 		newAftPane = new NewAFT_Controller(this);
 		sensitivtyTable.setEditable(true);
 		productivityTable.setEditable(true);
@@ -249,7 +249,7 @@ public class AFTsConfigurationController {
 
 	public static YChart<ValueChartItem> ychart(Pane box, Manager agent, String servicesName) {
 		List<ValueChartItem> listvalues = new ArrayList<>();
-		CellsLoader.getCapitalsName().forEach(cname -> {
+		CellsLoader.getCapitalsList().forEach(cname -> {
 			double y = Math.min(100, agent.getSensitivity().get(cname + "_" + servicesName) * 100);
 			listvalues.add(new ValueChartItem(y, ""));
 		});
@@ -259,8 +259,8 @@ public class AFTsConfigurationController {
 						ColorsTools.colorYchart(new Random().nextInt(4))),
 				Color.GRAY);
 		List<Category> categories = new ArrayList<>();
-		for (int i = 0; i < CellsLoader.getCapitalsName().size(); i++) {
-			categories.add(new Category(CellsLoader.getCapitalsName().get(i)));
+		for (int i = 0; i < CellsLoader.getCapitalsList().size(); i++) {
+			categories.add(new Category(CellsLoader.getCapitalsList().get(i)));
 		}
 		YChart<ValueChartItem> chart = new YChart(new YPane(categories, series));
 		// chart.setPrefSize(scale, scale);
@@ -269,14 +269,14 @@ public class AFTsConfigurationController {
 	}
 
 	String[][] sensitivityTable(Manager a) {
-		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsName().size()
+		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsList().size()
 				+ 1];
 		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
 			sensetivtyTable[i + 1][0] = ServiceSet.getServicesList().get(i);
-			for (int j = 0; j < CellsLoader.getCapitalsName().size(); j++) {
-				sensetivtyTable[0][j + 1] = CellsLoader.getCapitalsName().get(j);
+			for (int j = 0; j < CellsLoader.getCapitalsList().size(); j++) {
+				sensetivtyTable[0][j + 1] = CellsLoader.getCapitalsList().get(j);
 				sensetivtyTable[i + 1][j + 1] = a.getSensitivity()
-						.get(CellsLoader.getCapitalsName().get(j) + "_" + ServiceSet.getServicesList().get(i)) + "";
+						.get(CellsLoader.getCapitalsList().get(j) + "_" + ServiceSet.getServicesList().get(i)) + "";
 			}
 
 		}
@@ -357,17 +357,17 @@ public class AFTsConfigurationController {
 	}
 
 	static void creatCsvFiles(Manager a, String descreption) {
-		String[][] tab = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsName().size() + 2];
+		String[][] tab = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsList().size() + 2];
 		tab[0][0] = "";
-		tab[0][CellsLoader.getCapitalsName().size() + 1] = "Production";
-		for (int i = 0; i < CellsLoader.getCapitalsName().size(); i++) {
-			tab[0][i + 1] = CellsLoader.getCapitalsName().get(i);
+		tab[0][CellsLoader.getCapitalsList().size() + 1] = "Production";
+		for (int i = 0; i < CellsLoader.getCapitalsList().size(); i++) {
+			tab[0][i + 1] = CellsLoader.getCapitalsList().get(i);
 
 			for (int j = 0; j < ServiceSet.getServicesList().size(); j++) {
 				tab[j + 1][0] = ServiceSet.getServicesList().get(j);
 				tab[j + 1][i + 1] = a.getSensitivity()
-						.get(CellsLoader.getCapitalsName().get(i) + "_" + ServiceSet.getServicesList().get(j)) + "";
-				tab[j + 1][CellsLoader.getCapitalsName().size() + 1] = a.getProductivityLevel()
+						.get(CellsLoader.getCapitalsList().get(i) + "_" + ServiceSet.getServicesList().get(j)) + "";
+				tab[j + 1][CellsLoader.getCapitalsList().size() + 1] = a.getProductivityLevel()
 						.get(ServiceSet.getServicesList().get(j)) + "";
 			}
 		}

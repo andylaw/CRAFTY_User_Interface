@@ -43,9 +43,9 @@ public class S_WeightLoader {
 					if (ServiceSet.getServicesList().contains(name)) {
 						for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
 							if (i < vect.size()) {
-								DemandModel.worldService.get(name).getWeights().put(i, Tools.sToD(vect.get(i)));
+								ServiceSet.worldService.get(name).getWeights().put(i, Tools.sToD(vect.get(i)));
 							} else {
-								DemandModel.worldService.get(name).getWeights().put(i,
+								ServiceSet.worldService.get(name).getWeights().put(i,
 										Tools.sToD(vect.get(vect.size() - 1)));
 								LOGGER.info("There are no demand \'" + name + "\' for this year: \""
 										+ (i + PathsLoader.getStartYear()) + "\" using the latest available demands "
@@ -57,7 +57,7 @@ public class S_WeightLoader {
 			} else {
 				ServiceSet.getServicesList().forEach((serviceName) -> {
 					for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
-						DemandModel.worldService.get(serviceName).getWeights().put(i, 1.);
+						ServiceSet.worldService.get(serviceName).getWeights().put(i, 1.);
 					}
 
 				});

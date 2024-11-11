@@ -23,7 +23,6 @@ import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
-import dataLoader.ServiceSet;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -163,7 +162,7 @@ public class CellsSet {
 					c.ColorP(Color.WHITE);
 				}
 			});
-		} else if (CellsLoader.getCapitalsName().contains(colortype)) {
+		} else if (CellsLoader.getCapitalsList().contains(colortype)) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				c.ColorP(ColorsTools.getColorForValue(c.getCapitals().get(colortype)));
 

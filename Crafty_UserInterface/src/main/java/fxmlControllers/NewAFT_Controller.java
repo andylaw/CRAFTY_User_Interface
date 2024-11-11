@@ -73,11 +73,11 @@ public class NewAFT_Controller extends AFTsConfigurationController {
 			Histogram.histo(vbox, "Productivity levels", histogram, newAFT.getProductivityLevel());
 		});
 
-		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsName().size() + 1];
+		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsList().size() + 1];
 		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
 			sensetivtyTable[i + 1][0] = ServiceSet.getServicesList().get(i);
-			for (int j = 0; j < CellsLoader.getCapitalsName().size(); j++) {
-				sensetivtyTable[0][j + 1] = CellsLoader.getCapitalsName().get(j);
+			for (int j = 0; j < CellsLoader.getCapitalsList().size(); j++) {
+				sensetivtyTable[0][j + 1] = CellsLoader.getCapitalsList().get(j);
 				sensetivtyTable[i + 1][j + 1] = "0.0";
 			}
 		}

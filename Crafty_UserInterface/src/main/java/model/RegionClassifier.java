@@ -10,15 +10,17 @@ import dataLoader.DemandModel;
 import dataLoader.PathsLoader;
 import dataLoader.S_WeightLoader;
 import dataLoader.ServiceSet;
+import main.ConfigLoader;
 
 public class RegionClassifier {
 
 	private static final Logger LOGGER = LogManager.getLogger(RegionClassifier.class);
 	public static ConcurrentHashMap<String, Region> regions;
+	public static boolean regionalization = ConfigLoader.config.regionalization;
 
-	public static void initialation(boolean isRegionalized) {
+	public static void initialation() {
 		regions = new ConcurrentHashMap<>();
-		if (isRegionalized) {
+		if (regionalization) {
 			CellsLoader.regionsNamesSet.forEach(regionName -> {
 				regions.put(regionName, new Region(regionName));
 			});
@@ -28,39 +30,31 @@ public class RegionClassifier {
 			});
 
 			if (!ServiceSet.isRegionalServicesExisted()) {
-				initialation(false);
+				regionalization = false;
+				initialation();
 			}
 		} else {
 			String name = PathsLoader.WorldName;
 			regions.put(name, new Region(name));
 			regions.get(name).setCells(CellsLoader.hashCell);
 		}
+
 		ServiceSet.initialseServices();
 		DemandModel.updateRegionsDemand();
 		S_WeightLoader.updateRegionsWeight();
-
-		if (regions.size() == 1) {
-			DemandModel.worldService = regions.values().iterator().next().getServicesHash();
-			DemandModel.worldService.values().forEach(s -> {
-				System.out.println(s.getName() + "  " + s.getDemands());
-			});
-		} else {
-			regions.values().forEach(r -> {
-				r.getServicesHash().forEach((ns, s) -> {
-					s.getDemands().forEach((year, value) -> {
-						DemandModel.worldService.get(ns).getDemands().merge(year, value, Double::sum);
-					});
-				});
-			});
-		}
-
-//		ServiceSet.getServicesList().forEach((ns) -> {
-//			System.out.println("|||...  " + ns + ":   " + DemandModel.worldService.get(ns).getDemands());
-//			;
-//		});
+		aggregateServiceToWorldService();
 
 		LOGGER.info("Regions: " + regions.keySet());
+	}
 
+	static void aggregateServiceToWorldService() {
+		regions.values().forEach(r -> {
+			r.getServicesHash().forEach((ns, s) -> {
+				s.getDemands().forEach((year, value) -> {
+					ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
+				});
+			});
+		});
 	}
 
 }

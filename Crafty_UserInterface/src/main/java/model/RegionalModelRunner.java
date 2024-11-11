@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +23,6 @@ import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.ModelRunnerController;
@@ -41,6 +41,7 @@ public class RegionalModelRunner {
 
 	private String[][] compositionAftListener;
 	private String[][] servicedemandListener;
+	public  String[][] DSEquilibriumListener;
 
 	public RegionalModelRunner(String regionName) {
 		R = RegionClassifier.regions.get(regionName);
@@ -48,19 +49,25 @@ public class RegionalModelRunner {
 	}
 
 	private void initializeListeners() {
-		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 2][AFTsLoader
-				.getAftHash().size()];
+		compositionAftListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
+				+ 2][AFTsLoader.getAftHash().size() + 1];
 		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
-				+ 2][ServiceSet.getServicesList().size() * 2];
-		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
-			servicedemandListener[0][i] = "ServiceSupply:" + ServiceSet.getServicesList().get(i);
+				+ 2][ServiceSet.getServicesList().size() * 2 + 1];
+		servicedemandListener[0][0] = "Year";
+		for (int i = 1; i < ServiceSet.getServicesList().size() + 1; i++) {
+			servicedemandListener[0][i] = "ServiceSupply:" + ServiceSet.getServicesList().get(i - 1);
 			servicedemandListener[0][i + ServiceSet.getServicesList().size()] = "Demand:"
-					+ ServiceSet.getServicesList().get(i);
+					+ ServiceSet.getServicesList().get(i - 1);
 		}
-		int i = 0;
+		compositionAftListener[0][0] = "Year";
+		int j = 1;
 		for (String label : AFTsLoader.getAftHash().keySet()) {
-			compositionAftListener[0][i++] = label;
+			compositionAftListener[0][j++] = label;
 		}
+		DSEquilibriumListener = new String[ServiceSet.getServicesList().size() + 1][2];
+		DSEquilibriumListener[0][0] = "Service";
+		DSEquilibriumListener[0][1] = "Calibration_Factor";
+
 	}
 
 	private void calculeRegionsSupply() {
@@ -95,9 +102,9 @@ public class RegionalModelRunner {
 		int tick = year - PathsLoader.getStartYear();
 		totalSupply.forEach((serviceName, serviceSupply) -> {
 			double serviceDemand = R.getServicesHash().get(serviceName).getDemands().get(tick);
-			double marg = ModelRunner.removeNegative ? Math.max(serviceDemand - serviceSupply, 0)
+			double marg = ModelRunner.remove_negative_marginal_utility ? Math.max(serviceDemand - serviceSupply, 0)
 					: serviceDemand - serviceSupply;
-			if (ModelRunner.isAveragedPerCellResidualDemand) {
+			if (ModelRunner.averaged_residual_demand_per_cell) {
 				marg = marg / R.getCells().size();
 			}
 			marg = marg * R.getServicesHash().get(serviceName).getWeights().get(tick);
@@ -117,7 +124,7 @@ public class RegionalModelRunner {
 
 	public void regionalSupply() {
 		LOGGER.info("Region: [" + R.getName() + "] Productivity calculation for allcells ");
-		if (CellsLoader.regionalization) {
+		if (RegionClassifier.regionalization) {
 			productivityForAll();
 		} else {
 			productivityForAllExecutor();
@@ -128,38 +135,49 @@ public class RegionalModelRunner {
 
 	}
 
-	public static void initialDSEquilibrium(ConcurrentHashMap<String, Service> ServiceHash,
+	public  void initialDSEquilibrium(ConcurrentHashMap<String, Service> ServiceHash,
 			ConcurrentHashMap<String, Double> supply) {
 		supply.forEach((serviceName, serviceSuplly) -> {
 			double factor = 1;
 			if (serviceSuplly != 0) {
-				if (ServiceHash.get(serviceName).getDemands().get(0) == 0) {
+				if (ServiceHash.get(serviceName).getDemands().get(1) == 0) {
 					LOGGER.warn("Demand for " + serviceName + " = 0");
 				} else {
-					factor = ServiceHash.get(serviceName).getDemands().get(0) / (serviceSuplly);
+					factor = ServiceHash.get(serviceName).getDemands().get(1) / (serviceSuplly);
 				}
 			} else {
 				LOGGER.warn("Supply for " + serviceName + " = 0 (The AFT baseline map is unable to produce  "
 						+ serviceName + " service)");
 			}
-
 			ServiceHash.get(serviceName).setCalibration_Factor(factor != 0 ? factor : 1);
 		});
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
+			DSEquilibriumListener[i + 1][0] = ServiceSet.getServicesList().get(i);
+			DSEquilibriumListener[i + 1][1] = ServiceHash.get(ServiceSet.getServicesList().get(i))
+					.getCalibration_Factor() + "";
+		}
 	}
 
 	public void initialDSEquilibrium() {
 		regionalSupply();
 		initialDSEquilibrium(R.getServicesHash(), totalSupply);
+		R.getServicesHash().values().forEach(s -> {
+			s.getDemands().forEach((year, value) -> {
+				s.getDemands().put(year, value / s.getCalibration_Factor());
+			});
+		});
 		LOGGER.info(
 				"Initial Demand Service Equilibrium Factor= " + R.getName() + ": " + R.getServiceCalibration_Factor());
 	}
 
 	public void go(int year) {
-		boolean outputFilesCreation = ModelRunner.writeCsvFiles && RegionClassifier.regions.size() > 1;
+		boolean outputFilesCreation = ModelRunner.generate_csv_files && RegionClassifier.regions.size() > 1;
 
 		if (outputFilesCreation) {
 			outPutservicedemandToCsv(year);
 			Tracker.trackSupply(year, R.getName());
+			compositionAFT(year);
+			updateCSVFiles();
 		}
 
 		LOGGER.info("Rigion: [" + R.getName() + "] Total Supply = " + totalSupply);
@@ -167,9 +185,9 @@ public class RegionalModelRunner {
 		LOGGER.info("Rigion: [" + R.getName() + "] Calculating Distribution Mean & Land abandonment");
 		calculeDistributionMean();
 
-		if (ModelRunner.usegiveUp) {
+		if (ModelRunner.use_abandonment_threshold) {
 			ConcurrentHashMap<String, Cell> randomCellsubSetForGiveUp = CellsSet.getRandomSubset(R.getCells(),
-					ModelRunner.percentageOfGiveUp);
+					ModelRunner.land_abandonment_percentage);
 			if (randomCellsubSetForGiveUp != null) {
 				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
 					c.giveUp(marginal, distributionMean, R);
@@ -181,10 +199,10 @@ public class RegionalModelRunner {
 		takeOverUnmanageCells();
 		// Randomly select % of the land available for competition
 		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(R.getCells(),
-				ModelRunner.percentageCells);
+				ModelRunner.participating_cells_percentage);
 		if (randomCellsubSet != null) {
 			List<ConcurrentHashMap<String, Cell>> subsubsets = CellsSet.splitIntoSubsets(randomCellsubSet,
-					ModelRunner.nbrOfSubSet);
+					ModelRunner.marginal_utility_calculations_per_tick);
 			ConcurrentHashMap<String, Double> servicesBeforeCompetition = new ConcurrentHashMap<>();
 			ConcurrentHashMap<String, Double> servicesAfterCompetition = new ConcurrentHashMap<>();
 
@@ -211,10 +229,7 @@ public class RegionalModelRunner {
 			// cells");
 		}
 		// LOGGER.info("Region: [" + regionName + "] Competition Process Completed");
-		if (outputFilesCreation) {
-			compositionAFT(year);
-			updateCSVFiles();
-		}
+
 		AFTsLoader.hashAgentNbr(R.getName());
 
 	}
@@ -253,8 +268,9 @@ public class RegionalModelRunner {
 	}
 
 	private void outPutservicedemandToCsv(int year) {
-		AtomicInteger m = new AtomicInteger();
+		AtomicInteger m = new AtomicInteger(1);
 		int y = year - PathsLoader.getStartYear() + 1;
+		servicedemandListener[y][0] = year + "";
 		ServiceSet.getServicesList().forEach(name -> {
 			servicedemandListener[y][m.get()] = totalSupply.get(name) + "";
 			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = R.getServicesHash().get(name)
@@ -266,6 +282,7 @@ public class RegionalModelRunner {
 
 	private void compositionAFT(int year) {
 		int y = year - PathsLoader.getStartYear() + 1;
+		compositionAftListener[y][0] = year + "";
 		AFTsLoader.hashAgentNbrRegions.get(R.getName()).forEach((name, value) -> {
 			compositionAftListener[y][Tools.indexof(name, compositionAftListener[0])] = value + "";
 		});
@@ -274,11 +291,17 @@ public class RegionalModelRunner {
 	private void updateCSVFiles() {
 		String dir = PathTools.makeDirectory(ModelRunnerController.outPutFolderName + File.separator + "region_"
 				+ R.getName() + File.separator + "");
-		if (ModelRunner.writeCsvFiles) {
+		if (ModelRunner.generate_csv_files) {
 			Path aggregateAFTComposition = Paths.get(dir + "region_" + R.getName() + "-AggregateAFTComposition.csv");
 			CsvTools.writeCSVfile(compositionAftListener, aggregateAFTComposition);
 			Path aggregateServiceDemand = Paths.get(dir + "region_" + R.getName() + "-AggregateServiceDemand.csv");
 			CsvTools.writeCSVfile(servicedemandListener, aggregateServiceDemand);
+			boolean oneTime = true;
+			if (oneTime) {
+				oneTime = false;
+				Path DSEquilibriumPath = Paths.get(dir + "region_" + R.getName() + "-DemandServicesEquilibrium.csv");
+				CsvTools.writeCSVfile(DSEquilibriumListener, DSEquilibriumPath);
+			}
 		}
 
 	}

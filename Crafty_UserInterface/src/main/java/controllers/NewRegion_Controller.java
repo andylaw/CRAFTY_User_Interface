@@ -121,16 +121,16 @@ public class NewRegion_Controller {
 	public static TitledPane colorWorld() {
 		VBox vbox = new VBox();
 
-		int length = CellsLoader.getCapitalsName().size() + 1;
+		int length = CellsLoader.getCapitalsList().size() + 1;
 
 		RadioButton[] radioColor = new RadioButton[length];
 
 	
 
 		for (int i = 0; i < length; i++) {
-			if (i < CellsLoader.getCapitalsName().size()) {
-				radioColor[i] = new RadioButton(CellsLoader.getCapitalsName().get(i));
-			} else if (i == CellsLoader.getCapitalsName().size()) {
+			if (i < CellsLoader.getCapitalsList().size()) {
+				radioColor[i] = new RadioButton(CellsLoader.getCapitalsList().get(i));
+			} else if (i == CellsLoader.getCapitalsList().size()) {
 				radioColor[i] = new RadioButton("FR");
 			} 
 			vbox.getChildren().add(radioColor[i]);
@@ -141,9 +141,9 @@ public class NewRegion_Controller {
 						radioColor[j].setSelected(false);
 					}
 				}
-				if (k < CellsLoader.getCapitalsName().size()) {
-					colorMap(CellsLoader.getCapitalsName().get(k));
-				} else if (k == CellsLoader.getCapitalsName().size()) {
+				if (k < CellsLoader.getCapitalsList().size()) {
+					colorMap(CellsLoader.getCapitalsList().get(k));
+				} else if (k == CellsLoader.getCapitalsList().size()) {
 					colorMap("FR");
 				} 
 			});

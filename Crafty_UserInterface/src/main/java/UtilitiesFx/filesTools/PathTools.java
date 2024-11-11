@@ -32,34 +32,31 @@ import javafx.stage.FileChooser;
 public class PathTools {
 
 	private static final Logger LOGGER = LogManager.getLogger(PathTools.class);
-	
-	
-	
-	
-    public static String[] aggregateArrays(String[] firstArray, String...secondArray) {
-        String[] result = new String[firstArray.length + secondArray.length];
-        System.arraycopy(firstArray, 0, result, 0, firstArray.length);
-        System.arraycopy(secondArray, 0, result, firstArray.length, secondArray.length);
-        return result;
-    }
-	
-	public static Set<Path> listSubdirectories(Path directoryPath)  {
-        // Use try-with-resources to ensure the stream is closed properly
-        try (Stream<Path> paths = Files.list(directoryPath)) {
-            return paths.filter(Files::isDirectory) // Filter to include only directories
-                        .collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
-        } catch (IOException e) {
+
+	public static String[] aggregateArrays(String[] firstArray, String... secondArray) {
+		String[] result = new String[firstArray.length + secondArray.length];
+		System.arraycopy(firstArray, 0, result, 0, firstArray.length);
+		System.arraycopy(secondArray, 0, result, firstArray.length, secondArray.length);
+		return result;
+	}
+
+	public static Set<Path> listSubdirectories(Path directoryPath) {
+		// Use try-with-resources to ensure the stream is closed properly
+		try (Stream<Path> paths = Files.list(directoryPath)) {
+			return paths.filter(Files::isDirectory) // Filter to include only directories
+					.collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
-    }
+	}
+
 	public static Optional<Path> findFolder(Set<Path> paths, String FolderName) {
-        return paths.stream()
-                    .filter(path -> path.getFileName().toString().equals(FolderName))
-                    .findFirst(); // returns an Optional<Path>
-    }
-	
+		return paths.stream().filter(path -> path.getFileName().toString().equals(FolderName)).findFirst(); // returns
+																											// an
+																											// Optional<Path>
+	}
 
 	public static String asFolder(String input) {
 		return File.separator + input + File.separator;

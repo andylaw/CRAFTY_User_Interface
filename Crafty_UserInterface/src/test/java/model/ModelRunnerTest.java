@@ -20,7 +20,7 @@ class ModelRunnerTest {
 	// @BeforeEach
 	void setUp() throws Exception {
 		loader.setUp();
-		R = new ModelRunner(loader.M);
+		R = new ModelRunner();
 //		R.calculeSystemSupply();
 	}
 

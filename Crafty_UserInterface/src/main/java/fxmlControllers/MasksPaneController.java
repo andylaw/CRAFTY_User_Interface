@@ -31,9 +31,9 @@ public class MasksPaneController {
 	@FXML
 	ScrollPane scroll;
 	public static MaskRestrictionDataLoader Maskloader = new MaskRestrictionDataLoader();
-	static ArrayList<CheckBox> radioListOfMasks ;
+	static ArrayList<CheckBox> radioListOfMasks;
 	// cell.getMaskTyp->hash(owner_competitor-> true or false)
-	public static HashMap<String, HashMap<String, Boolean>> restrictions = new HashMap<>();
+
 	CircularPlot[] circularPlot;
 	private static boolean iscolored = false;
 
@@ -52,7 +52,7 @@ public class MasksPaneController {
 		radioListOfMasks = new ArrayList<>();
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * .9);
 		// Maskloader.MaskAndRistrictionLaoder();
-		MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
+		MaskRestrictionDataLoader.allMaskAndRistrictionUpdate();
 		MaskRestrictionDataLoader.hashMasksPaths.keySet().forEach(n -> {
 			CheckBox r = new CheckBox(n);
 			radioListOfMasks.add(r);
@@ -62,7 +62,7 @@ public class MasksPaneController {
 		TitledPane[] T = new TitledPane[radioListOfMasks.size()];
 		radioListOfMasks.forEach(r -> {
 			r.setOnAction(e -> {
-				MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate(r.getText());
+				MaskRestrictionDataLoader.maskAndRistrictionLaoder(r.getText());
 				int i = radioListOfMasks.indexOf(r);
 				if (r.isSelected()) {
 					List<String> listOfyears = filePathToYear(r.getText());
@@ -85,7 +85,7 @@ public class MasksPaneController {
 						boxOfAftRadios.getChildren().add(radio);
 					});
 
-					restrictions.put(r.getText(), restrictionsRul);
+					MaskRestrictionDataLoader.restrictions.put(r.getText(), restrictionsRul);
 
 					radioListOfAFTs.get(0).setSelected(true);
 					List<PlotItem> items = circularPlot(itemsList, restrictionsRul, radioListOfAFTs.get(0).getText(),
@@ -112,7 +112,7 @@ public class MasksPaneController {
 					boxMaskTypes.getChildren().add(place, T[i]);
 				} else {
 					Maskloader.cleanMaskType(r.getText());
-					restrictions.remove(r.getText());
+					MaskRestrictionDataLoader.restrictions.remove(r.getText());
 					boxMaskTypes.getChildren().removeAll(T[i]);
 					MaskRestrictionDataLoader.hashMasksPaths.remove(r.getText());
 
@@ -159,7 +159,7 @@ public class MasksPaneController {
 
 	private ArrayList<PlotItem> initPlotItem() {
 		ArrayList<PlotItem> itemsList = new ArrayList<>();
-		TabPaneController.M.AFtsSet.forEach(a -> {
+		TabPaneController.cellsLoader.AFtsSet.forEach(a -> {
 			itemsList.add(new PlotItem(a.getLabel(), 10, a.getColor()));
 		});
 		return itemsList;

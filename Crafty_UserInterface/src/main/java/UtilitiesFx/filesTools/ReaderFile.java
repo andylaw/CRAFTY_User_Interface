@@ -126,7 +126,7 @@ public class ReaderFile {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
 		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
-		CellsLoader.getCapitalsName().forEach(capital_name -> {
+		CellsLoader.getCapitalsList().forEach(capital_name -> {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));
 			CellsSet.getCellsSet().getCell(x, y).getCapitals().put(capital_name, capital_value);
 		});
@@ -146,7 +146,7 @@ public class ReaderFile {
 			CellsLoader.hashCell.put(x + "," + y, c);
 			c.setIndex(CellsLoader.hashCell.size());
 		}
-		CellsLoader.getCapitalsName().forEach(capital_name -> {
+		CellsLoader.getCapitalsList().forEach(capital_name -> {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));
 			c.getCapitals().put(capital_name, capital_value);//
 		});

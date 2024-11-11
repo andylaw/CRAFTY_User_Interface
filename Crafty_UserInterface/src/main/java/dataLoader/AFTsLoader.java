@@ -38,7 +38,7 @@ public class AFTsLoader extends HashSet<Manager> {
 	private static ConcurrentHashMap<String, Manager> activateAFTsHash = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<String, Integer> hashAgentNbr = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> hashAgentNbrRegions = new ConcurrentHashMap<>();
-	public static String unmanagedManagerLabel;
+	public static String unmanagedManagerLabel = "Abandoned";
 
 	public AFTsLoader() {
 		initializeAFTs();
@@ -250,7 +250,7 @@ public class AFTsLoader extends HashSet<Manager> {
 		try {
 			T = Table.read().csv(file);
 
-			CellsLoader.getCapitalsName().forEach((Cn) -> {
+			CellsLoader.getCapitalsList().forEach((Cn) -> {
 				ServiceSet.getServicesList().forEach((Sn) -> {
 					a.getSensitivity().put((Cn + "_" + Sn),
 							Tools.sToD(T.column(Cn).getString(T.column(0).indexOf(Sn))));
@@ -284,10 +284,13 @@ public class AFTsLoader extends HashSet<Manager> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 			else {
-				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "Abandoned", 1,
-						Integer::sum);
+				hashAgentNbr.merge(unmanagedManagerLabel, 1, Integer::sum);
 			}
 		});
+		if (!hashAgentNbr.containsKey("Abandoned") || !hashAgentNbr.containsKey(unmanagedManagerLabel)) {
+			hashAgentNbr.put(unmanagedManagerLabel, 0);
+		}
+
 	}
 
 	public static void hashAgentNbrRegions() {
@@ -302,8 +305,10 @@ public class AFTsLoader extends HashSet<Manager> {
 			if (c.getOwner() != null)
 				hashAgentNbr.merge(c.getOwner().getLabel(), 1, Integer::sum);
 			else {
-				hashAgentNbr.merge(unmanagedManagerLabel != null ? unmanagedManagerLabel : "Abandoned", 1,
-						Integer::sum);
+				hashAgentNbr.merge(unmanagedManagerLabel, 1, Integer::sum);
+			}
+			if (!hashAgentNbr.containsKey("Abandoned") || !hashAgentNbr.containsKey(unmanagedManagerLabel)) {
+				hashAgentNbr.put(unmanagedManagerLabel, 0);
 			}
 		});
 		hashAgentNbrRegions.put(regionName, hashAgentNbr);

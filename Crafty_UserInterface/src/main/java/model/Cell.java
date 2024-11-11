@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import dataLoader.AFTsLoader;
+import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.MasksPaneController;
 import javafx.scene.paint.Color;
@@ -83,13 +84,16 @@ public class Cell extends AbstractCell {
 
 		boolean makeCopetition = true;
 		if (getMaskType() != null) {
-			HashMap<String, Boolean> mask = MasksPaneController.restrictions.get(getMaskType());
+			HashMap<String, Boolean> mask = MaskRestrictionDataLoader.restrictions.get(getMaskType());
 			if (mask != null) {
 				if (owner == null) {
-					makeCopetition = mask.get(competitor.getLabel() + "_" + competitor.getLabel());
+					if (mask.get(competitor.getLabel() + "_" + competitor.getLabel()) != null)
+						makeCopetition = mask.get(competitor.getLabel() + "_" + competitor.getLabel());
 				} else {
-					makeCopetition = mask.get(owner.getLabel() + "_" + competitor.getLabel());
+					if (mask.get(owner.getLabel() + "_" + competitor.getLabel()) != null)
+						makeCopetition = mask.get(owner.getLabel() + "_" + competitor.getLabel());
 				}
+
 			}
 		}
 
@@ -99,14 +103,14 @@ public class Cell extends AbstractCell {
 
 			if (owner == null || owner.isAbandoned()) {
 				if (uC > 0)
-					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
+					owner = ModelRunner.mutate_on_competition_win ? new Manager(competitor) : competitor;
 			} else {
 				double nbr = distributionMean != null
 						? (distributionMean.get(owner)
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
 				if ((uC - uO > nbr) && uC > 0) {
-					owner = ModelRunner.isMutated ? new Manager(competitor) : competitor;
+					owner = ModelRunner.mutate_on_competition_win ? new Manager(competitor) : competitor;
 				}
 			}
 		}
@@ -130,9 +134,9 @@ public class Cell extends AbstractCell {
 
 	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
 			Region R) {
-		boolean Neighboor = ModelRunner.NeighboorEffect && ModelRunner.probabilityOfNeighbor > Math.random();
+		boolean Neighboor = ModelRunner.use_neighbor_priority && ModelRunner.neighbor_priority_probability > Math.random();
 		Collection<Manager> afts = Neighboor
-				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.NeighborRaduis)
+				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.neighbor_radius)
 				: AFTsLoader.getActivateAFTsHash().values();
 
 		if (Math.random() < ModelRunner.MostCompetitorAFTProbability) {
@@ -177,9 +181,7 @@ public class Cell extends AbstractCell {
 	public String toString() {
 		return "Cell [index=" + index + ", x=" + x + ", y=" + y + ", CurrentRegion=" + CurrentRegion + "\n, Mask="
 				+ getMaskType() + ", getOwner()=" + (getOwner() != null ? getOwner().getLabel() : "Unmanaged")
-				+  ", getCapitals()=" + getCapitals() + ", getCurrentProductivity()=" +
-				getCurrentProductivity() +
-					  "]";
+				+ ", getCapitals()=" + getCapitals() + ", getCurrentProductivity()=" + getCurrentProductivity() + "]";
 	}
 
 //	@Override
