@@ -13,6 +13,7 @@ import model.CellsSet;
 import java.io.IOException;
 
 import UtilitiesFx.graphicalTools.NewWindow;
+import dataLoader.ServiceSet;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 
@@ -40,13 +41,13 @@ public class OutPutTabController {
 	}
 
 	public void initialize() {
-		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
+		radioColor = new RadioButton[ServiceSet.getServicesList().size() + 1];
 
 		for (int i = 0; i < radioColor.length; i++) {
-			if (i < CellsSet.getServicesNames().size()) {
-				radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
+			if (i < ServiceSet.getServicesList().size()) {
+				radioColor[i] = new RadioButton(ServiceSet.getServicesList().get(i));
 
-			} else if (i == CellsSet.getServicesNames().size()) {
+			} else if (i == ServiceSet.getServicesList().size()) {
 				radioColor[i] = new RadioButton("Agent");
 			}
 			int k = i;
@@ -56,9 +57,9 @@ public class OutPutTabController {
 						radioColor[j].setSelected(false);
 					}
 				}
-				if (k < CellsSet.getServicesNames().size()) {
-					CellsSet.colorMap(CellsSet.getServicesNames().get(k));
-				} else if (k == CellsSet.getServicesNames().size()) {
+				if (k < ServiceSet.getServicesList().size()) {
+					CellsSet.colorMap(ServiceSet.getServicesList().get(k));
+				} else if (k == ServiceSet.getServicesList().size()) {
 					CellsSet.colorMap("FR");
 				}
 

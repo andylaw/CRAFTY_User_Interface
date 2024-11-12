@@ -76,7 +76,7 @@ public class PlumController {
 		iterativeFileReadingAndFilter(2020);
 		bio_crop_demand = bio_crop_demand_df();
 		List<Map<String, String>> tmp = domestic_prod();
-		tmp.forEach(map -> System.out.println(map.keySet()));
+//		tmp.forEach(map -> System.out.println(map.keySet()));
 	}
 
 	void staticFilesinitialisation() {

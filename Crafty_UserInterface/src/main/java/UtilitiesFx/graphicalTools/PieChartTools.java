@@ -3,18 +3,15 @@ package UtilitiesFx.graphicalTools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
-//import javafx.collections.FXCollections;
+import fxmlControllers.TabPaneController;
 //import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -49,7 +46,7 @@ public class PieChartTools {
 			legendColorStatic(color, chart) ;
 	}
 	
-	public void updateChart(CellsLoader M,ConcurrentHashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
+	public void updateChart(ConcurrentHashMap<String,Double> hash, HashMap<String, Color> color, PieChart chart) {
 		updateChart(hash, chart);
 		for (int i = 0; i < data.size(); i++) {
 			for (Node n : chart.lookupAll(".data" + i)) {
@@ -57,7 +54,7 @@ public class PieChartTools {
 			}
 		}
 
-		legendColorPicker(M,color, chart);
+		legendColorPicker(TabPaneController.cellsLoader,color, chart);
 
 	}
 	
@@ -112,7 +109,7 @@ public class PieChartTools {
 						for (Node n : chart.lookupAll(".data" + j)) {
 							n.setStyle("-fx-pie-color: " + ColorsTools.getStringColor(colorPicker.getValue()) + ";");
 						}
-						M.AFtsSet.getAftHash().get(data.get(j).getName()).setColor(colorPicker.getValue());
+						AFTsLoader.getAftHash().get(data.get(j).getName()).setColor(colorPicker.getValue());
 						CellsSet.colorMap("FR");
 //						Agents.aftReSet.forEach((name,agent) -> {
 //							if (dataName.equals(name)) {

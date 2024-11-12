@@ -88,8 +88,8 @@ public class CellsSubSets {
 
 	public static void selectZone(Cell patch, String zonetype) {
 		CellsLoader.hashCell.values().forEach(p -> {
-			if (p.getGisNameValue().get(zonetype) != null) {
-				if (p.getGisNameValue().get(zonetype).equals(patch.getGisNameValue().get(zonetype))) {
+			if (p.getCurrentRegion().equals(zonetype)) {
+				if (p.getCurrentRegion().equals(patch.getCurrentRegion())) {
 					p.ColorP(p.color);
 					NewRegion_Controller.patchsInRergion.add(p);
 				}

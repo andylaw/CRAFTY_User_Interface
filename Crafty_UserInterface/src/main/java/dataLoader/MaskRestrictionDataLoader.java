@@ -15,7 +15,6 @@ import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.ReaderFile;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.Tools;
-import fxmlControllers.MasksPaneController;
 import model.Cell;
 import model.CellsSet;
 import model.Manager;
@@ -23,40 +22,29 @@ import model.Manager;
 public class MaskRestrictionDataLoader {
 
 	public static HashMap<String, List<Path>> hashMasksPaths;
+	public static HashMap<String, HashMap<String, Boolean>> restrictions = new HashMap<>();
 
 	private static final Logger LOGGER = LogManager.getLogger(MaskRestrictionDataLoader.class);
 
-	public static void MaskAndRistrictionLaoderUpdate() {
+
+	
+	public static void allMaskAndRistrictionUpdate() {
 		hashMasksPaths = new HashMap<>();
-		Set<Path> LandUseControlFolder = PathTools.listSubdirectories(
-				Paths.get(PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl"));
+		List<File> LandUseControlFolder = PathTools
+				.detectFolders(PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl");
 		if (LandUseControlFolder != null) {
-			LandUseControlFolder.forEach(folder -> {
-				ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.toString(),
-						PathsLoader.getScenario());
-				if (listOfMaskFilesInScenario != null) {
-					List<Path> maks = new ArrayList<>();
-					for (Path file : listOfMaskFilesInScenario) {
-						if (!file.toString().contains("Restrictions")) {
-							maks.add(file);
-						}
-					}
-					hashMasksPaths.put(folder.getFileName().toString(), maks);
-				} else {
-					listOfMaskFilesInScenario = PathTools.fileFilter(true, folder.toString());
-					List<Path> maks = new ArrayList<>();
-					for (Path csv : listOfMaskFilesInScenario) {
-						if (!csv.toString().contains("Restrictions")) {
-							maks.add(csv);
-						}
-						hashMasksPaths.put(folder.getFileName().toString(), maks);
-					}
-				}
-			});
+			for (File folder : LandUseControlFolder) {
+				maskAndRistrictionLaoder(folder.getName());
+				restrictions.put(folder.getName(), new HashMap<>());
+			}
 		}
+		LOGGER.info("Masks: " + hashMasksPaths.keySet());
+		// HashMap<String, Boolean> restrictionsRul =
+		// Maskloader.restrictionsInitialize(r.getText());
+		// restrictions.put(r.getText(), restrictionsRul);
 	}
 
-	public static void MaskAndRistrictionLaoderUpdate(String maskType) {
+	public static void maskAndRistrictionLaoder(String maskType) {
 		ArrayList<Path> listOfMaskFilesInScenario = PathTools.fileFilter(true,
 				PathsLoader.getProjectPath() + PathTools.asFolder("worlds") + "LandUseControl",
 				PathsLoader.getScenario(), PathTools.asFolder(maskType));
@@ -116,7 +104,7 @@ public class MaskRestrictionDataLoader {
 	public void CellSetToMaskLoader(int year) {
 		hashMasksPaths.keySet().forEach(maskType -> {
 			CellSetToMaskLoader(maskType, year);
-			updateRestrections(maskType, year + "", MasksPaneController.restrictions.get(maskType));
+			updateRestrections(maskType, year + "", restrictions.get(maskType));
 		});
 
 	}
@@ -167,7 +155,6 @@ public class MaskRestrictionDataLoader {
 			for (int i = 1; i < matrix.length; i++) {
 				for (int j = 1; j < matrix[0].length; j++) {
 					restric.put(matrix[i][0] + "_" + matrix[0][j], matrix[i][j].contains("1"));
-//					System.out.println(matrix[i][0] + "_" + matrix[0][j]+"->"+ matrix[i][j].contains("1"));
 				}
 			}
 			return restric;

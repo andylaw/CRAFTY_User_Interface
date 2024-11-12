@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
+import dataLoader.ServiceSet;
 import model.Cell;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
@@ -127,7 +128,7 @@ public class ReaderFile {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
 		int y = (int) Tools.sToD(immutableList.get(indexof.get("Y")));
-		CellsSet.getCapitalsName().forEach(capital_name -> {
+		CellsLoader.getCapitalsList().forEach(capital_name -> {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));
 			CellsSet.getCellsSet().getCell(x, y).getCapitals().put(capital_name, capital_value);
 		});
@@ -147,7 +148,7 @@ public class ReaderFile {
 			CellsLoader.hashCell.put(x + "," + y, c);
 			c.setIndex(CellsLoader.hashCell.size());
 		}
-		CellsSet.getCapitalsName().forEach(capital_name -> {
+		CellsLoader.getCapitalsList().forEach(capital_name -> {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));
 			c.getCapitals().put(capital_name, capital_value);//
 		});
@@ -163,13 +164,11 @@ public class ReaderFile {
 		Cell c = CellsLoader.hashCell.get(x + "," + y);
 
 		c.setOwner(AFTsLoader.getAftHash().get(aft_name));
-		c.getServices().clear();
-		CellsSet.getServicesNames().forEach(service_name -> {
+		c.getCurrentProductivity().clear();
+		ServiceSet.getServicesList().forEach(service_name -> {
 			double service_value = Tools.sToD(immutableList.get(indexof.get(service_name.toUpperCase())));
-			
-			c.getServices().put(service_name, service_value);
+			c.getCurrentProductivity().put(service_name, service_value);
 		});
-		// System.out.println(c.getServices());
 
 	}
 	

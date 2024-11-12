@@ -27,6 +27,7 @@ import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
+import dataLoader.ServiceSet;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -47,7 +48,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 
 public class OutPuterController {
-	CellsLoader M;
 
 	@FXML
 	private Button saveAllFilAsPNG;
@@ -80,7 +80,7 @@ public class OutPuterController {
 
 	public void initialize() {
 		System.out.println("Initialize " + getClass().getSimpleName());
-		M = TabPaneController.M;
+
 		selectoutPut();
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 		gridChart.prefWidthProperty().bind(scroll.widthProperty());
@@ -174,7 +174,7 @@ public class OutPuterController {
 				if (tmp.contains("-Cell-"))
 					yearList.add(tmp);
 			});
-			LOGGER.info("output files List---> " + yearList);
+			LOGGER.info("output files List: " + yearList);
 			yearChoice.getItems().addAll(yearList);
 			yearChoice.setValue(yearList.get(0));
 			sankeyBox.getItems().addAll(yearList);
@@ -185,25 +185,24 @@ public class OutPuterController {
 		}
 	}
 
-	public void selectoutPut(Path path) {
-		outputpath = path;
-		ArrayList<String> yearList = new ArrayList<>();
-		PathTools.findAllFiles(outputpath).forEach(str -> {
-			File file = str.toFile();
-			String tmp = new File(file.getParent()).getName() + File.separator + file.getName();
-			if (tmp.contains("-Cell-"))
-				yearList.add(tmp);
-		});
-		LOGGER.info("output files List---> " + yearList);
-		yearChoice.getItems().addAll(yearList);
-		yearChoice.setValue(yearList.get(0));
-		sankeyBox.getItems().addAll(yearList);
-		sankeyBox.setValue(yearList.get(yearList.size() - 1));
-		OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
-		newOutPut(yearChoice.getValue());
-		Graphs(gridChart, "AggregateServiceDemand.csv", "-AggregateAFTComposition.csv");
-
-	}
+//	public void selectoutPut(Path path) {
+//		outputpath = path;
+//		ArrayList<String> yearList = new ArrayList<>();
+//		PathTools.findAllFiles(outputpath).forEach(str -> {
+//			File file = str.toFile();
+//			String tmp = new File(file.getParent()).getName() + File.separator + file.getName();
+//			if (tmp.contains("-Cell-"))
+//				yearList.add(tmp);
+//		});
+//		LOGGER.info("output files List---> " + yearList);
+//		yearChoice.getItems().addAll(yearList);
+//		yearChoice.setValue(yearList.get(0));
+//		sankeyBox.getItems().addAll(yearList);
+//		sankeyBox.setValue(yearList.get(yearList.size() - 1));
+//		OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
+//		newOutPut(yearChoice.getValue());
+//		Graphs(gridChart, "AggregateServiceDemand.csv", "-AggregateAFTComposition.csv");
+//	}
 
 	@FXML
 	public void saveAllFilAsPNGAction() {
@@ -213,7 +212,7 @@ public class OutPuterController {
 				String newfolder = PathTools
 						.makeDirectory(outputpath + File.separator + OutPutTabController.radioColor[ii].getText());
 				yearChoice.getItems().forEach(filepath -> {
-					M.servicesAndOwneroutPut(filepath, outputpath.toString());
+					TabPaneController.cellsLoader.servicesAndOwneroutPut(filepath, outputpath.toString());
 					OutPutTabController.radioColor[ii].fire();
 					String fileyear = new File(filepath).getName().replace(".csv", "").replace("-Cell-", "");
 					for (String scenario : PathsLoader.getScenariosList()) {
@@ -328,7 +327,7 @@ public class OutPuterController {
 	}
 
 	void newOutPut(String year) {
-		M.servicesAndOwneroutPut(year, outputpath.toString());
+		TabPaneController.cellsLoader.servicesAndOwneroutPut(year, outputpath.toString());
 		for (int i = 0; i < OutPutTabController.radioColor.length; i++) {
 			if (OutPutTabController.radioColor[i].isSelected()) {
 				OutPutTabController.radioColor[i].fire();
@@ -338,30 +337,31 @@ public class OutPuterController {
 
 	}
 
-	void Graphs(GridPane gridPane, String serviceDemand, String aftComposition) {
+	void Graphs(GridPane gridPane, String serviceDemand, String aftComposition){
 		gridPane.getChildren().clear();
 		ArrayList<LineChart<Number, Number>> lineChart = new ArrayList<>();
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		ArrayList<Path> servicepath = PathTools.fileFilter(outputpath.toString(), serviceDemand);
-		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(servicepath.get(0));
+		ArrayList<Path> servicespath = PathTools.fileFilter(outputpath.toString(), serviceDemand);
+		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(servicespath.get(0));
 
 		ArrayList<HashMap<String, ArrayList<Double>>> has = new ArrayList<>();
-		CellsSet.getServicesNames().forEach(servicename -> {
+		ServiceSet.getServicesList().forEach(serviceName -> {
 			HashMap<String, ArrayList<Double>> ha = new HashMap<>();
 			reder.forEach((name, value) -> {
 				ArrayList<Double> tmp = new ArrayList<>();
-				for (int i = 0; i < value.size() - 2; i++) {
+				for (int i = 0; i < value.size(); i++) {
 					tmp.add(Tools.sToD(value.get(i)));
 				}
-				if (name.contains(servicename)) {
+				if (name.contains(serviceName)) {
 					ha.put(name, tmp);
 				}
 			});
-
-			has.add(ha);
+			if (ha != null) {
+				has.add(ha);
+			}
 			LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(), new NumberAxis());
-			chart.setTitle(servicename);
+			chart.setTitle(serviceName);
 			lineChart.add(chart);
 		});
 
@@ -373,8 +373,7 @@ public class OutPuterController {
 		int j = 0, k = 0;
 		for (int i = 0; i < has.size(); i++) {
 			LineChart<Number, Number> Ch = lineChart.get(i);
-			new LineChartTools().lineChart(M, (Pane) Ch.getParent(), Ch, has.get(i));
-
+			new LineChartTools().lineChart((Pane) Ch.getParent(), Ch, has.get(i));
 			// this for coloring the Chart by the AFTs color after the creation of the chart
 			if (i == has.size() - 1) {
 				coloringChartByAFts(Ch);
@@ -403,27 +402,24 @@ public class OutPuterController {
 			Ch.getData().get(k2).getNode().lookup(".chart-series-line")
 					.setStyle("-fx-stroke: " + ColorsTools.getStringColor(a.getColor()) + ";");
 		}
-		LineChartTools.labelcolor(M, Ch);
+		LineChartTools.labelcolor(Ch);
 	}
 
 	HashMap<String, ArrayList<Double>> updatComposition(String path, String nameFile) {
-		try {
-			HashMap<String, ArrayList<String>> reder = ReaderFile
-					.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
-			HashMap<String, ArrayList<Double>> has = new HashMap<>();
 
-			reder.forEach((name, value) -> {
+		HashMap<String, ArrayList<String>> reder = ReaderFile.ReadAsaHash(PathTools.fileFilter(path, nameFile).get(0));
+		HashMap<String, ArrayList<Double>> has = new HashMap<>();
+
+		reder.forEach((name, value) -> {
+			if (AFTsLoader.getAftHash().keySet().contains(name)) {
 				ArrayList<Double> tmp = new ArrayList<>();
-				for (int i = 0; i < value.size() - 2; i++) {
+				for (int i = 0; i < value.size(); i++) {
 					tmp.add(Tools.sToD(value.get(i)));
 				}
 				has.put(name, tmp);
-
-			});
-			return has;
-		} catch (NullPointerException e) {
-			return null;
-		}
+			}
+		});
+		return has;
 	}
 
 	// Detect if there is regional output

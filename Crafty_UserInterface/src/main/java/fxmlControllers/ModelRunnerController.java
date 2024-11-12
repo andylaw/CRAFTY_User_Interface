@@ -1,8 +1,6 @@
 package fxmlControllers;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.filesTools.SaveAs;
 import UtilitiesFx.graphicalTools.ColorsTools;
@@ -22,10 +19,9 @@ import UtilitiesFx.graphicalTools.MousePressed;
 import UtilitiesFx.graphicalTools.NewWindow;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.CellsLoader;
-import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
+import dataLoader.ServiceSet;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -53,16 +49,14 @@ import javafx.stage.Window;
 import javafx.util.Duration;
 import model.CellsSet;
 import model.ModelRunner;
+import model.RegionClassifier;
 import javafx.scene.layout.GridPane;
 
 public class ModelRunnerController {
-
 	@FXML
 	private VBox vbox;
-
 	@FXML
 	private Label tickTxt;
-
 	@FXML
 	private Button oneStep;
 	@FXML
@@ -75,19 +69,17 @@ public class ModelRunnerController {
 	private GridPane gridPaneLinnChart;
 	@FXML
 	private ScrollPane scroll;
-	CellsLoader M;
 	public static String outPutFolderName;
-	public ModelRunner R;
+	private ModelRunner runner;
 
 	Timeline timeline;
-	AtomicInteger tick;
+	public static AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
 
 	public static boolean chartSynchronisation = true;
 	public static int chartSynchronisationGap = 5;
 
 	double KeyFramelag = 1;
-//	private final long desiredTickMillis = 1000;
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
 
@@ -95,14 +87,10 @@ public class ModelRunnerController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		M = TabPaneController.M;
-		R = new ModelRunner(M);
+		runner = new ModelRunner();
 		tick = new AtomicInteger(PathsLoader.getStartYear());
 		tickTxt.setText(tick.toString());
-
 		lineChart = new ArrayList<>();
-		// lineChart = (ArrayList<LineChart<Number, Number>>)
-		// Collections.synchronizedList(lineChart);
 
 		Collections.synchronizedList(lineChart);
 		outPutFolderName = PathsLoader.getScenario();
@@ -130,16 +118,16 @@ public class ModelRunnerController {
 	}
 
 	void initialzeRadioColorBox() {
-		radioColor = new RadioButton[CellsSet.getServicesNames().size() + 1];
+		radioColor = new RadioButton[ServiceSet.getServicesList().size() + 1];
 		radioColor[radioColor.length - 1] = new RadioButton("FR");
-		for (int i = 0; i < CellsSet.getServicesNames().size(); i++) {
-			radioColor[i] = new RadioButton(CellsSet.getServicesNames().get(i));
+		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
+			radioColor[i] = new RadioButton(ServiceSet.getServicesList().get(i));
 		}
 
 		for (int i = 0; i < radioColor.length; i++) {
 			int m = i;
 			radioColor[i].setOnAction(e -> {
-				R.colorDisplay = radioColor[m].getText();
+				runner.colorDisplay = radioColor[m].getText();
 				CellsSet.colorMap(radioColor[m].getText());
 				for (int I = 0; I < radioColor.length; I++) {
 					if (I != m) {
@@ -157,24 +145,29 @@ public class ModelRunnerController {
 			g.getChildren().addAll(radioColor);
 			colorbox.creatwindows("Display Services and AFT distribution", g);
 		}
-
 	}
 
 	@FXML
 	public void oneStep() {
 		System.out.println("------------------- Start of Tick  |" + tick.get() + "| -------------------");
 		PathsLoader.setCurrentYear(tick.get());
-		R.go();
+		runner.go();
 		tickTxt.setText(tick.toString());
+		updateSupplyDemandLineChart();
+		tick.getAndIncrement();
+	}
+
+	private void updateSupplyDemandLineChart() {
 		if (chartSynchronisation
 				&& ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % chartSynchronisationGap == 0
 						|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
-			CellsSet.getServicesNames().forEach(name -> {
+			ServiceSet.getServicesList().forEach(service -> {
 				lineChart.get(m.get()).getData().get(0).getData()
-						.add(new XYChart.Data<>(tick.get(), DemandModel.getGolbalDemand(name, tick.get())));
+						.add(new XYChart.Data<>(tick.get(), ServiceSet.worldService.get(service).getDemands()
+								.get(tick.get() - PathsLoader.getStartYear())));
 				lineChart.get(m.get()).getData().get(1).getData()
-						.add(new XYChart.Data<>(tick.get(), R.totalSupply.get(name)));
+						.add(new XYChart.Data<>(tick.get(), runner.totalSupply.get(service)));
 				m.getAndIncrement();
 			});
 			ObservableList<Series<Number, Number>> observable = lineChart.get(lineChart.size() - 1).getData();
@@ -183,18 +176,35 @@ public class ModelRunnerController {
 				observable.get(listofNames.indexOf(name)).getData().add(new XYChart.Data<>(tick.get(), value));
 			});
 		}
-		tick.getAndIncrement();
 	}
 
 	@FXML
 	public void run() {
-//		popUpRunWindowz();
 		run.setDisable(true);
 		simulationFolderName();
-		if (startRunin || !ModelRunner.writeCsvFiles) {
-			DemandModel.updateDemand();
-			DemandModel.updateRegionsDemand();
+		if (startRunin || !ModelRunner.generate_csv_files) {
+			demandEquilibrium();
 			scheduleIteravitveTicks(Duration.millis(1000));
+		}
+	}
+
+	public static void demandEquilibrium() {
+		if (ModelRunner.initial_demand_supply_equilibrium) {
+			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
+				RegionalRunner.initialDSEquilibrium();
+			});
+			ServiceSet.worldService.values().forEach(s -> {
+				s.getDemands().keySet().forEach(year -> {
+					s.getDemands().put(year, 0.);
+				});
+			});
+			RegionClassifier.regions.values().forEach(r -> {
+				r.getServicesHash().forEach((ns, s) -> {
+					s.getDemands().forEach((year, value) -> {
+						ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
+					});
+				});
+			});
 		}
 	}
 
@@ -206,39 +216,31 @@ public class ModelRunnerController {
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {
-		if (PathsLoader.getCurrentYear() >= PathsLoader.getEndtYear() - 1) {
+		if (PathsLoader.getCurrentYear() >= PathsLoader.getEndtYear()) {
 			// Stop if max iterations reached
-			if (ModelRunner.writeCsvFiles)
+			if (ModelRunner.generate_csv_files)
 				displayRunAsOutput();
 			return;
-		}
-		if (ModelRunner.writeCsvFiles) {
-			Path aggregateAFTComposition = Paths.get(
-					outPutFolderName + File.separator + PathsLoader.getScenario() + "-AggregateAFTComposition.csv");
-			CsvTools.writeCSVfile(R.compositionAftListener, aggregateAFTComposition);
-			Path aggregateServiceDemand = Paths
-					.get(outPutFolderName + File.separator + PathsLoader.getScenario() + "-AggregateServiceDemand.csv");
-			CsvTools.writeCSVfile(R.servicedemandListener, aggregateServiceDemand);
 		}
 		// Stop the old timeline if it's running
 		if (timeline != null) {
 			timeline.stop();
 		}
 		// Create a new timeline for the next tick
-		timeline = new Timeline(new KeyFrame(delay, event -> {
-			long startTime = System.currentTimeMillis();
-			// Perform the simulation update
-			Platform.runLater(() -> {
-				oneStep();
-			});
-			long endTime = System.currentTimeMillis();
-			// Calculate the delay for the next tick to maintain the rhythm
-			long delayForNextTick = Math.max(300, (endTime - startTime) / 3);
+			timeline = new Timeline(new KeyFrame(delay, event -> {
+				long startTime = System.currentTimeMillis();
+				// Perform the simulation update
+				Platform.runLater(() -> {
+					oneStep();
+				});
+				// Calculate the delay for the next tick to maintain the rhythm
+				long delayForNextTick = Math.max(300, (System.currentTimeMillis() - startTime) / 3);
+				// Schedule the next tick
 
-			// Schedule the next tick
-			scheduleIteravitveTicks(Duration.millis(delayForNextTick));
-			System.out.println("Delay For Last Tick=  " + delay + " Delay For Next Tick " + delayForNextTick + " ms");
-		}));
+				scheduleIteravitveTicks(Duration.millis(delayForNextTick));
+				System.out.println("Delay For Last Tick=...." + " ms");
+			}));
+		
 		timeline.play();
 	}
 
@@ -250,7 +252,7 @@ public class ModelRunnerController {
 
 	@FXML
 	public void stop() {
-		R.cells.loadMap();
+		TabPaneController.cellsLoader.loadMap();
 		CellsSet.colorMap();
 		try {
 			timeline.stop();
@@ -273,11 +275,11 @@ public class ModelRunnerController {
 	}
 
 	void initilaseChart(ArrayList<LineChart<Number, Number>> lineChart) {
-		CellsSet.getServicesNames().forEach(name -> {
+		ServiceSet.getServicesList().forEach(service -> {
 			Series<Number, Number> s1 = new XYChart.Series<Number, Number>();
 			Series<Number, Number> s2 = new XYChart.Series<Number, Number>();
-			s1.setName("Demand " + name);
-			s2.setName("Supply " + name);
+			s1.setName("Demand " + service);
+			s2.setName("Supply " + service);
 			LineChart<Number, Number> l = new LineChart<>(
 					new NumberAxis(PathsLoader.getStartYear(), PathsLoader.getEndtYear(), 5), new NumberAxis());
 			l.getData().add(s1);
@@ -309,11 +311,11 @@ public class ModelRunnerController {
 		l.setCreateSymbols(false);
 		LineChartTools.addSeriesTooltips(l);
 		MousePressed.mouseControle(vbox, l);
-		LineChartTools.labelcolor(R.cells, l);
+		LineChartTools.labelcolor(l);
 	}
 
 	Alert simulationFolderName() {
-		if (!ModelRunner.writeCsvFiles) {
+		if (!ModelRunner.generate_csv_files) {
 			return null;
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -324,21 +326,24 @@ public class ModelRunnerController {
 				+ "Randomly select an AFT for land competition Percentage: "
 				+ (100 - ModelRunner.MostCompetitorAFTProbability * 100) + "%";
 
-		String neighbour = ModelRunner.NeighboorEffect
-				? "   with probabilty " + (ModelRunner.probabilityOfNeighbor * 100) + "% " + "Neighborhood radius: "
-						+ ModelRunner.NeighborRaduis + "\n"
+		String neighbour = ModelRunner.use_neighbor_priority
+				? "   with probabilty " + (ModelRunner.neighbor_priority_probability * 100) + "% "
+						+ "Neighborhood radius: " + ModelRunner.neighbor_radius + "\n"
 				: "";
 
-		String cofiguration = /* runTitel+ */"Remove negative marginal utility values:   " + ModelRunner.removeNegative
-				+ "\n" + "Land abondenmant (Give-up mechanism):  " + ModelRunner.usegiveUp + "\n"
-				+ "Land abondenmant percentage: " + (ModelRunner.percentageOfGiveUp * 100) + "\n"
-				+ "Averaged Per Cell Residual Demand: " + ModelRunner.isAveragedPerCellResidualDemand + "\n"
-				+ "Considering mutation:  " + ModelRunner.isMutated + "\n" + competitionType + "\n"
-				+ "Priority given to neighbouring AFTs for land competition: |" + ModelRunner.NeighboorEffect + "| \n"
-				+ neighbour + "Percentage of land use that could be changed:  " + (ModelRunner.percentageCells * 100)
-				+ "%" + "\n" + "Number of sub-assemblies and residual demand update during the waiting period: "
-				+ ModelRunner.nbrOfSubSet + "\n" + "Types of land mask restrictions considered:  "
-				+ MaskRestrictionDataLoader.hashMasksPaths.keySet() + "\n \n" + "Add your comments..";
+		String cofiguration = /* runTitel+ */"Remove negative marginal utility values:   "
+				+ ModelRunner.remove_negative_marginal_utility + "\n" + "Land abondenmant (Give-up mechanism):  "
+				+ ModelRunner.use_abandonment_threshold + "\n" + "Land abondenmant percentage: "
+				+ (ModelRunner.land_abandonment_percentage * 100) + "\n" + "Averaged Per Cell Residual Demand: "
+				+ ModelRunner.averaged_residual_demand_per_cell + "\n" + "Considering mutation:  "
+				+ ModelRunner.mutate_on_competition_win + "\n" + competitionType + "\n"
+				+ "Priority given to neighbouring AFTs for land competition: |" + ModelRunner.use_neighbor_priority
+				+ "| \n" + neighbour + "Percentage of land use that could be changed:  "
+				+ (ModelRunner.participating_cells_percentage * 100) + "%" + "\n"
+				+ "Number of sub-assemblies and residual demand update during the waiting period: "
+				+ ModelRunner.marginal_utility_calculations_per_tick + "\n"
+				+ "Types of land mask restrictions considered:  " + MaskRestrictionDataLoader.hashMasksPaths.keySet()
+				+ "\n \n" + "Add your comments..";
 
 		TextField textField = new TextField();
 		textField.setPromptText("Output_Folder_Name (if not specified, a default name will be created)");
@@ -365,13 +370,15 @@ public class ModelRunnerController {
 		return alert;
 	}
 
-	void outputfolderPath(String textFieldGetText) {
-		if (textFieldGetText.equals("")) {
+	public static void outputfolderPath(String textFieldGetText) {
+		if (textFieldGetText.equals("") || textFieldGetText.equalsIgnoreCase("Default")) {
 			outPutFolderName = "Default simulation folder";
 			LocalDateTime now = LocalDateTime.now();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
 			String formattedDate = now.format(formatter);
-			outPutFolderName = "Run_Output_" + formattedDate;
+			outPutFolderName = "Default_Run_Output_" + formattedDate;
+		} else {
+			outPutFolderName = textFieldGetText;
 		}
 
 		String dir = PathTools.makeDirectory(PathsLoader.getProjectPath() + PathTools.asFolder("output"));

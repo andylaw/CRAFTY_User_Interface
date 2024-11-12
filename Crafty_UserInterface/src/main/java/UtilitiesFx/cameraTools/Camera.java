@@ -2,8 +2,6 @@ package UtilitiesFx.cameraTools;
 
 
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SubScene;
 import javafx.scene.canvas.Canvas;

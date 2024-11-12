@@ -3,7 +3,6 @@ package UtilitiesFx.filesTools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,15 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dataLoader.CellsLoader;
+import dataLoader.ServiceSet;
 import model.Cell;
-import model.CellsSet;
 
 public class CsvTools {
 	private static final Logger LOGGER = LogManager.getLogger(CsvTools.class);
@@ -69,69 +67,6 @@ public class CsvTools {
 		return array;
 	}
 
-	public static String[] lineFromscsv(int lineNumber, Path path) {
-		int i = 0;
-		Scanner scanner;
-		try {
-			scanner = new Scanner(path.toFile());
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine().toLowerCase();
-				if (i == lineNumber) {
-					return line.split(",");
-				}
-				i++;
-			}
-			scanner.close();
-		} catch (FileNotFoundException e) {
-		}
-		return null;
-	}
-
-	public static HashMap<String, String> lineFromscsvHash(int lineNumber, Path path) {
-		HashMap<String, String> ret = new HashMap<>();
-		String[] names = lineFromscsv(0, path);
-		String[] val = lineFromscsv(lineNumber, path);
-		for (int i = 0; i < val.length; i++) {
-			ret.put(names[i], val[i]);
-		}
-
-		return ret;
-	}
-
-//    public static HashMap<String, String[]> ReadAsaHash(String filePath) {//csvReaderAsHash
-//    	System.out.print("Read: " + filePath + "...");
-//        HashMap<String, List<String>> tempMap = new HashMap<>();
-//        String[] headers = null;
-//        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-//            String line;
-//            if ((line = br.readLine()) != null) {
-//                // Process headers
-//                headers = line.split(",");
-//                for (String header : headers) {
-//                    tempMap.put(header, new ArrayList<>());
-//                }
-//            }
-//            while ((line = br.readLine()) != null) {
-//                String[] values = line.split(",");
-//                for (int i = 0; i < values.length; i++) {
-//                    tempMap.get(headers[i]).add(values[i]);
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Convert lists to arrays
-//        HashMap<String, String[]> resultMap = new HashMap<>();
-//        for (String header : tempMap.keySet()) {
-//            List<String> valuesList = tempMap.get(header);
-//            String[] valuesArray = new String[valuesList.size()];
-//            valuesArray = valuesList.toArray(valuesArray);
-//            resultMap.put(header, valuesArray);
-//        }
-//        System.out.println(" Done");
-//        return resultMap;
-//    }
 
 	public static void cleanCsvFile(Path filePath) {
 		List<String> vect = csvReaderAsVector(filePath);
@@ -249,13 +184,12 @@ public class CsvTools {
 
 	public static void exportToCSV(String filePath) {
 		LOGGER.info("Processing data to write a csv file...");
-
-		List<String> serviceImmutableList = Collections.unmodifiableList(CellsSet.getServicesNames());
+		List<String> serviceImmutableList = Collections.unmodifiableList(ServiceSet.getServicesList());
 		// Process the cells in parallel to transform each Cell into a CSV string
 		Set<String> csvLines = CellsLoader.hashCell.values().parallelStream().map(c -> {
-			String capitalsFlattened = flattenHashMap(c, serviceImmutableList);
+			String servicesFlattened = flattenHashMap(c, serviceImmutableList);
 			return String.join(",", c.getIndex() + "", c.getX() + "", c.getY() + "",
-					c.getOwner() != null ? c.getOwner().getLabel() : "null", capitalsFlattened);
+					c.getOwner() != null ? c.getOwner().getLabel() : "null", servicesFlattened);
 		}).collect(Collectors.toSet());
 
 		LOGGER.info("Writing processed lines to the CSV file : " + filePath);
@@ -274,8 +208,13 @@ public class CsvTools {
 	private static String flattenHashMap(Cell c, List<String> serviceImmutableList) {
 		List<String> service = Collections.synchronizedList(new ArrayList<>());
 		serviceImmutableList.forEach(ServiceName -> {
-			service.add(c.getServices().get(ServiceName) + "");
+//			service.add(c.getServices().get(ServiceName) + "");
+			if (c.getCurrentProductivity().get(ServiceName) != null) {
+				service.add(c.getCurrentProductivity().get(ServiceName) + "");
+			}else {service.add("0");}
+//			
 		});
+
 		return String.join(",", service);
 	}
 }

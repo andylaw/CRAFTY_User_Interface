@@ -85,8 +85,7 @@ public class MenuBarController {
 
 	static void openProject() {
 		File selectedDirectory;
-
-		String userDocumentsPath = System.getProperty("user.home") + File.separator+"Documents";
+		String userDocumentsPath = System.getProperty("user.home") + File.separator + "Documents";
 		File documentsDir = new File(userDocumentsPath);
 
 		// Check if the Data directory exists within Documents
@@ -100,21 +99,18 @@ public class MenuBarController {
 		}
 
 		if (selectedDirectory != null) {
-			if (selectedDirectory != null) {
-				List<String> folderMissig = PathsLoader.checkfolders(selectedDirectory.getAbsolutePath());
-				
-				boolean ispathcorrect = true;
-				if (folderMissig.size() > 0) {
-					ispathcorrect = false;
-					WarningWindowes.showWarningMessage("Folders Missing", "Try Again", x -> {
-						openProject();
-					}, "Exit", x -> {
-						Platform.exit();
-					}, folderMissig);
-				}
-				if (ispathcorrect) {
-					PathsLoader.initialisation(Paths.get(selectedDirectory.getAbsolutePath()));
-				}
+			List<String> folderMissig = PathsLoader.checkfolders(selectedDirectory.getAbsolutePath());
+			boolean ispathcorrect = true;
+			if (folderMissig.size() > 0) {
+				ispathcorrect = false;
+				WarningWindowes.showWarningMessage("Folders Missing", "Try Again", x -> {
+					openProject();
+				}, "Exit", x -> {
+					Platform.exit();
+				}, folderMissig);
+			}
+			if (ispathcorrect) {
+				PathsLoader.initialisation(Paths.get(selectedDirectory.getAbsolutePath()));
 			}
 		}
 	}
@@ -143,27 +139,28 @@ public class MenuBarController {
 
 		}
 	}
-	
+
 	@SuppressWarnings("resource")
-	private void updateRecentFilesMenu(){
+	private void updateRecentFilesMenu() {
 		recent.getItems().clear();
 		String[] paths = PathTools.read("RecentProject.txt").split("\n");
-		for (int i =paths.length-1;i>=0;i--) {
-			if(!paths[i].equals("")) {
-			MenuItem item = new MenuItem(paths[i]);
-			int j=i;
-			item.setOnAction(event -> {
-				PathsLoader.initialisation(Paths.get(paths[j]));
-				initialsePAnes();
-			});
-			recent.getItems().add(item);}
+		for (int i = paths.length - 1; i >= 0; i--) {
+			if (!paths[i].equals("")) {
+				MenuItem item = new MenuItem(paths[i]);
+				int j = i;
+				item.setOnAction(event -> {
+					PathsLoader.initialisation(Paths.get(paths[j]));
+					initialsePAnes();
+				});
+				recent.getItems().add(item);
+			}
 		}
 		MenuItem item = new MenuItem("Clear History");
 		item.setOnAction(event -> {
 			try {
 				new FileWriter("RecentProject.txt", false);
 				recent.getItems().clear();
-			//	recent.getItems().add(item);
+				// recent.getItems().add(item);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

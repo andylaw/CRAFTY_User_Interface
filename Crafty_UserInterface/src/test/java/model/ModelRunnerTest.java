@@ -20,7 +20,7 @@ class ModelRunnerTest {
 	// @BeforeEach
 	void setUp() throws Exception {
 		loader.setUp();
-		R = new ModelRunner(loader.M);
+		R = new ModelRunner();
 //		R.calculeSystemSupply();
 	}
 
@@ -61,10 +61,10 @@ class ModelRunnerTest {
 
 		String service1 = "Service1";
 		String service2 = "Service2";
-		Mockito.when(cell1.productivity(Owner1, service1)).thenReturn(10.0);
-		Mockito.when(cell1.productivity(Owner1, service2)).thenReturn(20.0);
-		Mockito.when(cell2.productivity(Owner2, service1)).thenReturn(15.0);
-		Mockito.when(cell2.productivity(Owner2, service2)).thenReturn(25.0);
+//		Mockito.when(cell1.productivity(Owner1, service1)).thenReturn(10.0);
+//		Mockito.when(cell1.productivity(Owner1, service2)).thenReturn(20.0);
+//		Mockito.when(cell2.productivity(Owner2, service1)).thenReturn(15.0);
+//		Mockito.when(cell2.productivity(Owner2, service2)).thenReturn(25.0);
 
 		// Mockito.when(CellsSet.getCellsSet()).thenReturn(new
 		// HashSet<>(Arrays.asList(cell1, cell2)));

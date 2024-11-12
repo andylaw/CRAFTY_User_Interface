@@ -20,6 +20,9 @@
 					<content>
 						<VBox spacing="2.0">
 							<children>
+							<CheckBox fx:id="InitialEquilibrium"
+									mnemonicParsing="false" onAction="#initialEquilibrium"
+									text="Initial Supply-Demand Equilibrium (Ensure that supply and demand are balanced for eco-services during the initial tick.)" />
 								<CheckBox fx:id="removeNegative"
 									mnemonicParsing="false" onAction="#removeNegativeMarginal"
 									text="Remove negative Marginal utility" />

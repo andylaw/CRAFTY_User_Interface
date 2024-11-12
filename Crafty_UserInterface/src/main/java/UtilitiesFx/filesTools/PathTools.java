@@ -42,15 +42,14 @@ public class PathTools {
 	}
 
 	public static Set<Path> listSubdirectories(Path directoryPath) {
+
+		// Use try-with-resources to ensure the stream is closed properly
 		try (Stream<Path> paths = Files.list(directoryPath)) {
 			return paths.filter(Files::isDirectory) // Filter to include only directories
 					.collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
-		} catch (NoSuchFileException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			LOGGER.warn("NoSuchFileException= " + directoryPath);
-			return null;
-		} catch (IOException s) {
-			System.out.println("IOException");
 			return null;
 		}
 	}
@@ -180,6 +179,27 @@ public class PathTools {
 				LOGGER.error("Error writing to file: " + ex.getMessage());
 			}
 		}
+	}
+	
+	public static List<File> detectFolders(String folderPath) {
+		List<File> filePaths = new ArrayList<>();
+		File folder = new File(folderPath);
+
+		// Check if the folder exists and is a directory
+		if (folder.exists() && folder.isDirectory()) {
+			File[] files = folder.listFiles();
+
+			// Iterate over the files in the folder
+			for (File file : files) {
+				// Check if it is a directory
+				if (file.isDirectory()) {
+					filePaths.add(file);
+				}
+			}
+		} else {
+			LOGGER.error("Folder not found: " + folderPath);
+		}
+		return filePaths;
 	}
 
 	public static String makeDirectory(String dir) {

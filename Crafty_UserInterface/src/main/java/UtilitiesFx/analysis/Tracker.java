@@ -14,31 +14,36 @@ import org.apache.logging.log4j.Logger;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import fxmlControllers.ModelRunnerController;
+import model.ModelRunner;
 import model.RegionClassifier;
 
 public class Tracker {
 	private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
 
 	public static void trackSupply(int year) {
-
-		if (ModelRunnerController.outPutFolderName != null) {
-			long staetTime = System.currentTimeMillis();
-			ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> container = new ConcurrentHashMap<>();
-			AFTsLoader.getAftHash().values().forEach(a -> {
-				ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
-				container.put(a.getLabel(), tmp);
-			});
-			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				c.currentProductivity.forEach((s, v) -> {
-					if (c.getOwner() != null)
-						container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
-				});
-			});
-			AFTsLoader.hashAgentNbr.forEach((label, a) -> {
-				container.get(label).put("AggregateAFT", (double) a);
-			});
-			writeCSV(container, ModelRunnerController.outPutFolderName + File.separator+"SupplyTracker_" + year + ".csv");
-			LOGGER.trace("Time taken for trackSupply " + (System.currentTimeMillis() - staetTime) + " ms");
+		if (ModelRunner.generate_csv_files) {
+			if (ModelRunner.track_changes) {
+				if (ModelRunnerController.outPutFolderName != null) {
+					long staetTime = System.currentTimeMillis();
+					ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> container = new ConcurrentHashMap<>();
+					AFTsLoader.getAftHash().values().forEach(a -> {
+						ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
+						container.put(a.getLabel(), tmp);
+					});
+					CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+						c.getCurrentProductivity().forEach((s, v) -> {
+							if (c.getOwner() != null)
+								container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
+						});
+					});
+					AFTsLoader.hashAgentNbr.forEach((label, a) -> {
+						container.get(label).put("AggregateAFT", (double) a);
+					});
+					writeCSV(container,
+							ModelRunnerController.outPutFolderName + File.separator + "SupplyTracker_" + year + ".csv");
+					LOGGER.trace("Time taken for trackSupply " + (System.currentTimeMillis() - staetTime) + " ms");
+				}
+			}
 		}
 	}
 
@@ -49,8 +54,8 @@ public class Tracker {
 				ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
 				container.put(a.getLabel(), tmp);
 			});
-			RegionClassifier.regions.get(regionName).values().parallelStream().forEach(c -> {
-				c.currentProductivity.forEach((s, v) -> {
+			RegionClassifier.regions.get(regionName).getCells().values().parallelStream().forEach(c -> {
+				c.getCurrentProductivity().forEach((s, v) -> {
 					if (c.getOwner() != null)
 						container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
 				});
@@ -58,7 +63,8 @@ public class Tracker {
 			AFTsLoader.hashAgentNbrRegions.get(regionName).forEach((label, a) -> {
 				container.get(label).put("AggregateAFT", (double) a);
 			});
-			writeCSV(container, ModelRunnerController.outPutFolderName+File.separator+"region_"+regionName + File.separator+"SupplyTracker_" + year + ".csv");
+			writeCSV(container, ModelRunnerController.outPutFolderName + File.separator + "region_" + regionName
+					+ File.separator + "SupplyTracker_" + year + ".csv");
 		}
 	}
 

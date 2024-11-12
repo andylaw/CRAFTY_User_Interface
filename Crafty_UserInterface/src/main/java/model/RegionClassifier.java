@@ -1,6 +1,5 @@
 package model;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,40 +8,53 @@ import org.apache.logging.log4j.Logger;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.PathsLoader;
+import dataLoader.S_WeightLoader;
+import dataLoader.ServiceSet;
+import main.ConfigLoader;
 
 public class RegionClassifier {
 
 	private static final Logger LOGGER = LogManager.getLogger(RegionClassifier.class);
-	public static ConcurrentHashMap<String, ConcurrentHashMap<String, Cell>> regions;
-	public static ConcurrentHashMap<String, Set<Cell>> unmanageCellsR = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, Region> regions;
+	public static boolean regionalization = ConfigLoader.config.regionalization;
 
-	public static void initialation(boolean isRegionalized) {
+	public static void initialation() {
 		regions = new ConcurrentHashMap<>();
-//		try {
-			if (isRegionalized) {
-				CellsLoader.hashCell.entrySet().parallelStream().forEach(entry -> {
-					String region = entry.getValue().getCurrentRegion();
-					regions.computeIfAbsent(region, k -> new ConcurrentHashMap<>()).put(entry.getKey(),
-							entry.getValue());
-				});
-				if (!DemandModel.isRegionalDemandExisted()) {
-					initialation(false);
-				}
-			} else {
-				regions.put(PathsLoader.WorldName, CellsLoader.hashCell);
-			}
-			
-			DemandModel.updateRegionsDemand();
-			regions.keySet().forEach(region -> {
-				unmanageCellsR.put(region, ConcurrentHashMap.newKeySet());
+		if (regionalization) {
+			CellsLoader.regionsNamesSet.forEach(regionName -> {
+				regions.put(regionName, new Region(regionName));
+			});
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+				String region = c.getCurrentRegion();
+				regions.get(region).getCells().put(c.getX() + "," + c.getY(), c);
 			});
 
-			LOGGER.info("Regions: " + regions.keySet());
+			if (!ServiceSet.isRegionalServicesExisted()) {
+				regionalization = false;
+				initialation();
+			}
+		} else {
+			String name = PathsLoader.WorldName;
+			regions.put(name, new Region(name));
+			regions.get(name).setCells(CellsLoader.hashCell);
+		}
 
-//		} catch (NullPointerException e) {
-//			LOGGER.warn("The Regionalization Files is not Found");
-//		}
+		ServiceSet.initialseServices();
+		DemandModel.updateRegionsDemand();
+		S_WeightLoader.updateRegionsWeight();
+		aggregateServiceToWorldService();
 
+		LOGGER.info("Regions: " + regions.keySet());
+	}
+
+	static void aggregateServiceToWorldService() {
+		regions.values().forEach(r -> {
+			r.getServicesHash().forEach((ns, s) -> {
+				s.getDemands().forEach((year, value) -> {
+					ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
+				});
+			});
+		});
 	}
 
 }

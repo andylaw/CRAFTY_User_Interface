@@ -12,6 +12,8 @@ import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
+import dataLoader.S_WeightLoader;
+import dataLoader.ServiceSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
@@ -45,7 +47,8 @@ public class TabPaneController {
 //	@FXML
 //	private TextArea consoleArea;
 
-	public static CellsLoader M = new CellsLoader();
+	public static CellsLoader cellsLoader = new CellsLoader();
+
 	private boolean isNotInitialsation = false;
 
 	private static TabPaneController instance;
@@ -57,16 +60,14 @@ public class TabPaneController {
 	public static TabPaneController getInstance() {
 		return instance;
 	}
-	
 
 	public TabPane getTabpane() {
 		return tabpane;
 	}
 
-
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		mapBox.getChildren().add( FxMain.subScene);
+		mapBox.getChildren().add(FxMain.subScene);
 		PathTools.writePathRecentProject("RecentProject.txt", "\n" + PathsLoader.getProjectPath());
 		scenarioschoice.getItems().addAll(PathsLoader.getScenariosList());
 		scenarioschoice.setValue(PathsLoader.getScenario());
@@ -88,43 +89,46 @@ public class TabPaneController {
 //      });
 //		 GraphicConsol.start(consoleArea);
 
-		regionalBox.setDisable(!CellsLoader.regionalization);
 
+		regionalBox.setSelected(RegionClassifier.regionalization);
+	//	regionalBox.setDisable(ServiceSet.isRegionalServicesExisted());
 	}
 
 	@FXML
 	public void regionalization() {
-		RegionClassifier.initialation(regionalBox.isSelected());
+		RegionClassifier.regionalization=regionalBox.isSelected();
+		RegionClassifier.initialation();
 		ModelRunner.initializeRegions();
 		AFTsLoader.hashAgentNbrRegions();
 
 		AtomicInteger nbr = new AtomicInteger();
-		RegionClassifier.regions.values().forEach(hash -> {
+		RegionClassifier.regions.values().forEach(R -> {
 			Color color = ColorsTools.colorlist(nbr.getAndIncrement());
-			hash.values().forEach(c -> {
+			R.getCells().values().forEach(c -> {
 				c.ColorP(color);
 			});
 		});
 		CellsSet.gc.drawImage(CellsSet.writableImage, 0, 0);
-		regionalBox.setSelected(DemandModel.getDemandsRegions().size() > 1);
-		// if there is no regionalisation enable to be selected and return a warn
-		// make an indecation that you select a region / only here not in the
-		// initialsation
-		// add some text to explain what mean by regionalisation
+	//	regionalBox.setSelected(CellsLoader.regionsNamesSet.size() > 1);
 	}
 
 	@FXML
 	public void scenarioschoice() {
 		if (isNotInitialsation) {
-			M.loadMap();
+			cellsLoader.loadMap();
 			PathsLoader.setScenario(scenarioschoice.getValue());
-			DemandModel.updateDemand();// = CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
+			// DemandModel.updateDemand();// =
+			// CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
+			ServiceSet.initialseServices();
+//			DemandModel.updateWorldDemand();
 			DemandModel.updateRegionsDemand();
+			S_WeightLoader.updateWorldWeight();
+			S_WeightLoader.updateRegionsWeight();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
-			new LineChartTools().lineChart(M, (Pane) chart.getParent(), chart, DemandModel.getGolbalDemand());
-			M.AFtsSet.updateAFTsForsenario();
+			new LineChartTools().lineChart((Pane) chart.getParent(), chart, DemandModel.serialisationWorldDemand());
+			cellsLoader.AFtsSet.updateAFTsForsenario();
 			yearchoice();
-			MaskRestrictionDataLoader.MaskAndRistrictionLaoderUpdate();
+			MaskRestrictionDataLoader.allMaskAndRistrictionUpdate();
 			MasksPaneController.getInstance().clear(new ActionEvent());
 			MasksPaneController.initialiseMask();
 		}
@@ -135,15 +139,15 @@ public class TabPaneController {
 		if (isNotInitialsation) {
 			if (yearchoice.getValue() != null) {
 				PathsLoader.setCurrentYear((int) Tools.sToD(yearchoice.getValue()));
-				M.updateCapitals(PathsLoader.getCurrentYear());
-				M.AFtsSet.updateAFTs();
+				cellsLoader.updateCapitals(PathsLoader.getCurrentYear());
+				AFTsLoader.updateAFTs();
 				if (dataPane.isSelected()) {
-					for (int i = 0; i < CellsSet.getCapitalsName().size() + 1; i++) {
+					for (int i = 0; i < CellsLoader.getCapitalsList().size() + 1; i++) {
 						if (SpatialDataController.radioColor[i].isSelected()) {
-							if (i < CellsSet.getCapitalsName().size()) {
-								CellsSet.colorMap(CellsSet.getCapitalsName().get(i));
-								SpatialDataController.getInstance().histogrameCapitals(PathsLoader.getCurrentYear() + "",
-										CellsSet.getCapitalsName().get(i));
+							if (i < CellsLoader.getCapitalsList().size()) {
+								CellsSet.colorMap(CellsLoader.getCapitalsList().get(i));
+								SpatialDataController.getInstance().histogrameCapitals(
+										PathsLoader.getCurrentYear() + "", CellsLoader.getCapitalsList().get(i));
 							} else {
 								CellsSet.colorMap("FR");
 							}

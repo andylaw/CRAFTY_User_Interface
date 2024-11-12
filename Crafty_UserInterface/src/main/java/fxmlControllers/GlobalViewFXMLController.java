@@ -45,16 +45,10 @@ public class GlobalViewFXMLController {
 
 		vbox.getChildren().forEach(node -> {
 			if (node instanceof TitledPane) {
-//				((TitledPane)node).setExpanded(false);
 				panes.add(((TitledPane) node));
 			}
 		});
 	}
 	
-	void closeTitelPanes(Set<TitledPane> panes) {
-		panes.forEach(p->{
-			
-		});
-	}
 
 }

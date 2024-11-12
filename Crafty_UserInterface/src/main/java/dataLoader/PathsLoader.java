@@ -37,6 +37,7 @@ public final class PathsLoader {
 
 	public static void initialisation(Path p) {
 		projectPath = p;
+		System.out.println("----------- "+p);
 		allfilesPathInData = PathTools.findAllFiles(projectPath);
 		initialSenarios();
 	}
@@ -128,7 +129,8 @@ public final class PathsLoader {
 		String[] temp = scenariosHash.get(scenario).split("_");
 		startYear = (int) Tools.sToD(temp[0]);
 		endtYear = (int) Tools.sToD(temp[1]);
-		System.out.println(scenario + "--> startYear= " + startYear + ", endtYear " + endtYear);
+		 LOGGER.info(scenario+"--> startYear= "+ startYear+", endtYear "+
+		 endtYear);
 	}
 
 }
