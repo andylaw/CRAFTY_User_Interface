@@ -1,8 +1,8 @@
 # Configuration for CRAFTY Model
 
 # Paths and Data
-project_path: '/mnt/c/Users/byari-m/Desktop/CRAFTY-Cobra-Code-compareson/data_for_UI' #'C:\\Users\\byari-m\\Desktop\\CRAFTY-Cobra-Code-compareson\\data_for_UI'  #
-scenario: 'RCP2_6-SSP4' # 'ssp1b26' # Scenario identifier
+project_path: 'C:\Users\byari-m\Desktop\CRAFTY-Cobra-Code-compareson\CRAFTY-EU-5km-data' #'C:\\Users\\byari-m\\Desktop\\CRAFTY-Cobra-Code-compareson\\data_for_UI' #
+scenario: 'RCP2_6-SSP4' # 'RCP2_6-SSP4' #Scenario identifier
 regionalization: false
 # CRAFTY Mechanisms
 initial_demand_supply_equilibrium: true       # Ensure balanced eco-service supply and demand during initial tick
@@ -25,6 +25,6 @@ land_abandonment_percentage: 0.05            # Percentage of land that can be ab
 
 # Output Configuration
 generate_csv_files: true                      # Enable CSV file output
-output_folder_name: 'linux'                  #if left empty defaults to timestamped folder,project_path\output\scenario\output_folder_name
+output_folder_name: 'Tester'                  #if left empty defaults to timestamped folder,project_path\output\scenario\output_folder_name
 csv_output_frequency: 50                      # Ticks interval for CSV output of land use and service supply
 track_changes: false                          # Enable change tracking in output
