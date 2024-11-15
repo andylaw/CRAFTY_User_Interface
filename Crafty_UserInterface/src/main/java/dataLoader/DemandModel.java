@@ -30,14 +30,14 @@ public class DemandModel {
 	private static void updateDemand(Region R) {
 		Path path;
 		try {
-			path = PathTools.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("demand"), R.getName()).get(0);
+			path = PathTools.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("demand"), "demands_"+R.getName()).get(0);
 		} catch (NullPointerException e) {
 			LOGGER.warn("No demand file fund for region: |" + R.getName() + "|");
 			return;
 		}
 
 		HashMap<String, ArrayList<String>> hashDemand = ReaderFile.ReadAsaHash(path);
-		LOGGER.info("Update Demand for [" + R + "]: " + path);
+		LOGGER.info("Update Demand for [" + R.getName() + "]: " + path);
 		hashDemand.forEach((serviceName, vect) -> {
 			if (ServiceSet.getServicesList().contains(serviceName)) {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();

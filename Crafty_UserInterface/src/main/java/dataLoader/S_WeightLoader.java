@@ -77,9 +77,8 @@ public class S_WeightLoader {
 	private static void updateWeight(Region R) {
 		Path path;
 		try {
-			path = PathTools
-					.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("Service_Utility_Weights"), R.getName())
-					.get(0);
+			path = PathTools.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("Service_Utility_Weights"),
+					"Weight_" + R.getName()).get(0);
 		} catch (NullPointerException e) {
 			LOGGER.warn("No Weight file fund for region: |" + R.getName()
 					+ "|  will use 1 for all Service Utility Weights ");
@@ -94,8 +93,7 @@ public class S_WeightLoader {
 			return;
 		}
 		HashMap<String, ArrayList<String>> hashWeight = ReaderFile.ReadAsaHash(path);
-		LOGGER.info("Update Weight for [" + R + "]: " + path);
-
+		LOGGER.info("Update Weight for [" + R.getName() + "]: " + path);
 		hashWeight.forEach((serviceName, vect) -> {
 			if (ServiceSet.getServicesList().contains(serviceName)) {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();

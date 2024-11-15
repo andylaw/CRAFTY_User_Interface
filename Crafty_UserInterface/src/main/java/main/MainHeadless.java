@@ -14,6 +14,7 @@ import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import model.CellsSet;
 import model.ModelRunner;
+import plumLinking.PlumController;
 
 public class MainHeadless {
 	private static final Logger LOGGER = LogManager.getLogger(MainHeadless.class);
@@ -21,7 +22,8 @@ public class MainHeadless {
 	public static void main(String[] args) {
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
 		modelInitialisation();
-		run();
+		new PlumController().initialize();
+		//run();
 	}
 
 	static void modelInitialisation() {

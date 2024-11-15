@@ -99,16 +99,16 @@ public class MenuBarController {
 		}
 
 		if (selectedDirectory != null) {
-			List<String> folderMissig = PathsLoader.checkfolders(selectedDirectory.getAbsolutePath());
+//			List<String> folderMissig = PathsLoader.checkfolders(selectedDirectory.getAbsolutePath());
 			boolean ispathcorrect = true;
-			if (folderMissig.size() > 0) {
-				ispathcorrect = false;
-				WarningWindowes.showWarningMessage("Folders Missing", "Try Again", x -> {
-					openProject();
-				}, "Exit", x -> {
-					Platform.exit();
-				}, folderMissig);
-			}
+//			if (folderMissig.size() > 0) {
+//				ispathcorrect = false;
+//				WarningWindowes.showWarningMessage("Folders Missing", "Try Again", x -> {
+//					openProject();
+//				}, "Exit", x -> {
+//					Platform.exit();
+//				}, folderMissig);
+//			}
 			if (ispathcorrect) {
 				PathsLoader.initialisation(Paths.get(selectedDirectory.getAbsolutePath()));
 			}

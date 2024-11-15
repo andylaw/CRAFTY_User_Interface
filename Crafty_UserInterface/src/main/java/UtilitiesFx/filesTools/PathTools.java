@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,9 +54,7 @@ public class PathTools {
 	}
 
 	public static Optional<Path> findFolder(Set<Path> paths, String FolderName) {
-		return paths.stream().filter(path -> path.getFileName().toString().equals(FolderName)).findFirst(); // returns
-																											// an
-																											// Optional<Path>
+		return paths.stream().filter(path -> path.getFileName().toString().equals(FolderName)).findFirst();
 	}
 
 	public static String asFolder(String input) {
@@ -180,7 +177,7 @@ public class PathTools {
 			}
 		}
 	}
-	
+
 	public static List<File> detectFolders(String folderPath) {
 		List<File> filePaths = new ArrayList<>();
 		File folder = new File(folderPath);

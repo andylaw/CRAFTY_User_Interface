@@ -13,7 +13,6 @@ import UtilitiesFx.analysis.Tracker;
 import UtilitiesFx.filesTools.CsvTools;
 import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
-import dataLoader.DemandModel;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.MasksPaneController;

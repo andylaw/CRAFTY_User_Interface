@@ -3,6 +3,9 @@ package fxmlControllers;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import UtilitiesFx.filesTools.PathTools;
 import UtilitiesFx.graphicalTools.ColorsTools;
 import UtilitiesFx.graphicalTools.LineChartTools;
@@ -52,6 +55,9 @@ public class TabPaneController {
 	private boolean isNotInitialsation = false;
 
 	private static TabPaneController instance;
+	
+	private static final Logger LOGGER = LogManager.getLogger(TabPaneController.class);
+
 
 	public TabPaneController() {
 		instance = this;
@@ -117,10 +123,8 @@ public class TabPaneController {
 		if (isNotInitialsation) {
 			cellsLoader.loadMap();
 			PathsLoader.setScenario(scenarioschoice.getValue());
-			// DemandModel.updateDemand();// =
-			// CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
+			LOGGER.info("Current Scenarion:  "+ PathsLoader.getScenario());
 			ServiceSet.initialseServices();
-//			DemandModel.updateWorldDemand();
 			DemandModel.updateRegionsDemand();
 			S_WeightLoader.updateWorldWeight();
 			S_WeightLoader.updateRegionsWeight();
