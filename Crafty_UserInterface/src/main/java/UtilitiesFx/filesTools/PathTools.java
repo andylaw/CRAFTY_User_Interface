@@ -7,9 +7,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
@@ -50,12 +52,6 @@ public class PathTools {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public static Optional<Path> findFolder(Set<Path> paths, String FolderName) {
-		return paths.stream().filter(path -> path.getFileName().toString().equals(FolderName)).findFirst(); // returns
-																											// an
-																											// Optional<Path>
 	}
 
 	public static String asFolder(String input) {
@@ -189,6 +185,22 @@ public class PathTools {
 			LOGGER.error("Folder not found: " + folderPath);
 		}
 		return filePaths;
+	}
+
+	public static List<Path> getAllFolders(String rootFolder) {
+		Path root = Paths.get(rootFolder);
+		try {
+			if (!Files.isDirectory(root)) {
+				throw new IllegalArgumentException("Provided path is not a directory: " + rootFolder);
+			}
+			try (Stream<Path> stream = Files.walk(root)) {
+				return stream.filter(Files::isDirectory) // Include only directories
+						.filter(path -> !path.equals(root)) // Exclude the root folder itself
+						.collect(Collectors.toList());
+			}
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	public static String makeDirectory(String dir) {
