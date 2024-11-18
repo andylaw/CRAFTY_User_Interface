@@ -116,6 +116,9 @@ public class PlumCommodityMapping {
 			}
 			finalCountriesDemands.put(country, map);
 		});
+//		finalCountriesDemands.forEach((country,list)->{
+//			System.out.println(country+"-->"+ list);
+//		});
 	}
 
 	List<Map<String, String>> domestic_prod() {
