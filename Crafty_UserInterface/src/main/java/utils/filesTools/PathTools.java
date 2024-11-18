@@ -54,12 +54,16 @@ public class PathTools {
 	}
 
 	static void creatListPaths(final File folder, ArrayList<Path> Listpathe) {
-		for (final File fileEntry : folder.listFiles()) {
-			if (fileEntry.isDirectory()) {
-				creatListPaths(fileEntry, Listpathe);
-			} else {
-				Listpathe.add(fileEntry.toPath());
+		try {
+			for (final File fileEntry : folder.listFiles()) {
+				if (fileEntry.isDirectory()) {
+					creatListPaths(fileEntry, Listpathe);
+				} else {
+					Listpathe.add(fileEntry.toPath());
+				}
 			}
+		} catch (NullPointerException e) {
+			LOGGER.fatal("Project folder is null " + folder);
 		}
 	}
 
