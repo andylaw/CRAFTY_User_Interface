@@ -62,15 +62,24 @@ public class PathTools {
 			}
 		}
 	}
-
+	
 	public static ArrayList<Path> fileFilter(String... condition) {
 		return fileFilter(false, condition);
 	}
 
 	public static ArrayList<Path> fileFilter(boolean ignoreIfFileNotExists, String... condition) {
+		return fileFilter(PathsLoader.getAllfilesPathInData(), ignoreIfFileNotExists, condition);
+	}
+
+	public static ArrayList<Path> fileFilter(ArrayList<Path> getAllfilesPathInFolder, String... condition) {
+		return fileFilter(getAllfilesPathInFolder, false, condition);
+	}
+
+	public static ArrayList<Path> fileFilter(ArrayList<Path> getAllfilesPathInFolder, boolean ignoreIfFileNotExists,
+			String... condition) {
 
 		ArrayList<Path> turn = new ArrayList<>();
-		PathsLoader.getAllfilesPathInData().forEach(e -> {
+		getAllfilesPathInFolder.forEach(e -> {
 			boolean testCodition = true;
 			for (int j = 0; j < condition.length; j++) {
 				if (!e.toString().contains(condition[j])) {

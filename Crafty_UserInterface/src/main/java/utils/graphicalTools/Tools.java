@@ -104,6 +104,7 @@ public class Tools {
 	}
 
 	public static double sToD(String str) {
+		if(str==null) return 0;
 		try {
 			return Double.parseDouble(str);
 		} catch (NumberFormatException e) {
