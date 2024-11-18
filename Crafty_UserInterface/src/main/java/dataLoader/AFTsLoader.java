@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +63,7 @@ public class AFTsLoader extends HashSet<Manager> {
 						if (T.keySet().contains("Name")) {
 							a.setCompleteName(T.get("Name").get(i));
 						} else {
-							a.setCompleteName("--");
+							a.setCompleteName("-");
 						}
 					}
 				}
@@ -261,17 +262,16 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void updateAFTProduction(Manager a, File file) {
-		HashMap<String, ArrayList<String>> matrix = ReaderFile.ReadAsaHash(file.toPath());
-		String c0 = matrix.keySet().contains("C0") ? "C0" : "Unnamed: 0";
-		for (int i = 0; i < matrix.get(c0).size(); i++) {
-			if (ServiceSet.getServicesList().contains(matrix.get(c0).get(i))) {
-				a.getProductivityLevel().put(matrix.get(c0).get(i), Tools.sToD(matrix.get("Production").get(i)));
+		String[][] m = CsvTools.csvReader(file.toPath());
+		System.out.println(Arrays.toString(m[0]));
+		for (int i = 0; i < m.length; i++) {
+			if (ServiceSet.getServicesList().contains(m[i][0])) {
+				a.getProductivityLevel().put(m[i][0], Tools.sToD(m[i][Tools.indexof("Production", m[0])]));
 			} else {
-				LOGGER.warn(matrix.get(c0).get(i) + "  is not existe in Services List, will be ignored");
+				LOGGER.warn(m[i][0] + "  is not existe in Services List, will be ignored");
 			}
 		}
-		// LOGGER.info(a.getLabel() + " -> ProductivityLevel= " +
-		// a.getProductivityLevel());
+
 		updateSensitivty(a, file);
 	}
 
