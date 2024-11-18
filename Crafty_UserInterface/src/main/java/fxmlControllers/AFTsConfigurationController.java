@@ -10,14 +10,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.CSVTableView;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.Histogram;
-import UtilitiesFx.graphicalTools.MousePressed;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
@@ -53,6 +45,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import model.CellsSet;
 import model.Manager;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.graphicalTools.CSVTableView;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.Histogram;
+import utils.graphicalTools.MousePressed;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.Tools;
 
 public class AFTsConfigurationController {
 

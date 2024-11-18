@@ -1,4 +1,4 @@
-package UtilitiesFx.filesTools;
+package utils.filesTools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,15 +13,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import dataLoader.CellsLoader;
 import dataLoader.ServiceSet;
 import model.Cell;
+import utils.analysis.CustomLogger;
 
 public class CsvTools {
-	private static final Logger LOGGER = LogManager.getLogger(CsvTools.class);
+	private static final CustomLogger LOGGER = new CustomLogger(CsvTools.class);
 
 	/**
 	 * @author Mohamed Byari
@@ -105,7 +103,6 @@ public class CsvTools {
 
 	public static void writeCSVfile(String[][] tabl, Path filePath) {
 		LOGGER.info("writing CSV file: " + filePath);
-
 		File file = filePath.toFile();
 		try {
 			if (!file.exists()) {
@@ -124,7 +121,6 @@ public class CsvTools {
 			bw.close();
 		} catch (IOException e) {
 		}
-		LOGGER.info("Writing CSV file...  Done");
 	}
 
 	public static void writeNewLineCSVfile(Path filePath, int lineNumber, String... content) {

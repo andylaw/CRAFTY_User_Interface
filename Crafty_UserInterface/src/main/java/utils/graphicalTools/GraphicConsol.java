@@ -1,4 +1,4 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

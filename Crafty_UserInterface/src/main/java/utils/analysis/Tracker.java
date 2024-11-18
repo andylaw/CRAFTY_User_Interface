@@ -1,4 +1,4 @@
-package UtilitiesFx.analysis;
+package utils.analysis;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,9 +8,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import fxmlControllers.ModelRunnerController;
@@ -18,7 +15,7 @@ import model.ModelRunner;
 import model.RegionClassifier;
 
 public class Tracker {
-	private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
+	private static final CustomLogger LOGGER = new CustomLogger(Tracker.class);
 
 	public static void trackSupply(int year) {
 		if (ModelRunner.generate_csv_files) {

@@ -1,4 +1,4 @@
-package UtilitiesFx.filesTools;
+package utils.filesTools;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,10 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.ServiceSet;
@@ -26,9 +22,11 @@ import model.Cell;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.AddCellToColumnException;
+import utils.analysis.CustomLogger;
+import utils.graphicalTools.Tools;
 
 public class ReaderFile {
-	private static final Logger LOGGER = LogManager.getLogger(ReaderFile.class);
+	private static final CustomLogger LOGGER = new CustomLogger(ReaderFile.class);
 
 	public static HashMap<String, ArrayList<String>> ReadAsaHash(Path filePath) {
 		return ReadAsaHash(filePath, false);

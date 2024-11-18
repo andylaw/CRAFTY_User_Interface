@@ -1,4 +1,4 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import java.util.List;
 import java.io.File;

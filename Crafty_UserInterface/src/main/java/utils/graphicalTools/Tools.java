@@ -1,4 +1,4 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,11 +22,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import utils.analysis.CustomLogger;
 
 import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @author Mohamed Byari
@@ -34,7 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 
 public class Tools {
-	private static final Logger LOGGER = LogManager.getLogger(Tools.class);
+	private static final CustomLogger LOGGER = new CustomLogger(Tools.class);
 
 	public static VBox vBox(Node... children) {
 		VBox vbox = new VBox();

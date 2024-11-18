@@ -1,4 +1,4 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;

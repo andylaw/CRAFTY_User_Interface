@@ -11,19 +11,17 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.Tools;
 import javafx.scene.paint.Color;
 import model.Manager;
 import model.ManagerTypes;
 import model.RegionClassifier;
 import tech.tablesaw.api.Table;
+import utils.analysis.CustomLogger;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.Tools;
 
 /**
  * @author Mohamed Byari
@@ -32,7 +30,7 @@ import tech.tablesaw.api.Table;
 
 public class AFTsLoader extends HashSet<Manager> {
 
-	private static final Logger LOGGER = LogManager.getLogger(AFTsLoader.class);
+	private static final CustomLogger LOGGER = new CustomLogger(AFTsLoader.class);
 	private static final long serialVersionUID = 1L;
 	private static ConcurrentHashMap<String, Manager> hashAFTs = new ConcurrentHashMap<>();
 	private static ConcurrentHashMap<String, Manager> activateAFTsHash = new ConcurrentHashMap<>();

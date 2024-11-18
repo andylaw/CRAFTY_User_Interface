@@ -10,15 +10,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import model.Cell;
 import model.RegionClassifier;
 import tech.tablesaw.api.Table;
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.filesTools.PathTools;
+import utils.analysis.CustomLogger;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
 
 /**
  * @author Mohamed Byari
@@ -26,7 +24,7 @@ import UtilitiesFx.filesTools.PathTools;
  */
 
 public class CellsLoader {
-	private static final Logger LOGGER = LogManager.getLogger(CellsLoader.class);
+	private static final CustomLogger LOGGER = new CustomLogger(CellsLoader.class);
 	public static Set<String> regionsNamesSet = new HashSet<>();
 	public static ConcurrentHashMap<String, Cell> hashCell = new ConcurrentHashMap<>();
 	private static List<String> capitalsList;

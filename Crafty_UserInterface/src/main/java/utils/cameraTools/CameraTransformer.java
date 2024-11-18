@@ -4,7 +4,7 @@
  * and open the template in the editor. 
  */
  
-package UtilitiesFx.cameraTools; 
+package utils.cameraTools; 
 //  
 // Xform.java is a class that extends the Group class. It is used in the  
 // MoleculeSampleApp application that is built using the Getting Started with JavaFX 

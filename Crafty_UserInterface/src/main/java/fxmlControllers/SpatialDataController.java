@@ -11,10 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import UtilitiesFx.filesTools.SaveAs;
-import UtilitiesFx.graphicalTools.LineChartTools;
-import UtilitiesFx.graphicalTools.MousePressed;
-import UtilitiesFx.graphicalTools.PieChartTools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
@@ -31,6 +27,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.CellsSet;
+import utils.filesTools.SaveAs;
+import utils.graphicalTools.LineChartTools;
+import utils.graphicalTools.MousePressed;
+import utils.graphicalTools.PieChartTools;
 
 public class SpatialDataController {
 
@@ -80,7 +80,7 @@ public class SpatialDataController {
 		};
 		HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
 		othersMenuItems.put(ItemName, action);
-		MousePressed.mouseControle((Pane) demandsChart.getParent(), demandsChart, othersMenuItems);//////
+		MousePressed.mouseControle((Pane) demandsChart.getParent(), demandsChart, othersMenuItems);
 
 		updatePieChartColorAFts(pieChartColor);
 		mapColorAndCapitalHistogrameInitialisation();

@@ -1,4 +1,4 @@
-package UtilitiesFx.filesTools;
+package utils.filesTools;
 
 import java.io.File;
 import java.io.FileWriter;

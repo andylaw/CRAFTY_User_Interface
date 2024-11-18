@@ -1,10 +1,8 @@
 package main;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
@@ -14,9 +12,10 @@ import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import model.CellsSet;
 import model.ModelRunner;
+import utils.analysis.CustomLogger;
 
 public class MainHeadless {
-	private static final Logger LOGGER = LogManager.getLogger(MainHeadless.class);
+	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
 
 	public static void main(String[] args) {
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
@@ -39,11 +38,15 @@ public class MainHeadless {
 		ModelRunner runner = new ModelRunner();
 		ModelRunnerController.tick = new AtomicInteger(PathsLoader.getStartYear());
 		ModelRunnerController.outputfolderPath(ConfigLoader.config.output_folder_name);
+		if (ConfigLoader.config.export_LOGGER) {
+			CustomLogger
+					.configureLogger(Paths.get(ModelRunnerController.outPutFolderName + File.separator + "LOGGER.txt"));
+		}
 		ModelRunnerController.demandEquilibrium();
-		
+
 		for (int i = 0; i <= PathsLoader.getEndtYear() - PathsLoader.getStartYear(); i++) {
 			PathsLoader.setCurrentYear(ModelRunnerController.tick.get());
-			System.out.println("-------------   " + PathsLoader.getCurrentYear() + "   --------------");
+			LOGGER.info("-------------   " + PathsLoader.getCurrentYear() + "   --------------");
 			runner.go();
 			ModelRunnerController.tick.getAndIncrement();
 		}

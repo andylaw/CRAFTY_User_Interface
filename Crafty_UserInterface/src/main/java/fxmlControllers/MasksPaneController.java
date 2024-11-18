@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import UtilitiesFx.graphicalTools.MousePressed;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
@@ -24,6 +22,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import model.CellsSet;
+import utils.graphicalTools.MousePressed;
+import utils.graphicalTools.Tools;
 
 public class MasksPaneController {
 	@FXML

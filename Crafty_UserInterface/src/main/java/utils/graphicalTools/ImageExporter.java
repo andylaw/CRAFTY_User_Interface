@@ -1,4 +1,4 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import java.io.File;
 import java.io.IOException;

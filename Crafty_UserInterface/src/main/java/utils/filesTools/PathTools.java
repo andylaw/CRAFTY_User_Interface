@@ -1,4 +1,4 @@
-package UtilitiesFx.filesTools;
+package utils.filesTools;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,18 +11,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import dataLoader.PathsLoader;
 import main.FxMain;
+import utils.analysis.CustomLogger;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -33,7 +28,7 @@ import javafx.stage.FileChooser;
 
 public class PathTools {
 
-	private static final Logger LOGGER = LogManager.getLogger(PathTools.class);
+	private static final CustomLogger LOGGER = new CustomLogger(PathTools.class);
 
 	public static String[] aggregateArrays(String[] firstArray, String... secondArray) {
 		String[] result = new String[firstArray.length + secondArray.length];

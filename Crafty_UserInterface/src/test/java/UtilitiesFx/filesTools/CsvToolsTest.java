@@ -8,8 +8,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
-import UtilitiesFx.graphicalTools.Tools;
+import utils.filesTools.CsvTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.Tools;
 
 class CsvToolsTest {
 	List<File> list;

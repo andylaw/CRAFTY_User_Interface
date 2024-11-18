@@ -3,10 +3,6 @@ package fxmlControllers;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.LineChartTools;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
@@ -25,6 +21,10 @@ import main.FxMain;
 import model.CellsSet;
 import model.ModelRunner;
 import model.RegionClassifier;
+import utils.filesTools.PathTools;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.LineChartTools;
+import utils.graphicalTools.Tools;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -89,14 +89,13 @@ public class TabPaneController {
 //      });
 //		 GraphicConsol.start(consoleArea);
 
-
 		regionalBox.setSelected(RegionClassifier.regionalization);
-	//	regionalBox.setDisable(ServiceSet.isRegionalServicesExisted());
+		// regionalBox.setDisable(ServiceSet.isRegionalServicesExisted());
 	}
 
 	@FXML
 	public void regionalization() {
-		RegionClassifier.regionalization=regionalBox.isSelected();
+		RegionClassifier.regionalization = regionalBox.isSelected();
 		RegionClassifier.initialation();
 		ModelRunner.initializeRegions();
 		AFTsLoader.hashAgentNbrRegions();
@@ -109,7 +108,7 @@ public class TabPaneController {
 			});
 		});
 		CellsSet.gc.drawImage(CellsSet.writableImage, 0, 0);
-	//	regionalBox.setSelected(CellsLoader.regionsNamesSet.size() > 1);
+		// regionalBox.setSelected(CellsLoader.regionsNamesSet.size() > 1);
 	}
 
 	@FXML
@@ -124,6 +123,7 @@ public class TabPaneController {
 			DemandModel.updateRegionsDemand();
 			S_WeightLoader.updateWorldWeight();
 			S_WeightLoader.updateRegionsWeight();
+			RegionClassifier.aggregateServiceToWorldService();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
 			new LineChartTools().lineChart((Pane) chart.getParent(), chart, DemandModel.serialisationWorldDemand());
 			cellsLoader.AFtsSet.updateAFTsForsenario();

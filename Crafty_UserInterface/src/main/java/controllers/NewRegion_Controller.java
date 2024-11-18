@@ -10,12 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import UtilitiesFx.cameraTools.Camera;
-import UtilitiesFx.graphicalTools.CSVTableView;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.PieChartTools;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.CellsLoader;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -36,6 +30,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import model.Cell;
 import model.CellsSet;
+import utils.cameraTools.Camera;
+import utils.graphicalTools.CSVTableView;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.PieChartTools;
+import utils.graphicalTools.Tools;
 import javafx.scene.layout.BorderPane;
 
 /**

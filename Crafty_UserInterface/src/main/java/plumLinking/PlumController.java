@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.graphicalTools.GraphicConsol;
-import UtilitiesFx.graphicalTools.Tools;
 //import ac.ed.lurg.ModelConfig;
 //import ac.ed.lurg.ModelMain;
 import javafx.animation.KeyFrame;
@@ -30,6 +27,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.util.Duration;
+import utils.filesTools.CsvTools;
+import utils.graphicalTools.GraphicConsol;
+import utils.graphicalTools.Tools;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

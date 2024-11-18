@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,18 +13,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.analysis.Tracker;
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.ModelRunnerController;
+import utils.analysis.CustomLogger;
+import utils.analysis.Tracker;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.graphicalTools.Tools;
 
 /**
  * @author Mohamed Byari
@@ -33,7 +29,7 @@ import fxmlControllers.ModelRunnerController;
  */
 
 public class RegionalModelRunner {
-	private static final Logger LOGGER = LogManager.getLogger(RegionalModelRunner.class);
+	private static final CustomLogger LOGGER = new CustomLogger(RegionalModelRunner.class);
 	ConcurrentHashMap<String, Double> totalSupply;
 	private ConcurrentHashMap<String, Double> marginal = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<Manager, Double> distributionMean;
@@ -41,7 +37,7 @@ public class RegionalModelRunner {
 
 	private String[][] compositionAftListener;
 	private String[][] servicedemandListener;
-	public  String[][] DSEquilibriumListener;
+	public String[][] DSEquilibriumListener;
 
 	public RegionalModelRunner(String regionName) {
 		R = RegionClassifier.regions.get(regionName);
@@ -135,7 +131,7 @@ public class RegionalModelRunner {
 
 	}
 
-	public  void initialDSEquilibrium(ConcurrentHashMap<String, Service> ServiceHash,
+	public void initialDSEquilibrium(ConcurrentHashMap<String, Service> ServiceHash,
 			ConcurrentHashMap<String, Double> supply) {
 		supply.forEach((serviceName, serviceSuplly) -> {
 			double factor = 1;

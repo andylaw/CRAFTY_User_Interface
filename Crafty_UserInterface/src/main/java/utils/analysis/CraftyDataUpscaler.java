@@ -1,4 +1,4 @@
-package UtilitiesFx.analysis;
+package utils.analysis;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,10 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
@@ -26,6 +22,10 @@ import dataLoader.ServiceSet;
 import fxmlControllers.TabPaneController;
 import main.ConfigLoader;
 import model.CellsSet;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.Tools;
 
 public class CraftyDataUpscaler {
 	static double scale = 2;

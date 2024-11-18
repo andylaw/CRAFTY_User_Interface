@@ -11,19 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.filesTools.SaveAs;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.ImageExporter;
-import UtilitiesFx.graphicalTools.ImagesToPDF;
-import UtilitiesFx.graphicalTools.LineChartTools;
-import UtilitiesFx.graphicalTools.MousePressed;
-import UtilitiesFx.graphicalTools.SankeyPlotGraph;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
@@ -42,6 +29,17 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import model.CellsSet;
 import model.Manager;
+import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.filesTools.SaveAs;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.ImageExporter;
+import utils.graphicalTools.ImagesToPDF;
+import utils.graphicalTools.LineChartTools;
+import utils.graphicalTools.MousePressed;
+import utils.graphicalTools.SankeyPlotGraph;
+import utils.graphicalTools.Tools;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -73,7 +71,7 @@ public class OutPuterController {
 	private GridPane regionalGridChart;
 
 	ArrayList<CheckBox> radioListOfAFTs = new ArrayList<>();
-	private static final Logger LOGGER = LogManager.getLogger(OutPuterController.class);
+	private static final CustomLogger LOGGER = new CustomLogger(OutPuterController.class);
 
 	public static boolean isCurrentResult = false;
 	public static Path outputpath;

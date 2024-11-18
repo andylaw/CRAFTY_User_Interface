@@ -6,19 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.graphicalTools.Tools;
 import model.Region;
 import model.RegionClassifier;
-import model.Service;
+import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.Tools;
 
 public class DemandModel {
-	private static final Logger LOGGER = LogManager.getLogger(DemandModel.class);
-	
+	private static final CustomLogger LOGGER = new CustomLogger(DemandModel.class);
 
 	public static void updateRegionsDemand() {
 		RegionClassifier.regions.values().forEach(r -> {
@@ -43,8 +39,6 @@ public class DemandModel {
 				for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
 					if (i < vect.size()) {
 						dv.put(i, Tools.sToD(vect.get(i)));
-//						dv.put(i,
-//								Tools.sToD(vect.get(i)) / R.getServicesHash().get(serviceName).getCalibration_Factor());
 					}
 				}
 				R.getServicesHash().get(serviceName).setDemands(dv);
@@ -55,11 +49,7 @@ public class DemandModel {
 	public static Map<String, ArrayList<Double>> serialisationWorldDemand() {
 		Map<String, ArrayList<Double>> serviceSerialisation = new HashMap<>();
 		ServiceSet.worldService.forEach((serviceName, service) -> {
-			ArrayList<Double> sv = new ArrayList<Double>();
-			for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear()+1; i++) {
-				sv.add(service.getDemands().get(i));
-			}
-			serviceSerialisation.put(serviceName, sv);
+			serviceSerialisation.put(serviceName, new ArrayList<>(service.getDemands().values()));
 		});
 		return serviceSerialisation;
 	}

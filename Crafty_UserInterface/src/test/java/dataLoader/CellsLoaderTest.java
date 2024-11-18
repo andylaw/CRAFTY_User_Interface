@@ -9,10 +9,10 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.graphicalTools.Tools;
 import model.Cell;
 import model.CellsSet;
+import utils.filesTools.CsvTools;
+import utils.graphicalTools.Tools;
 
 public class CellsLoaderTest {
 
