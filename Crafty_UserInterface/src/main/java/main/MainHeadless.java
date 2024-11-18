@@ -12,17 +12,18 @@ import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import model.CellsSet;
 import model.ModelRunner;
-import plumLinking.PlumController;
+import plumLinking.PlumCommodityMapping;
 import utils.analysis.CustomLogger;
 
 public class MainHeadless {
 	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
+	static PlumCommodityMapping plumMaper= new PlumCommodityMapping();
 
 	public static void main(String[] args) {
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
 		modelInitialisation();
-		new PlumController().initialize();
-		run();
+		plumMaper.initialize();
+	//	run();
 	}
 
 	static void modelInitialisation() {
