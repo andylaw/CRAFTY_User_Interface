@@ -7,18 +7,16 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.graphicalTools.Tools;
 import model.Region;
 import model.RegionClassifier;
+import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.Tools;
 
 // Service Weight loader calss
 public class S_WeightLoader {
-	private static final Logger LOGGER = LogManager.getLogger(S_WeightLoader.class);
+	private static final CustomLogger LOGGER = new CustomLogger(S_WeightLoader.class);
 
 	private static Path weighWolrldtPath() {
 		AtomicReference<String> path = new AtomicReference<>("");

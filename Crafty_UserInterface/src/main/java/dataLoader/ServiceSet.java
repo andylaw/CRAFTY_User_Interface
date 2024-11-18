@@ -7,16 +7,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.PathTools;
 import model.RegionClassifier;
 import model.Service;
+import utils.analysis.CustomLogger;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
 
 public class ServiceSet {
-	private static final Logger LOGGER = LogManager.getLogger(ServiceSet.class);
+	private static final CustomLogger LOGGER = new CustomLogger(ServiceSet.class);
 	private static List<String> servicesList;
 	public static ConcurrentHashMap<String, Service> worldService = new ConcurrentHashMap<>();
 

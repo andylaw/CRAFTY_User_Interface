@@ -17,12 +17,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.graphicalTools.GraphicConsol;
-import UtilitiesFx.graphicalTools.Tools;
-import ac.ed.lurg.ModelConfig;
-import ac.ed.lurg.ModelMain;
+
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,19 +28,24 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
+import utils.graphicalTools.GraphicConsol;
+import utils.graphicalTools.Tools;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import ac.ed.lurg.ModelConfig;
+import ac.ed.lurg.ModelMain;
 
 public class PlumController {
 	@FXML
 	private VBox box;
 	@FXML
 	private ScrollPane scroll;
-	private static final Logger LOGGER = LogManager.getLogger(PlumController.class);
+	private static final CustomLogger LOGGER = new CustomLogger(PlumController.class);
 
 	boolean isPlumInitialized = false;
 	boolean isATickFinished = true;
@@ -71,14 +71,14 @@ public class PlumController {
 		FilterHash.put("Country", new HashSet<>(Arrays.asList(EuCountries)));
 		staticFilesinitialisation();
 		iterativeFileReadingAndFilter(2020);
-	//	bio_crop_demand = bio_crop_demand_df();
-	//	List<Map<String, String>> domistic = domestic_prod();
+//		bio_crop_demand = bio_crop_demand_df();
+//		List<Map<String, String>> domistic = domestic_prod();
 //		domistic.forEach(map -> System.out.println(map));
 //		 domistic.forEach(map -> System.out.println(map));
 		// Tranfer each crop as a colmun
 		// # Split demands for various countries based on their population fractions in
 		// different SSP scenarios
-	//	aggregate_Demands(domistic);
+//		aggregate_Demands(domistic);
 	}
 
 	void aggregate_Demands(List<Map<String, String>> domistic) {
@@ -134,16 +134,16 @@ public class PlumController {
 	}
 
 	void staticFilesinitialisation() {
-		bio_fractions = ReaderFile.filterMapsByCriteria(
+		bio_fractions = filterMapsByCriteria(
 				readCsvIntoList(PathTools.fileFilter(allpaths, "bio_fractions_df.csv").get(0)), FilterHash);
 		waste_df = readCsvIntoList(PathTools.fileFilter(allpaths, "waste_df.csv").get(0));
 	}
 
 	void iterativeFileReadingAndFilter(int year) {
 		FilterHash.put("Year", Set.of(String.valueOf(year)));
-		country_demand = ReaderFile.filterMapsByCriteria(
+		country_demand = filterMapsByCriteria(
 				readCsvIntoList(PathTools.fileFilter(allpaths, "countryDemand.txt").get(0)), FilterHash);
-		domestic = ReaderFile.filterMapsByCriteria(
+		domestic = filterMapsByCriteria(
 				readCsvIntoList(PathTools.fileFilter(allpaths, "domestic.txt").get(0)), FilterHash);
 	}
 
@@ -439,6 +439,31 @@ public class PlumController {
 			}
 		};
 		new Thread(task).start();
+	}
+	
+
+	public static List<Map<String, String>> filterMapsByCriteria(List<Map<String, String>> listMaps,
+			HashMap<String, Set<String>> hash) {
+		List<Map<String, String>> returnlistMaps = new ArrayList<>();
+		listMaps.forEach(map -> {
+			boolean tmp1 = true;
+			for (String key : hash.keySet()) {
+				boolean tmp0 = false;
+				for (String v : hash.get(key)) {
+					if (map.get(key).equals(v)) {
+						tmp0 = true;
+						break;
+					}
+				}
+				tmp1 = tmp0;
+				if (!tmp1) {
+					break;
+				}
+			}
+			if (tmp1)
+				returnlistMaps.add(map);
+		});
+		return returnlistMaps;
 	}
 
 }

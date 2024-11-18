@@ -8,23 +8,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.Tools;
 import model.Cell;
 import model.CellsSet;
 import model.Manager;
+import utils.analysis.CustomLogger;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.Tools;
 
 public class MaskRestrictionDataLoader {
 
 	public static HashMap<String, List<Path>> hashMasksPaths;
 	public static HashMap<String, HashMap<String, Boolean>> restrictions = new HashMap<>();
 
-	private static final Logger LOGGER = LogManager.getLogger(MaskRestrictionDataLoader.class);
+	private static final CustomLogger LOGGER = new CustomLogger(MaskRestrictionDataLoader.class);
 
 
 	

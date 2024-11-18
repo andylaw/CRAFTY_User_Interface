@@ -1,9 +1,8 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 
 import java.util.function.Consumer;
 
-import UtilitiesFx.cameraTools.Camera;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -11,6 +10,7 @@ import javafx.scene.SubScene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import utils.cameraTools.Camera;
 import javafx.scene.layout.BorderPane;
 
 /**

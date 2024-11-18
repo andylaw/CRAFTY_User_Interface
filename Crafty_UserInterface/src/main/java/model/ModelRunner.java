@@ -3,15 +3,9 @@ package model;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import UtilitiesFx.analysis.Tracker;
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
@@ -19,6 +13,10 @@ import fxmlControllers.MasksPaneController;
 import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import main.ConfigLoader;
+import utils.analysis.CustomLogger;
+import utils.analysis.Tracker;
+import utils.filesTools.CsvTools;
+import utils.graphicalTools.Tools;
 
 /**
  * @author Mohamed Byari
@@ -26,7 +24,7 @@ import main.ConfigLoader;
  */
 
 public class ModelRunner {
-	private static final Logger LOGGER = LogManager.getLogger(ModelRunner.class);
+	private static final CustomLogger LOGGER = new CustomLogger(ModelRunner.class);
 	public String colorDisplay = "FR";
 	public static boolean mapSynchronisation = true;
 	public static int mapSynchronisationGap = 5;

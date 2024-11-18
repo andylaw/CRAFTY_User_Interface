@@ -26,5 +26,6 @@ public class Config {
 	public boolean generate_csv_files;
 	public int csv_output_frequency;
 	public boolean track_changes;
+	public boolean export_LOGGER;
 
 }

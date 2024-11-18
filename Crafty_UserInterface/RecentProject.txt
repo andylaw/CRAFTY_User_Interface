@@ -1,5 +1,2 @@
 
-C:\Users\byari-m\Desktop\CRAFTY-Cobra-Code-compareson\CRAFTY-EU-5km-data
-C:\Users\byari-m\Desktop\data-DE_3kmgrid
-C:\Users\byari-m\Desktop\data-DEo
-C:\Users\byari-m\Desktop\CRAFTY-EU-1km
+C:\Users\byari-m\Desktop\CRAFTY-EU-1km_upscaled_8.0

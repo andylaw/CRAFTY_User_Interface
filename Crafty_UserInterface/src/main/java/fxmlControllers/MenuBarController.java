@@ -6,6 +6,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import main.FxMain;
+import utils.filesTools.PathTools;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.WarningWindowes;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -17,10 +21,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.WarningWindowes;
 import dataLoader.PathsLoader;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

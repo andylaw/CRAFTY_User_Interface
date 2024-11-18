@@ -1,11 +1,10 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import UtilitiesFx.filesTools.SaveAs;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -13,6 +12,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import utils.filesTools.SaveAs;
 
 public class MousePressed {
 

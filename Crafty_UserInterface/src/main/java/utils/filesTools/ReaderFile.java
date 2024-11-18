@@ -1,4 +1,4 @@
-package UtilitiesFx.filesTools;
+package utils.filesTools;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -17,10 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.ServiceSet;
@@ -28,9 +24,11 @@ import model.Cell;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.AddCellToColumnException;
+import utils.analysis.CustomLogger;
+import utils.graphicalTools.Tools;
 
 public class ReaderFile {
-	private static final Logger LOGGER = LogManager.getLogger(ReaderFile.class);
+	private static final CustomLogger LOGGER = new CustomLogger(ReaderFile.class);
 
 	public static HashMap<String, ArrayList<String>> ReadAsaHash(Path filePath) {
 		return ReadAsaHash(filePath, false);
@@ -122,8 +120,6 @@ public class ReaderFile {
 		}
 	}
 
-
-
 	static void associateCapitalsToCells(ConcurrentHashMap<String, Integer> indexof, String data) {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));
 		int x = (int) Tools.sToD(immutableList.get(indexof.get("X")));
@@ -171,29 +167,6 @@ public class ReaderFile {
 		});
 
 	}
-	
-	public static List<Map<String, String>> filterMapsByCriteria(List<Map<String, String>> listMaps,
-			HashMap<String, Set<String>> hash) {
-		List<Map<String, String>> returnlistMaps = new ArrayList<>();
-		listMaps.forEach(map -> {
-			boolean tmp1 = true;
-			for (String key : hash.keySet()) {
-				boolean tmp0 = false;
-				for (String v : hash.get(key)) {
-					if (map.get(key).equals(v)) {
-						tmp0 = true;
-						break;
-					}
-				}
-				tmp1 = tmp0;
-				if (!tmp1) {
-					break;
-				}
-			}
-			if (tmp1)
-				returnlistMaps.add(map);
-		});
-		return returnlistMaps;
-	}
+
 
 }

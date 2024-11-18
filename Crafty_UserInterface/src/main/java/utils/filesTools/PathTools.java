@@ -1,4 +1,4 @@
-package UtilitiesFx.filesTools;
+package utils.filesTools;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,20 +7,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import dataLoader.PathsLoader;
 import main.FxMain;
+import utils.analysis.CustomLogger;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -31,7 +28,7 @@ import javafx.stage.FileChooser;
 
 public class PathTools {
 
-	private static final Logger LOGGER = LogManager.getLogger(PathTools.class);
+	private static final CustomLogger LOGGER = new CustomLogger(PathTools.class);
 
 	public static String[] aggregateArrays(String[] firstArray, String... secondArray) {
 		String[] result = new String[firstArray.length + secondArray.length];
@@ -41,20 +38,15 @@ public class PathTools {
 	}
 
 	public static Set<Path> listSubdirectories(Path directoryPath) {
-
 		// Use try-with-resources to ensure the stream is closed properly
 		try (Stream<Path> paths = Files.list(directoryPath)) {
 			return paths.filter(Files::isDirectory) // Filter to include only directories
 					.collect(Collectors.toSet()); // Collect results into a set to eliminate duplicates
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			LOGGER.warn("NoSuchFileException= " + directoryPath);
+			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public static Optional<Path> findFolder(Set<Path> paths, String FolderName) {
-		return paths.stream().filter(path -> path.getFileName().toString().equals(FolderName)).findFirst();
 	}
 
 	public static String asFolder(String input) {
@@ -197,6 +189,22 @@ public class PathTools {
 			LOGGER.error("Folder not found: " + folderPath);
 		}
 		return filePaths;
+	}
+
+	public static List<Path> getAllFolders(String rootFolder) {
+		Path root = Paths.get(rootFolder);
+		try {
+			if (!Files.isDirectory(root)) {
+				throw new IllegalArgumentException("Provided path is not a directory: " + rootFolder);
+			}
+			try (Stream<Path> stream = Files.walk(root)) {
+				return stream.filter(Files::isDirectory) // Include only directories
+						.filter(path -> !path.equals(root)) // Exclude the root folder itself
+						.collect(Collectors.toList());
+			}
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	public static String makeDirectory(String dir) {

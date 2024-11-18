@@ -3,11 +3,6 @@ package controllers;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import UtilitiesFx.graphicalTools.CSVTableView;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.PieChartTools;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.PathsLoader;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
@@ -16,6 +11,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.Cell;
+import utils.graphicalTools.CSVTableView;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.PieChartTools;
+import utils.graphicalTools.Tools;
 
 /**
  * @author Mohamed Byari

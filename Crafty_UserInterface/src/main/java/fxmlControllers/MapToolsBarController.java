@@ -4,9 +4,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import main.FxMain;
 import model.CellsSet;
-import UtilitiesFx.filesTools.SaveAs;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.NewWindow;
+import utils.filesTools.SaveAs;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.NewWindow;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 

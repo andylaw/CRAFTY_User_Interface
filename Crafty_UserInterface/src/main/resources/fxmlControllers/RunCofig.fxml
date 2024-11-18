@@ -20,7 +20,7 @@
 					<content>
 						<VBox spacing="2.0">
 							<children>
-							<CheckBox fx:id="InitialEquilibrium"
+								<CheckBox fx:id="InitialEquilibrium"
 									mnemonicParsing="false" onAction="#initialEquilibrium"
 									text="Initial Supply-Demand Equilibrium (Ensure that supply and demand are balanced for eco-services during the initial tick.)" />
 								<CheckBox fx:id="removeNegative"
@@ -40,11 +40,9 @@
 										<Label text="\%" />
 									</children>
 								</HBox>
-<!--
-								<CheckBox fx:id="isAveragedPerCellResidualDemand"
-									mnemonicParsing="false"
-									onAction="#averagedPerCellResidualDemand"
-									text="Averaged Per Cell Residual Demand" />-->
+								<!-- <CheckBox fx:id="isAveragedPerCellResidualDemand" mnemonicParsing="false" 
+									onAction="#averagedPerCellResidualDemand" text="Averaged Per Cell Residual 
+									Demand" /> -->
 								<HBox spacing="5.0">
 									<CheckBox fx:id="neighbours" mnemonicParsing="false"
 										onAction="#NeighboursAction"
@@ -58,23 +56,26 @@
 											prefWidth="58.0" />
 									</children>
 								</HBox>
-								<!--
-								<CheckBox fx:id="mutationM" mnemonicParsing="false"
-									onAction="#MutationMechanism" text="Mutation mechanism" />-->
+								<!-- <CheckBox fx:id="mutationM" mnemonicParsing="false" onAction="#MutationMechanism" 
+									text="Mutation mechanism" /> -->
 								<HBox spacing="5.0">
 									<children>
-										<Label text="The percentage of 'Most competitive' AFT selection" />
-										<Slider fx:id="BestAftS" max="100.0" min="0.0" minorTickCount="10"
-											showTickLabels="true" showTickMarks="true" />
+										<Label
+											text="The percentage of 'Most competitive' AFT selection" />
+										<Slider fx:id="BestAftS" max="100.0" min="0.0"
+											minorTickCount="10" showTickLabels="true"
+											showTickMarks="true" />
 										<TextField fx:id="BestAftT" onAction="#BestAftT"
 											prefHeight="25.0" prefWidth="58.0" />
 									</children>
 								</HBox>
 								<HBox spacing="5.0">
 									<children>
-										<Label text="The percentage of  'Randomly selected'  AFT          " />
-										<Slider fx:id="RandomAftS"  max="100.0" min="0.0" minorTickCount="10"
-											showTickLabels="true" showTickMarks="true" />
+										<Label
+											text="The percentage of  'Randomly selected'  AFT          " />
+										<Slider fx:id="RandomAftS" max="100.0" min="0.0"
+											minorTickCount="10" showTickLabels="true"
+											showTickMarks="true" />
 										<TextField fx:id="RandomAftT" onAction="#RandomAftT"
 											prefHeight="25.0" prefWidth="58.0" />
 									</children>
@@ -90,16 +91,13 @@
 										<Label text="\%" />
 									</children>
 								</HBox>
-								
+
 								<HBox spacing="5.0">
-									<children><!--
-										<Label
-											text="Number of Sub-sets and Supply Update During a Single Iteration" />
-										<Slider fx:id="nbrOfSubSetS" blockIncrement="1.0"
-											majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="5"
-											showTickLabels="true" showTickMarks="true" />
-										<TextField fx:id="nbrOfSubSetT"
-											onAction="#nbrOfSubSetT" prefHeight="25.0" prefWidth="58.0" />-->
+									<children><!-- <Label text="Number of Sub-sets and Supply Update 
+											During a Single Iteration" /> <Slider fx:id="nbrOfSubSetS" blockIncrement="1.0" 
+											majorTickUnit="1.0" max="20.0" min="1.0" minorTickCount="5" showTickLabels="true" 
+											showTickMarks="true" /> <TextField fx:id="nbrOfSubSetT" onAction="#nbrOfSubSetT" 
+											prefHeight="25.0" prefWidth="58.0" /> -->
 									</children>
 								</HBox>
 							</children>
@@ -150,7 +148,9 @@
 								prefHeight="25.0" prefWidth="58.0" />
 						</HBox>
 						<CheckBox fx:id="traker" mnemonicParsing="false"
-								onAction="#trakerAction" text="Create .csv supply tracker files" />
+							onAction="#trakerAction" text="Create .csv supply tracker files" />
+						<CheckBox fx:id="logger" mnemonicParsing="false" 
+							onAction="#loggerAction" text="Create .txt LOGGER files" />
 					</children>
 				</VBox>
 			</content>

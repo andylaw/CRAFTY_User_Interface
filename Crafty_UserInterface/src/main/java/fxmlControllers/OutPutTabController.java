@@ -9,10 +9,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import model.CellsSet;
+import utils.graphicalTools.NewWindow;
 
 import java.io.IOException;
 
-import UtilitiesFx.graphicalTools.NewWindow;
 import dataLoader.ServiceSet;
 import javafx.event.Event;
 import javafx.event.EventHandler;

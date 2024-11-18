@@ -3,12 +3,10 @@ package dataLoader;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.ReaderFile;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.Tools;
+import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
+import utils.graphicalTools.Tools;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -22,7 +20,7 @@ import java.util.HashMap;
  */
 
 public final class PathsLoader {
-	private static final Logger LOGGER = LogManager.getLogger(PathsLoader.class);
+	private static final CustomLogger LOGGER = new CustomLogger(PathsLoader.class);
 	private static String[] foldersNecessary = { "agents", "csv", "production", "worlds" };
 	private static int startYear;
 	private static int endtYear;
@@ -37,7 +35,6 @@ public final class PathsLoader {
 
 	public static void initialisation(Path p) {
 		projectPath = p;
-		System.out.println("----------- "+p);
 		allfilesPathInData = PathTools.findAllFiles(projectPath);
 		initialSenarios();
 	}

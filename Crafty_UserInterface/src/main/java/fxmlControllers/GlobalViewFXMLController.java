@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import UtilitiesFx.filesTools.CsvTools;
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.graphicalTools.CSVTableView;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
+import utils.filesTools.CsvTools;
+import utils.filesTools.PathTools;
+import utils.graphicalTools.CSVTableView;
 
 public class GlobalViewFXMLController {
 	@FXML

@@ -1,4 +1,4 @@
-package UtilitiesFx.cameraTools;
+package utils.cameraTools;
 
 
 import javafx.event.EventHandler;

@@ -3,8 +3,9 @@ package fxmlControllers;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.TextField;
+import main.ConfigLoader;
 import model.ModelRunner;
-import UtilitiesFx.graphicalTools.Tools;
+import utils.graphicalTools.Tools;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
 import javafx.scene.control.CheckBox;
@@ -69,6 +70,8 @@ public class RunCofigController {
 	private TextField percentageOfGiveUpT;
 	@FXML
 	private CheckBox traker;
+	@FXML
+	private CheckBox logger;
 
 	static public ModelRunnerController CA;
 
@@ -153,6 +156,8 @@ public class RunCofigController {
 			BestAftS.setValue(Tools.sToD(BestAftT.getText()));
 		});
 		traker.setSelected(ModelRunner.track_changes);
+		logger.setSelected(ConfigLoader.config.export_LOGGER);
+
 	}
 
 	@FXML
@@ -275,5 +280,10 @@ public class RunCofigController {
 	@FXML
 	public void trakerAction() {
 		ModelRunner.track_changes = traker.isSelected();
+	}
+
+	@FXML
+	public void loggerAction() {
+		ConfigLoader.config.export_LOGGER = logger.isSelected();
 	}
 }

@@ -2,10 +2,6 @@ package fxmlControllers;
 
 import java.util.function.Consumer;
 
-import UtilitiesFx.graphicalTools.CSVTableView;
-import UtilitiesFx.graphicalTools.Histogram;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.Tools;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.ServiceSet;
@@ -24,6 +20,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import model.Manager;
+import utils.graphicalTools.CSVTableView;
+import utils.graphicalTools.Histogram;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.Tools;
 
 /**
  * @author Mohamed Byari

@@ -1,4 +1,4 @@
-package UtilitiesFx.graphicalTools;
+package utils.graphicalTools;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,11 +22,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import utils.analysis.CustomLogger;
 
 import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @author Mohamed Byari
@@ -34,7 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 
 public class Tools {
-	private static final Logger LOGGER = LogManager.getLogger(Tools.class);
+	private static final CustomLogger LOGGER = new CustomLogger(Tools.class);
 
 	public static VBox vBox(Node... children) {
 		VBox vbox = new VBox();
@@ -68,6 +66,7 @@ public class Tools {
 		choiceBox(choice, list);
 		return choice;
 	}
+
 
 	public static void choiceBox(ChoiceBox<String> choice, List<String> list) {
 		if (list.size() == 0) {
@@ -105,9 +104,7 @@ public class Tools {
 	}
 
 	public static double sToD(String str) {
-		if (str == null) {
-			return 0;
-		}
+		if(str==null) return 0;
 		try {
 			return Double.parseDouble(str);
 		} catch (NumberFormatException e) {
@@ -131,9 +128,9 @@ public class Tools {
 		int insertIndex = indexPath.get(indexPath.size() - 1);
 
 		if (currentParent instanceof Pane) {
-			((Pane) currentParent).getChildren().set(insertIndex, child);
+		    ((Pane) currentParent).getChildren().set(insertIndex, child);
 		} else if (currentParent instanceof Group) {
-			((Group) currentParent).getChildren().set(insertIndex, child);
+		    ((Group) currentParent).getChildren().set(insertIndex, child);
 		} else {
 			LOGGER.error("The parent is neither a Pane nor a Group, cannot modify children.");
 		}
@@ -164,17 +161,16 @@ public class Tools {
 		return Arrays.asList(tmp).indexOf(s);
 	}
 
-	public static ImageView logo(InputStream imageStream, double translateX, double translateY, double scale) {
-		ImageView imageView = new ImageView();
-		;
+	public static ImageView logo (InputStream imageStream, double translateX,double translateY, double scale) {
+		ImageView imageView = new ImageView();;
 		Image image = new Image(imageStream);
 		imageView.setImage(image);
 		imageView.setTranslateX(translateX);
 		imageView.setTranslateY(translateY);
 		imageView.setScaleX(scale);
 		imageView.setScaleY(scale);
+		
+		return imageView;} 
 
-		return imageView;
-	}
 
 }

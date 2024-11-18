@@ -1,6 +1,7 @@
 package fxmlControllers;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,13 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import UtilitiesFx.filesTools.PathTools;
-import UtilitiesFx.filesTools.SaveAs;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.LineChartTools;
-import UtilitiesFx.graphicalTools.MousePressed;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.Tools;
+
 import dataLoader.AFTsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
@@ -47,9 +42,18 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import main.ConfigLoader;
 import model.CellsSet;
 import model.ModelRunner;
 import model.RegionClassifier;
+import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
+import utils.filesTools.SaveAs;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.LineChartTools;
+import utils.graphicalTools.MousePressed;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.Tools;
 import javafx.scene.layout.GridPane;
 
 public class ModelRunnerController {
@@ -84,6 +88,7 @@ public class ModelRunnerController {
 	NewWindow colorbox = new NewWindow();
 
 	private boolean startRunin = true;
+	private static final CustomLogger LOGGER = new CustomLogger(ModelRunnerController.class);
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
@@ -149,7 +154,7 @@ public class ModelRunnerController {
 
 	@FXML
 	public void oneStep() {
-		System.out.println("------------------- Start of Tick  |" + tick.get() + "| -------------------");
+		LOGGER.info("------------------- Start of Tick  |" + tick.get() + "| -------------------");
 		PathsLoader.setCurrentYear(tick.get());
 		runner.go();
 		tickTxt.setText(tick.toString());
@@ -182,6 +187,11 @@ public class ModelRunnerController {
 	public void run() {
 		run.setDisable(true);
 		simulationFolderName();
+		if (ConfigLoader.config.export_LOGGER) {
+			CustomLogger
+					.configureLogger(Paths.get(ModelRunnerController.outPutFolderName + File.separator + "LOGGER.txt"));
+		}
+		
 		if (startRunin || !ModelRunner.generate_csv_files) {
 			demandEquilibrium();
 			scheduleIteravitveTicks(Duration.millis(1000));
@@ -211,8 +221,12 @@ public class ModelRunnerController {
 	private void displayRunAsOutput() {
 		OutPuterController.isCurrentResult = true;
 		OutPutTabController.getInstance().createNewTab("Current simulation");
-		TabPane tab = TabPaneController.getInstance().getTabpane();
-		tab.getSelectionModel().select(tab.getTabs().size() - 1);
+		TabPane tabpane = TabPaneController.getInstance().getTabpane();
+		tabpane.getSelectionModel().select(tabpane.getTabs().size() - 1);
+		tabpane.getTabs().stream()
+        .filter(tab -> tab.getText().equals("Model OutPut")) // Match tab by name
+        .findFirst() // Get the first matching tab (if any)
+        .ifPresent(tab -> tabpane.getSelectionModel().select(tab)); // Select the tab if found
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {

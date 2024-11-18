@@ -2,11 +2,6 @@ package main;
 
 import java.io.InputStream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.cameraTools.Camera;
-import UtilitiesFx.graphicalTools.Tools;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +13,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import utils.analysis.CustomLogger;
+import utils.cameraTools.Camera;
+import utils.graphicalTools.Tools;
 
 /*
  * @author Mohamed Byari
@@ -32,7 +30,7 @@ public class FxMain extends Application {
 	public static Stage primaryStage;
 	public static AnchorPane anchor = new AnchorPane();
 	public static Scene scene = new Scene(anchor);
-	private static final Logger LOGGER = LogManager.getLogger(FxMain.class);
+	private static final CustomLogger LOGGER = new CustomLogger(FxMain.class);
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {

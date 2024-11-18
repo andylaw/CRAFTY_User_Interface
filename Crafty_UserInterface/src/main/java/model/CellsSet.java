@@ -12,13 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import UtilitiesFx.filesTools.SaveAs;
-import UtilitiesFx.graphicalTools.ColorsTools;
-import UtilitiesFx.graphicalTools.NewWindow;
-import UtilitiesFx.graphicalTools.Tools;
 import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
@@ -35,6 +28,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.FxMain;
+import utils.analysis.CustomLogger;
+import utils.filesTools.SaveAs;
+import utils.graphicalTools.ColorsTools;
+import utils.graphicalTools.NewWindow;
+import utils.graphicalTools.Tools;
 
 /**
  * @author Mohamed Byari
@@ -42,7 +40,7 @@ import main.FxMain;
  */
 
 public class CellsSet {
-	private static final Logger LOGGER = LogManager.getLogger(CellsSet.class);
+	private static final CustomLogger LOGGER = new CustomLogger(CellsSet.class);
 	public static boolean isPlotedMap = false;
 	private static Canvas canvas;
 	public static GraphicsContext gc;
@@ -66,7 +64,7 @@ public class CellsSet {
 		maxY = Collections.max(Y) + 1;
 		int minX = Collections.min(X);
 		int minY = Collections.min(Y);
-		System.out.println("||" + (maxX - minX) + "," + (maxY - minY));
+		LOGGER.info("matrix size: " + (maxX - minX) + "," + (maxY - minY));
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
 
