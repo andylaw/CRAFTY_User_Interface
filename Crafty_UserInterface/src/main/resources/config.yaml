@@ -1,8 +1,8 @@
 # Configuration for CRAFTY Model
 
 # Paths and Data
-project_path: 'C:\Users\byari-m\Desktop\CRAFTY-Cobra-Code-compareson\CRAFTY-EU-5km-data' #
-scenario: 'RCP2_6-SSP4' # 'RCP2_6-SSP4' #Scenario identifier
+project_path: 'C:\Users\byari-m\Desktop\CRAFTY_DATA\CRAFTY-EU-1km_upscaled_8.0' #
+scenario: 'ssp126' # 'RCP2_6-SSP4' #Scenario identifier
 regionalization: false
 # CRAFTY Mechanisms
 initial_demand_supply_equilibrium: true       # Ensure balanced eco-service supply and demand during initial tick

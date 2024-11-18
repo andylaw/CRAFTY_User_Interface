@@ -22,7 +22,7 @@ public class MainHeadless {
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
 		modelInitialisation();
 		new PlumController().initialize();
-		//run();
+		run();
 	}
 
 	static void modelInitialisation() {
