@@ -27,6 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
+import main.ConfigLoader;
 import model.CellsSet;
 import model.Manager;
 import utils.analysis.CustomLogger;
@@ -158,8 +159,8 @@ public class OutPuterController {
 				outputpath = null;
 			}
 		} else {
-			if (ModelRunnerController.outPutFolderName != null) {
-				outputpath = Paths.get(ModelRunnerController.outPutFolderName);
+			if (ConfigLoader.config.output_folder_name != null) {
+				outputpath = Paths.get(ConfigLoader.config.output_folder_name);
 				isCurrentResult = false;
 			}
 		}
@@ -179,28 +180,9 @@ public class OutPuterController {
 			sankeyBox.setValue(yearList.get(yearList.size() - 1));
 			OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
 			// newOutPut(yearChoice.getValue());
-			Graphs(gridChart, "AggregateServiceDemand.csv", "-AggregateAFTComposition.csv");
+			Graphs(gridChart, "Total-AggregateServiceDemand.csv", "Total-AggregateAFTComposition.csv");
 		}
 	}
-
-//	public void selectoutPut(Path path) {
-//		outputpath = path;
-//		ArrayList<String> yearList = new ArrayList<>();
-//		PathTools.findAllFiles(outputpath).forEach(str -> {
-//			File file = str.toFile();
-//			String tmp = new File(file.getParent()).getName() + File.separator + file.getName();
-//			if (tmp.contains("-Cell-"))
-//				yearList.add(tmp);
-//		});
-//		LOGGER.info("output files List---> " + yearList);
-//		yearChoice.getItems().addAll(yearList);
-//		yearChoice.setValue(yearList.get(0));
-//		sankeyBox.getItems().addAll(yearList);
-//		sankeyBox.setValue(yearList.get(yearList.size() - 1));
-//		OutPutTabController.radioColor[OutPutTabController.radioColor.length - 1].setSelected(true);
-//		newOutPut(yearChoice.getValue());
-//		Graphs(gridChart, "AggregateServiceDemand.csv", "-AggregateAFTComposition.csv");
-//	}
 
 	@FXML
 	public void saveAllFilAsPNGAction() {
@@ -335,7 +317,7 @@ public class OutPuterController {
 
 	}
 
-	void Graphs(GridPane gridPane, String serviceDemand, String aftComposition){
+	void Graphs(GridPane gridPane, String serviceDemand, String aftComposition) {
 		gridPane.getChildren().clear();
 		ArrayList<LineChart<Number, Number>> lineChart = new ArrayList<>();
 		gridPane.setHgap(10);

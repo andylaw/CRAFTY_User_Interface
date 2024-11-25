@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -16,6 +15,7 @@ import controllers.CellWindow;
 import controllers.NewRegion_Controller;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
+import dataLoader.ServiceSet;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -67,25 +67,14 @@ public class CellsSet {
 		LOGGER.info("matrix size: " + (maxX - minX) + "," + (maxY - minY));
 		canvas = new Canvas((maxX - minX) * Cell.getSize(), (maxY - minY) * Cell.getSize());
 		gc = canvas.getGraphicsContext2D();
-
 		writableImage = new WritableImage(maxX, maxY);
 		pixelWriter = writableImage.getPixelWriter();
-
-//		 FxMain.subScene = new SubScene(FxMain.root, canvas.getWidth(),
-//		 canvas.getHeight());
-//		 gc.setFill(Color.color(Math.random(), Math.random( ), Math.random()));
-//		 gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-//		 colorMap("FR");
-
 		FxMain.root.getChildren().clear();
 		FxMain.root.getChildren().add(canvas);
 		FxMain.subScene.setCamera(FxMain.camera);
 		FxMain.camera.defaultcamera(canvas, FxMain.subScene);
-		// FxMain.camera.adjustCamera(FxMain.root,FxMain.subScene);
 		LOGGER.info("Number of cells = " + CellsLoader.hashCell.size());
-
 		MapControlerBymouse();
-
 	}
 
 	public static ConcurrentHashMap<String, Cell> getRandomSubset(ConcurrentHashMap<String, Cell> cellsHash,
@@ -111,23 +100,6 @@ public class CellsSet {
 		cellsHash.keySet().parallelStream().unordered().limit(numberOfElementsToSelect)
 				.forEach(key -> subset.put(key, cellsHash.get(key)));
 		return subset;
-	}
-
-	public static List<ConcurrentHashMap<String, Cell>> splitIntoSubsets(ConcurrentHashMap<String, Cell> cellsHash,
-			int n) {
-		// Create a list to hold the n subsets
-		List<ConcurrentHashMap<String, Cell>> subsets = new ArrayList<>(n);
-		for (int i = 0; i < n; i++) {
-			subsets.add(new ConcurrentHashMap<>());
-		}
-
-		// Distribute keys randomly across the n subsets
-		cellsHash.keySet().parallelStream().forEach(key -> {
-			int subsetIndex = ThreadLocalRandom.current().nextInt(n);
-			subsets.get(subsetIndex).put(key, cellsHash.get(key));
-		});
-
-		return subsets;
 	}
 
 	public static void colorMap(String str) {
@@ -166,32 +138,21 @@ public class CellsSet {
 
 			});
 
-		} /*
-			 * else if (ServiceSet.getServicesList().contains(colortype)) {
-			 * CellsLoader.hashCell.values().parallelStream().forEach(c -> { Service s =
-			 * ServiceSet.getServicesHash().get(colortype); if
-			 * (c.getCurrentProductivity().get(ServiceSet.getServicesHash().get(colortype))
-			 * != null) values.add(c.getCurrentProductivity().get(s)); }); double max =
-			 * values.size() > 0 ? Collections.max(values) : 0;
-			 * 
-			 * CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-			 * 
-			 * if
-			 * (c.getCurrentProductivity().get(ServiceSet.getServicesHash().get(colortype))
-			 * != null) { c.ColorP(ColorsTools.getColorForValue(max,
-			 * c.getCurrentProductivity().get(ServiceSet.getServicesHash().get(colortype))))
-			 * ; } else { c.ColorP(ColorsTools.getColorForValue(max, 0)); } }); }
-			 */ else if (colortype.equalsIgnoreCase("tmp")) {
+		} else if (ServiceSet.getServicesList().contains(colortype)) {
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+				if (c.getCurrentProductivity().get(colortype) != null)
+					values.add(c.getCurrentProductivity().get(colortype));
+			});
+			double max = values.size() > 0 ? Collections.max(values) : 0;
 
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				values.add(c.getTmpValueCell());
-			});
-			double max = Collections.max(values);
 
-			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-				c.ColorP(ColorsTools.getColorForValue(max, c.getTmpValueCell()));
+				if (c.getCurrentProductivity().get(colortype) != null) {
+					c.ColorP(ColorsTools.getColorForValue(max, c.getCurrentProductivity().get(colortype)));
+				} else {
+					c.ColorP(ColorsTools.getColorForValue(max, 0));
+				}
 			});
-
 		} else if (colortype.equalsIgnoreCase("Mask")) {
 			ArrayList<String> listOfMasks = new ArrayList<>(MaskRestrictionDataLoader.hashMasksPaths.keySet());
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {

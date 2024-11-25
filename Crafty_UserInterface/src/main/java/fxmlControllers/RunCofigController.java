@@ -15,6 +15,8 @@ public class RunCofigController {
 	@FXML
 	private CheckBox InitialEquilibrium;
 	@FXML
+	private CheckBox InitialEquilibriumRegion;
+	@FXML
 	private CheckBox removeNegative;
 	@FXML
 	private CheckBox gUP;
@@ -83,10 +85,12 @@ public class RunCofigController {
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		InitialEquilibrium.setSelected(ModelRunner.initial_demand_supply_equilibrium);
-		removeNegative.setSelected(ModelRunner.remove_negative_marginal_utility);
+		InitialEquilibriumRegion.setSelected(ConfigLoader.config.initial_DS_equilibrium_byRegions);
+
+		removeNegative.setSelected(ConfigLoader.config.remove_negative_marginal_utility);
 		MapSync.setSelected(ModelRunner.mapSynchronisation);
 		neighbours.setSelected(ModelRunner.use_neighbor_priority);
-		creatCSV.setSelected(ModelRunner.generate_csv_files);
+		creatCSV.setSelected(ConfigLoader.config.generate_csv_files);
 		gUP.setSelected(ModelRunner.use_abandonment_threshold);
 //		mutationM.setSelected(ModelRunner.isMutated);
 		// neighboursCollaboration.setSelected(CA.R.NeighboorEffect);
@@ -112,10 +116,10 @@ public class RunCofigController {
 			ModelRunnerController.chartSynchronisationGap = (int) chartSync_GapS.getValue();
 			chartSync_GapT.setText((int) chartSync_GapS.getValue() + "");
 		});
-		CSV_GapS.setValue(ModelRunner.csv_output_frequency);
+		CSV_GapS.setValue(ConfigLoader.config.csv_output_frequency);
 		CSV_GapT.setText((int) CSV_GapS.getValue() + "");
 		CSV_GapS.valueProperty().addListener((ov, oldval, newval) -> {
-			ModelRunner.csv_output_frequency = (int) CSV_GapS.getValue();
+			ConfigLoader.config.csv_output_frequency = (int) CSV_GapS.getValue();
 			CSV_GapT.setText((int) CSV_GapS.getValue() + "");
 		});
 //		nbrOfSubSetS.setValue(ModelRunner.nbrOfSubSet);
@@ -155,7 +159,7 @@ public class RunCofigController {
 			BestAftT.setText(Math.round(1000 - RandomAftS.getValue() * 10) / 10. + "");
 			BestAftS.setValue(Tools.sToD(BestAftT.getText()));
 		});
-		traker.setSelected(ModelRunner.track_changes);
+		traker.setSelected(ConfigLoader.config.track_changes);
 		logger.setSelected(ConfigLoader.config.export_LOGGER);
 
 	}
@@ -163,12 +167,19 @@ public class RunCofigController {
 	@FXML
 	public void initialEquilibrium(ActionEvent event) {
 		ModelRunner.initial_demand_supply_equilibrium = InitialEquilibrium.isSelected();
+		InitialEquilibriumRegion.setDisable(!ModelRunner.initial_demand_supply_equilibrium);
+	}
+
+	@FXML
+	public void initialEquilibriumRegion(ActionEvent event) {
+		ConfigLoader.config.initial_DS_equilibrium_byRegions = InitialEquilibriumRegion.isSelected()&&ConfigLoader.config.regionalization;
+			InitialEquilibriumRegion.setSelected(ConfigLoader.config.initial_DS_equilibrium_byRegions );
 	}
 
 	// Event Listener on CheckBox[#removeNegative].onAction
 	@FXML
 	public void removeNegativeMarginal(ActionEvent event) {
-		ModelRunner.remove_negative_marginal_utility = removeNegative.isSelected();
+		ConfigLoader.config.remove_negative_marginal_utility = removeNegative.isSelected();
 	}
 
 	// Event Listener on CheckBox[#MapSync].onAction
@@ -279,7 +290,7 @@ public class RunCofigController {
 
 	@FXML
 	public void trakerAction() {
-		ModelRunner.track_changes = traker.isSelected();
+		ConfigLoader.config.track_changes = traker.isSelected();
 	}
 
 	@FXML

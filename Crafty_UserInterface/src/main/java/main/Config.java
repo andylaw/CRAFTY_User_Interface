@@ -7,6 +7,7 @@ public class Config {
 	public boolean regionalization;
 	// CRAFTY Mechanisms
 	public boolean initial_demand_supply_equilibrium;
+	public boolean initial_DS_equilibrium_byRegions;
 	public boolean remove_negative_marginal_utility;
 	public boolean use_abandonment_threshold;
 	public boolean mutate_on_competition_win;
@@ -27,5 +28,8 @@ public class Config {
 	public int csv_output_frequency;
 	public boolean track_changes;
 	public boolean export_LOGGER;
+	public boolean LOGGER_info;
+	public boolean LOGGER_warn;
+	public boolean LOGGER_trace;
 
 }

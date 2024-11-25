@@ -19,7 +19,6 @@ import dataLoader.PathsLoader;
 import main.FxMain;
 import utils.analysis.CustomLogger;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 
 /**
  * @author Mohamed Byari
@@ -37,7 +36,7 @@ public class PathTools {
 		return result;
 	}
 
-	public static Set<Path> listSubdirectories(Path directoryPath) {
+	public static Set<Path> listSubdirectories(Path directoryPath) {// used for Plum coupling
 		// Use try-with-resources to ensure the stream is closed properly
 		try (Stream<Path> paths = Files.list(directoryPath)) {
 			return paths.filter(Files::isDirectory) // Filter to include only directories
@@ -106,8 +105,6 @@ public class PathTools {
 				return null;
 			}
 			return null;
-//			return fileFilter(ignoreIfFileNotExists,
-//					WarningWindowes.alterErrorNotFileFound("The file path could not be found:", str));
 		} else {
 			return turn;
 		}
@@ -125,7 +122,6 @@ public class PathTools {
 		String line = "";
 		try {
 			scanner = new Scanner(new File(filePath));
-
 			while (scanner.hasNextLine()) {
 				line = line + "\n" + scanner.nextLine();
 			}
@@ -141,15 +137,6 @@ public class PathTools {
 		if (initialDirectory.exists())
 			chooser.setInitialDirectory(initialDirectory);
 		File selectedDirectory = chooser.showDialog(FxMain.primaryStage);
-		return selectedDirectory;
-	}
-
-	public static File selecFile(String projectPath) {
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle("Select Project");
-		File initialDirectory = new File(projectPath);
-		chooser.setInitialDirectory(initialDirectory);
-		File selectedDirectory = chooser.showOpenDialog(FxMain.primaryStage);
 		return selectedDirectory;
 	}
 

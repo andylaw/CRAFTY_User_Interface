@@ -1,20 +1,22 @@
 package fxmlControllers;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.ibm.icu.impl.data.ResourceReader;
 
 import dataLoader.AFTsLoader;
-import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
 import javafx.animation.KeyFrame;
@@ -46,6 +48,8 @@ import main.ConfigLoader;
 import model.CellsSet;
 import model.ModelRunner;
 import model.RegionClassifier;
+import model.Service;
+import output.Listener;
 import utils.analysis.CustomLogger;
 import utils.filesTools.PathTools;
 import utils.filesTools.SaveAs;
@@ -73,8 +77,8 @@ public class ModelRunnerController {
 	private GridPane gridPaneLinnChart;
 	@FXML
 	private ScrollPane scroll;
-	public static String outPutFolderName;
-	private ModelRunner runner;
+	
+	public static ModelRunner runner;
 
 	Timeline timeline;
 	public static AtomicInteger tick;
@@ -92,13 +96,12 @@ public class ModelRunnerController {
 
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
-		runner = new ModelRunner();
-		tick = new AtomicInteger(PathsLoader.getStartYear());
+		init();
 		tickTxt.setText(tick.toString());
 		lineChart = new ArrayList<>();
 
 		Collections.synchronizedList(lineChart);
-		outPutFolderName = PathsLoader.getScenario();
+		ConfigLoader.config.output_folder_name = PathsLoader.getScenario();
 		initilaseChart(lineChart);
 		initialzeRadioColorBox();
 
@@ -109,6 +112,11 @@ public class ModelRunnerController {
 
 		initializeGridpane(2);
 		gridPaneLinnChart.prefWidthProperty().bind(scroll.widthProperty());
+	}
+
+	public static void init() {
+		runner = new ModelRunner();
+		tick = new AtomicInteger(PathsLoader.getStartYear());
 	}
 
 	void initializeGridpane(int colmunNBR) {
@@ -128,7 +136,6 @@ public class ModelRunnerController {
 		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
 			radioColor[i] = new RadioButton(ServiceSet.getServicesList().get(i));
 		}
-
 		for (int i = 0; i < radioColor.length; i++) {
 			int m = i;
 			radioColor[i].setOnAction(e -> {
@@ -189,9 +196,8 @@ public class ModelRunnerController {
 		simulationFolderName();
 		if (ConfigLoader.config.export_LOGGER) {
 			CustomLogger
-					.configureLogger(Paths.get(ModelRunnerController.outPutFolderName + File.separator + "LOGGER.txt"));
+					.configureLogger(Paths.get(ConfigLoader.config.output_folder_name + File.separator + "LOGGER.txt"));
 		}
-		
 		if (startRunin || !ModelRunner.generate_csv_files) {
 			demandEquilibrium();
 			scheduleIteravitveTicks(Duration.millis(1000));
@@ -200,22 +206,66 @@ public class ModelRunnerController {
 
 	public static void demandEquilibrium() {
 		if (ModelRunner.initial_demand_supply_equilibrium) {
-			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
-				RegionalRunner.initialDSEquilibrium();
-			});
-			ServiceSet.worldService.values().forEach(s -> {
-				s.getDemands().keySet().forEach(year -> {
-					s.getDemands().put(year, 0.);
-				});
-			});
-			RegionClassifier.regions.values().forEach(r -> {
-				r.getServicesHash().forEach((ns, s) -> {
-					s.getDemands().forEach((year, value) -> {
-						ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
-					});
-				});
-			});
+			if (ConfigLoader.config.initial_DS_equilibrium_byRegions) {
+				RegionalDemandEquilibrium();
+			} else {
+				initialTotalDSEquilibrium();
+			}
 		}
+	}
+
+	public static void RegionalDemandEquilibrium() {
+		ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
+			RegionalRunner.initialDSEquilibrium();
+		});
+		ServiceSet.worldService.values().forEach(s -> {
+			s.getDemands().keySet().forEach(year -> {
+				s.getDemands().put(year, 0.);
+			});
+		});
+		RegionClassifier.regions.values().forEach(r -> {
+			r.getServicesHash().forEach((ns, s) -> {
+				s.getDemands().forEach((year, value) -> {
+					ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
+				});
+			});
+		});
+
+	}
+
+	public static void initialTotalDSEquilibrium() {
+		runner.go();
+		runner.totalSupply.forEach((serviceName, serviceSuplly) -> {
+			double factor = 1;
+			if (serviceSuplly != 0) {
+				if (ServiceSet.worldService.get(serviceName).getDemands().get(1) == 0) {
+					LOGGER.warn("Demand for " + serviceName + " = 0");
+				} else {
+					factor = ServiceSet.worldService.get(serviceName).getDemands().get(0) / (serviceSuplly);
+				}
+			} else {
+				LOGGER.warn("Supply for " + serviceName + " = 0 (The AFT baseline map is unable to produce it)");
+			}
+			ServiceSet.worldService.get(serviceName).setCalibration_Factor(factor != 0 ? factor : 1);
+			double f = factor;
+
+			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
+				Service s = RegionalRunner.R.getServicesHash().get(serviceName);
+				s.setCalibration_Factor(f);
+				s.getDemands().forEach((year, value) -> {
+					s.getDemands().put(year, value / f);
+				});
+				int i = ServiceSet.getServicesList().indexOf(serviceName);
+				RegionalRunner.listner.DSEquilibriumListener[i + 1][0] = serviceName;
+				RegionalRunner.listner.DSEquilibriumListener[i + 1][1] = f + "";
+
+			});
+			ConcurrentHashMap<Integer, Double> ss = ServiceSet.worldService.get(serviceName).getDemands();
+			ss.keySet().forEach(year -> {
+				ss.put(year, ss.get(year) / f);
+			});
+		});
+
 	}
 
 	private void displayRunAsOutput() {
@@ -223,16 +273,15 @@ public class ModelRunnerController {
 		OutPutTabController.getInstance().createNewTab("Current simulation");
 		TabPane tabpane = TabPaneController.getInstance().getTabpane();
 		tabpane.getSelectionModel().select(tabpane.getTabs().size() - 1);
-		tabpane.getTabs().stream()
-        .filter(tab -> tab.getText().equals("Model OutPut")) // Match tab by name
-        .findFirst() // Get the first matching tab (if any)
-        .ifPresent(tab -> tabpane.getSelectionModel().select(tab)); // Select the tab if found
+		tabpane.getTabs().stream().filter(tab -> tab.getText().equals("Model OutPut")) // Match tab by name
+				.findFirst() // Get the first matching tab (if any)
+				.ifPresent(tab -> tabpane.getSelectionModel().select(tab)); // Select the tab if found
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {
 		if (PathsLoader.getCurrentYear() >= PathsLoader.getEndtYear()) {
 			// Stop if max iterations reached
-			if (ModelRunner.generate_csv_files)
+			if (ConfigLoader.config.generate_csv_files)
 				displayRunAsOutput();
 			return;
 		}
@@ -241,20 +290,19 @@ public class ModelRunnerController {
 			timeline.stop();
 		}
 		// Create a new timeline for the next tick
-			timeline = new Timeline(new KeyFrame(delay, event -> {
-				long startTime = System.currentTimeMillis();
-				// Perform the simulation update
-				Platform.runLater(() -> {
-					oneStep();
-				});
-				// Calculate the delay for the next tick to maintain the rhythm
-				long delayForNextTick = Math.max(300, (System.currentTimeMillis() - startTime) / 3);
-				// Schedule the next tick
+		timeline = new Timeline(new KeyFrame(delay, event -> {
+			long startTime = System.currentTimeMillis();
+			// Perform the simulation update
+			Platform.runLater(() -> {
+				oneStep();
+			});
+			// Calculate the delay for the next tick to maintain the rhythm
+			long delayForNextTick = Math.max(300, (System.currentTimeMillis() - startTime) / 3);
+			// Schedule the next tick
+			System.out.println("Tick=...." + PathsLoader.getCurrentYear());
+			scheduleIteravitveTicks(Duration.millis(delayForNextTick));
 
-				scheduleIteravitveTicks(Duration.millis(delayForNextTick));
-				System.out.println("Delay For Last Tick=...." + " ms");
-			}));
-		
+		}));
 		timeline.play();
 	}
 
@@ -334,30 +382,13 @@ public class ModelRunnerController {
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setHeaderText("Please enter OutPut folder name and any comments");
-		// String runTitel ="outPutFolderName="+ outPutFolderName +"\n";
-		String competitionType = "Select The most competitive AFT for land competition Percentage: "
-				+ (ModelRunner.MostCompetitorAFTProbability * 100) + "% \n"
-				+ "Randomly select an AFT for land competition Percentage: "
-				+ (100 - ModelRunner.MostCompetitorAFTProbability * 100) + "%";
-
-		String neighbour = ModelRunner.use_neighbor_priority
-				? "   with probabilty " + (ModelRunner.neighbor_priority_probability * 100) + "% "
-						+ "Neighborhood radius: " + ModelRunner.neighbor_radius + "\n"
-				: "";
-
-		String cofiguration = /* runTitel+ */"Remove negative marginal utility values:   "
-				+ ModelRunner.remove_negative_marginal_utility + "\n" + "Land abondenmant (Give-up mechanism):  "
-				+ ModelRunner.use_abandonment_threshold + "\n" + "Land abondenmant percentage: "
-				+ (ModelRunner.land_abandonment_percentage * 100) + "\n" + "Averaged Per Cell Residual Demand: "
-				+ ModelRunner.averaged_residual_demand_per_cell + "\n" + "Considering mutation:  "
-				+ ModelRunner.mutate_on_competition_win + "\n" + competitionType + "\n"
-				+ "Priority given to neighbouring AFTs for land competition: |" + ModelRunner.use_neighbor_priority
-				+ "| \n" + neighbour + "Percentage of land use that could be changed:  "
-				+ (ModelRunner.participating_cells_percentage * 100) + "%" + "\n"
-				+ "Number of sub-assemblies and residual demand update during the waiting period: "
-				+ ModelRunner.marginal_utility_calculations_per_tick + "\n"
-				+ "Types of land mask restrictions considered:  " + MaskRestrictionDataLoader.hashMasksPaths.keySet()
-				+ "\n \n" + "Add your comments..";
+		String cofiguration = "";
+		try {
+			InputStream inputStream = ResourceReader.class.getResourceAsStream(ConfigLoader.configPath);
+			cofiguration = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		TextField textField = new TextField();
 		textField.setPromptText("Output_Folder_Name (if not specified, a default name will be created)");
@@ -373,8 +404,8 @@ public class ModelRunnerController {
 
 		alert.showAndWait().ifPresent(response -> {
 			if (response == ButtonType.OK) {
-				outputfolderPath(textField.getText());
-				PathTools.writeFile(outPutFolderName + File.separator + "readme.txt", textArea.getText(), false);
+				Listener.outputfolderPath(textField.getText());
+				PathTools.writeFile(ConfigLoader.config.output_folder_name + File.separator + "readme.txt", textArea.getText(), false);
 				startRunin = true;
 			} else if (response == ButtonType.CANCEL) {
 				startRunin = false;
@@ -384,21 +415,6 @@ public class ModelRunnerController {
 		return alert;
 	}
 
-	public static void outputfolderPath(String textFieldGetText) {
-		if (textFieldGetText.equals("") || textFieldGetText.equalsIgnoreCase("Default")) {
-			outPutFolderName = "Default simulation folder";
-			LocalDateTime now = LocalDateTime.now();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
-			String formattedDate = now.format(formatter);
-			outPutFolderName = "Default_Run_Output_" + formattedDate;
-		} else {
-			outPutFolderName = textFieldGetText;
-		}
 
-		String dir = PathTools.makeDirectory(PathsLoader.getProjectPath() + PathTools.asFolder("output"));
-		dir = PathTools.makeDirectory(dir + PathsLoader.getScenario());
-		dir = PathTools.makeDirectory(dir + File.separator + outPutFolderName);
-		outPutFolderName = dir;
-	}
 
 }

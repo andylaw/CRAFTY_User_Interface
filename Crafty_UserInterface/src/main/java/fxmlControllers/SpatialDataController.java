@@ -10,16 +10,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.DemandModel;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.RadioButton;
@@ -73,7 +76,8 @@ public class SpatialDataController {
 		CellsSet.setCellsSet(TabPaneController.cellsLoader);
 		CellsSet.plotCells();
 
-		new LineChartTools().lineChart( (Pane) demandsChart.getParent(), demandsChart, DemandModel.serialisationWorldDemand());
+		new LineChartTools().lineChart((Pane) demandsChart.getParent(), demandsChart,
+				DemandModel.serialisationWorldDemand());
 		String ItemName = "Save as CSV";
 		Consumer<String> action = x -> {
 			SaveAs.exportLineChartDataToCSV(demandsChart);
@@ -86,24 +90,21 @@ public class SpatialDataController {
 		mapColorAndCapitalHistogrameInitialisation();
 		radioColor[0].fire();
 		isNotInitialsation = true;
+		((CategoryAxis) histogramCapitals.getXAxis()).setCategories(FXCollections.observableArrayList(
+				IntStream.rangeClosed(1, 100).mapToObj(String::valueOf).collect(Collectors.toList())));
 	}
 
 	private void mapColorAndCapitalHistogrameInitialisation() {
-
 		radioColor = new RadioButton[CellsLoader.getCapitalsList().size() + 1];
 		for (int i = 0; i < CellsLoader.getCapitalsList().size(); i++) {
 			radioColor[i] = new RadioButton(CellsLoader.getCapitalsList().get(i));
 			vboxForSliderColors.getChildren().add(radioColor[i]);
-
 			int k = i;
 			radioColor[k].setOnAction(e -> {
 				for (int j = 0; j < CellsLoader.getCapitalsList().size() + 1; j++) {
 					if (j != k) {
 						if (radioColor[j] != null) {
 							radioColor[j].setSelected(false);
-//							OpenTabs.choiceScenario.setDisable(false);
-//							OpenTabs.year.setDisable(false);
-
 						}
 					}
 				}
@@ -113,7 +114,6 @@ public class SpatialDataController {
 						histogrameCapitals(PathsLoader.getCurrentYear() + "", CellsLoader.getCapitalsList().get(k));
 					}
 					CellsSet.colorMap(CellsLoader.getCapitalsList().get(k));
-
 				}
 			});
 		}
@@ -134,16 +134,10 @@ public class SpatialDataController {
 	}
 
 	void histogrameCapitals(String year, String capitalName) {
-
 		Set<Double> dset = CellsLoader.hashCell.values().stream().map(c -> c.getCapitals().get(capitalName))
 				.collect(Collectors.toSet());
 		XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();
 		List<Integer> numbersInInterval = countNumbersInIntervals(dset, 100);
-//		System.out.println(numbersInInterval);
-//		System.out.println(numbersInInterval.stream()
-//                                   .mapToInt(Integer::intValue) // converts Integer to int
-//                                   .sum());
-
 		dataSeries.setName(capitalName + "_" + year + "_" + PathsLoader.getScenario());
 		for (int i = 0; i < numbersInInterval.size(); i++) {
 			Integer v = numbersInInterval.get(i);
@@ -157,7 +151,7 @@ public class SpatialDataController {
 		HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
 		othersMenuItems.put(ItemName, action);
 		MousePressed.mouseControle((Pane) histogramCapitals.getParent(), histogramCapitals, othersMenuItems);
-	}
+ 	}
 
 	public static List<Integer> countNumbersInIntervals(Set<Double> numbers, int intervalNBR) {
 		int[] counts = new int[intervalNBR + 1];
@@ -183,7 +177,7 @@ public class SpatialDataController {
 			color.put(name, a.getColor());
 		});
 
-		new PieChartTools().updateChart( convertedMap, color, chart);
+		new PieChartTools().updateChart(convertedMap, color, chart);
 		chart.setLegendSide(Side.LEFT);
 		// * add menu to PiChart*//
 		HashMap<String, Consumer<String>> newItemMenu = new HashMap<>();

@@ -23,6 +23,9 @@
 								<CheckBox fx:id="InitialEquilibrium"
 									mnemonicParsing="false" onAction="#initialEquilibrium"
 									text="Initial Supply-Demand Equilibrium (Ensure that supply and demand are balanced for eco-services during the initial tick.)" />
+									<CheckBox fx:id="InitialEquilibriumRegion"
+									mnemonicParsing="false" onAction="#initialEquilibriumRegion"
+									text="Initial Supply-Demand Equilibrium by Region" />
 								<CheckBox fx:id="removeNegative"
 									mnemonicParsing="false" onAction="#removeNegativeMarginal"
 									text="Remove negative Marginal utility" />

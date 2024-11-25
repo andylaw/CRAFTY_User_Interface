@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -263,7 +262,6 @@ public class AFTsLoader extends HashSet<Manager> {
 
 	public static void updateAFTProduction(Manager a, File file) {
 		String[][] m = CsvTools.csvReader(file.toPath());
-		System.out.println(Arrays.toString(m[0]));
 		for (int i = 0; i < m.length; i++) {
 			if (ServiceSet.getServicesList().contains(m[i][0])) {
 				a.getProductivityLevel().put(m[i][0], Tools.sToD(m[i][Tools.indexof("Production", m[0])]));

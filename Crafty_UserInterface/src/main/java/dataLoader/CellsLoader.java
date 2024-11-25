@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +15,6 @@ import model.Cell;
 import model.RegionClassifier;
 import tech.tablesaw.api.Table;
 import utils.analysis.CustomLogger;
-import utils.filesTools.CsvTools;
 import utils.filesTools.PathTools;
 import utils.filesTools.ReaderFile;
 
@@ -45,7 +45,6 @@ public class CellsLoader {
 
 		loadGisData();
 		RegionClassifier.initialation();
-//		DemandModel.updateWorldDemand();
 		S_WeightLoader.updateWorldWeight();
 		AFTsLoader.hashAgentNbr();
 		AFTsLoader.hashAgentNbrRegions();
@@ -56,17 +55,19 @@ public class CellsLoader {
 
 	public static void loadCapitalsList() {
 		capitalsList = Collections.synchronizedList(new ArrayList<>());
-		String[] line0 = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Capitals.csv").get(0));
-		getCapitalsList().clear();
-		for (int n = 1; n < line0.length; n++) {
-			getCapitalsList().add(line0[n]);
-		}
+		HashMap<String, ArrayList<String>> capitalsFile = ReaderFile
+				.ReadAsaHash(PathTools.fileFilter(File.separator + "Capitals.csv").get(0));
+		String label = capitalsFile.keySet().contains("Label") ? "Label" : "Name";
+		setCapitalsList(capitalsFile.get(label));
 		LOGGER.info("Capitals size=" + getCapitalsList().size() + " CellsSet.getCapitalsName() " + getCapitalsList());
-
 	}
 
 	public static List<String> getCapitalsList() {
 		return capitalsList;
+	}
+
+	public static void setCapitalsList(List<String> capitalsList) {
+		CellsLoader.capitalsList = capitalsList;
 	}
 
 	public void loadGisData() {
