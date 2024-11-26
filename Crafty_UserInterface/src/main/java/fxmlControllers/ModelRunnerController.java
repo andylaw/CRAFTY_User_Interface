@@ -77,7 +77,7 @@ public class ModelRunnerController {
 	private GridPane gridPaneLinnChart;
 	@FXML
 	private ScrollPane scroll;
-	
+
 	public static ModelRunner runner;
 
 	Timeline timeline;
@@ -376,12 +376,7 @@ public class ModelRunnerController {
 		LineChartTools.labelcolor(l);
 	}
 
-	Alert simulationFolderName() {
-		if (!ModelRunner.generate_csv_files) {
-			return null;
-		}
-		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-		alert.setHeaderText("Please enter OutPut folder name and any comments");
+	public static String exportConfigurationFile() {
 		String cofiguration = "";
 		try {
 			InputStream inputStream = ResourceReader.class.getResourceAsStream(ConfigLoader.configPath);
@@ -389,7 +384,17 @@ public class ModelRunnerController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return cofiguration;
+	}
 
+	Alert simulationFolderName() {
+		if (!ModelRunner.generate_csv_files) {
+			return null;
+		}
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.setHeaderText("Please enter OutPut folder name and any comments");
+		String cofiguration = exportConfigurationFile();
+		cofiguration = cofiguration + " \n "+"Add any comments \n ";
 		TextField textField = new TextField();
 		textField.setPromptText("Output_Folder_Name (if not specified, a default name will be created)");
 		Text txt = new Text(PathsLoader.getProjectPath() + PathTools.asFolder("output") + PathsLoader.getScenario()
@@ -405,7 +410,8 @@ public class ModelRunnerController {
 		alert.showAndWait().ifPresent(response -> {
 			if (response == ButtonType.OK) {
 				Listener.outputfolderPath(textField.getText());
-				PathTools.writeFile(ConfigLoader.config.output_folder_name + File.separator + "readme.txt", textArea.getText(), false);
+				PathTools.writeFile(ConfigLoader.config.output_folder_name + File.separator + "readme.txt",
+						textArea.getText(), false);
 				startRunin = true;
 			} else if (response == ButtonType.CANCEL) {
 				startRunin = false;
@@ -414,7 +420,5 @@ public class ModelRunnerController {
 		});
 		return alert;
 	}
-
-
 
 }
