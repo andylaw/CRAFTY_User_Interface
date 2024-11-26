@@ -3,7 +3,6 @@ package plumLinking;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,22 +15,34 @@ import utils.graphicalTools.Tools;
 
 public class PlumCommodityMapping {
 	ArrayList<Path> allpaths;
-	List<Map<String, String>> bio_fractions;
-	List<Map<String, String>> waste_df;
-	List<Map<String, String>> country_demand;
-	List<Map<String, String>> domestic;
-	HashMap<String, Set<String>> FilterHash = new HashMap<>();
-	String[] EuCountries = { "Austria", "Bulgaria", "Croatia", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland",
-			"France", "Germany", "Greece", "Hungary", "Ireland", "Italy & Malta", "Latvia", "Lithuania",
-			"Belgium & Luxembourg", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia",
-			"Spain", "Sweden", "Switzerland", "United Kingdom" };// Sould be change into CRFATY countries and unsure
-																	// that CRFATY countries match with Iso3 groupment
+	private List<Map<String, String>> bio_fractions;
+	private List<Map<String, String>> waste_df;
+	private List<Map<String, String>> country_demand;
+	private List<Map<String, String>> domestic;
+	private HashMap<String, Set<String>> FilterHash = new HashMap<>();
+	Map<String, String> countryShortNameMap = new HashMap<>();
+
+	void Eu_countries() {
+		String[] EuCountries = { "Cyprus", "Czechia", "Portugal", "Greece", "Austria", "Latvia", "Netherlands",
+				"Sweden", "Ireland", "Belgium & Luxembourg", "Poland", "Slovakia", "Slovenia", "Bulgaria", "France",
+				"Lithuania", "Croatia", "Italy & Malta", "Romania", "Hungary", "United Kingdom", "Switzerland", "Spain",
+				"Norway", "Finland", "Denmark", "Germany", "Estonia" };
+		String[] shortNames = { "CY", "CZ", "PT", "EL", "AT", "LV", "NL", "SE", "IE", "BE", "PL", "SK", "SI", "BG",
+				"FR", "LT", "HR", "MT", "RO", "HU", "UK", "CH", "ES", "NO", "FI", "DK", "DE", "EE" };
+
+		for (int i = 0; i < EuCountries.length; i++) {
+			countryShortNameMap.put(EuCountries[i], shortNames[i]);
+		}
+	}
+
+	public Map<String, Map<String, Double>> finalCountriesDemands = new HashMap<>();
 
 	public void initialize() {
 		allpaths = PathTools.findAllFiles(Paths.get(ModelConfig.OUTPUT_DIR));
-		FilterHash.put("Country", new HashSet<>(Arrays.asList(EuCountries)));
+		Eu_countries();
+		FilterHash.put("Country", new HashSet<>(countryShortNameMap.keySet()));
 		staticFilesinitialisation();
-		fromPlumTickToCraftyDemands(2020);
+
 	}
 
 	void fromPlumTickToCraftyDemands(int tick) {
@@ -77,21 +88,19 @@ public class PlumCommodityMapping {
 		List<Map<String, String>> domistic = domestic_prod();
 		// split by countries
 		Map<String, List<Map<String, String>>> countriesDemands = new HashMap<>();
-		for (int i = 0; i < EuCountries.length; i++) {
+			for(String country: countryShortNameMap.keySet()) {
 			List<Map<String, String>> d = new ArrayList<>();
-			int j = i;
 			domistic.forEach(line -> {
-				if (line.get("Country").equals(EuCountries[j])) {
+				if (line.get("Country").equals(country)) {
 					d.add(line);
 				}
 			});
-			countriesDemands.put(EuCountries[i], d);
+			countriesDemands.put(countryShortNameMap.get(country), d);
 		}
 
-		Map<String, Map<String, Double>> finalCountriesDemands = new HashMap<>();
-		countriesDemands.forEach((country, list) -> {
+		countriesDemands.forEach((country, demandMap) -> {
 			Map<String, Double> map = new HashMap<>();
-			for (Map<String, String> line : list) {
+			for (Map<String, String> line : demandMap) {
 				double Fodder_crops = getCrop(line, "wheat", "Rum_feed_produced")
 						+ getCrop(line, "wheat", "Mon_feed_produced") + getCrop(line, "maize", "Rum_feed_produced")
 						+ getCrop(line, "maize", "Mon_feed_produced") + getCrop(line, "rice", "Rum_feed_produced")
@@ -105,9 +114,8 @@ public class PlumCommodityMapping {
 				map.merge("BioenergyG1", Bioenergy1G, Double::sum);
 				map.merge("Pasture", getCrop(line, "pasture", "Rum_feed_produced"), Double::sum);
 				map.merge("C4crops", getCrop(line, "maize", "Food_produced"), Double::sum);
-				// map.merge("C3rice", getCrop(line, "rice", "Food_produced"), Double::sum);//
-				// map.merge("C3oilNFix", getCrop(line, "oilcropsNFix", "Food_produced"),
-				// Double::sum);//
+				map.merge("C3rice", getCrop(line, "rice", "Food_produced"), Double::sum);//
+				map.merge("C3oilNFix", getCrop(line, "oilcropsNFix", "Food_produced"), Double::sum);//
 				map.merge("C3oilcrops", getCrop(line, "oilcropsOther", "Food_produced"), Double::sum);
 				map.merge("C3starchyroots", getCrop(line, "starchyRoots", "Food_produced"), Double::sum);
 				map.merge("C3cereals", getCrop(line, "wheat", "Food_produced"), Double::sum);
@@ -116,9 +124,6 @@ public class PlumCommodityMapping {
 			}
 			finalCountriesDemands.put(country, map);
 		});
-//		finalCountriesDemands.forEach((country,list)->{
-//			System.out.println(country+"-->"+ list);
-//		});
 	}
 
 	List<Map<String, String>> domestic_prod() {

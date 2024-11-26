@@ -14,7 +14,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
-import utils.analysis.CustomLogger;
+//import utils.analysis.CustomLogger;
 import utils.graphicalTools.GraphicConsol;
 import utils.graphicalTools.Tools;
 
@@ -26,19 +26,19 @@ public class PlumController {
 	private VBox box;
 	@FXML
 	private ScrollPane scroll;
-	private static final CustomLogger LOGGER = new CustomLogger(PlumController.class);
+//	private static final CustomLogger LOGGER = new CustomLogger(PlumController.class);
 
 	boolean isPlumInitialized = false;
 	boolean isATickFinished = true;
 	AtomicInteger tick = new AtomicInteger(1);
 
-	PlumCommodityMapping dataMaper = new PlumCommodityMapping();
+	PlumToCrafty PtoC = new PlumToCrafty();
 
 	// List<Map<String, String>> bio_crop_demand;
 
 	public void initialize() {
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.85);
-		dataMaper.initialize();
+		PtoC.initialize();
 	}
 
 	@FXML

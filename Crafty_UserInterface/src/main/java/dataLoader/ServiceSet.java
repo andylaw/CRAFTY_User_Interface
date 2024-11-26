@@ -4,14 +4,15 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import model.RegionClassifier;
 import model.Service;
 import utils.analysis.CustomLogger;
-import utils.filesTools.CsvTools;
 import utils.filesTools.PathTools;
+import utils.filesTools.ReaderFile;
 
 public class ServiceSet {
 	private static final CustomLogger LOGGER = new CustomLogger(ServiceSet.class);
@@ -31,10 +32,10 @@ public class ServiceSet {
 
 	public static void loadServiceList() {
 		servicesList = Collections.synchronizedList(new ArrayList<>());
-		String[] line0s = CsvTools.columnFromscsv(0, PathTools.fileFilter(File.separator + "Services.csv").get(0));
-		for (int n = 1; n < line0s.length; n++) {
-			servicesList.add(line0s[n]);
-		}
+		HashMap<String, ArrayList<String>> servicesFile = ReaderFile
+				.ReadAsaHash(PathTools.fileFilter(File.separator + "Services.csv").get(0));
+		String label = servicesFile.keySet().contains("Label") ? "Label" : "Name";
+		servicesList = servicesFile.get(label);
 		LOGGER.info("Services size=  " + servicesList.size() + "  CellsSet.getServicesList()=" + servicesList);
 	}
 

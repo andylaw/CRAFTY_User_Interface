@@ -18,6 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
+import main.ConfigLoader;
 import main.FxMain;
 import model.CellsSet;
 import model.ModelRunner;
@@ -101,6 +102,10 @@ public class TabPaneController {
 	@FXML
 	public void regionalization() {
 		RegionClassifier.regionalization = regionalBox.isSelected();
+		ConfigLoader.config.regionalization=regionalBox.isSelected();
+		if (!regionalBox.isSelected()) {
+			ConfigLoader.config.initial_DS_equilibrium_byRegions = false;
+		}
 		RegionClassifier.initialation();
 		ModelRunner.initializeRegions();
 		AFTsLoader.hashAgentNbrRegions();

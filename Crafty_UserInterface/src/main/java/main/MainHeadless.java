@@ -11,19 +11,21 @@ import dataLoader.ServiceSet;
 import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import model.CellsSet;
-import model.ModelRunner;
-import plumLinking.PlumCommodityMapping;
+import plumLinking.PlumToCrafty;
+import output.Listener;
 import utils.analysis.CustomLogger;
 
 public class MainHeadless {
 	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
-	static PlumCommodityMapping plumMaper= new PlumCommodityMapping();
+	static PlumToCrafty plumMaper= new PlumToCrafty();
 
 	public static void main(String[] args) {
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
 		modelInitialisation();
 		plumMaper.initialize();
-	//	run();
+		
+//		runHeadless();
+		System.out.println("------------CRAFTY executed from Java-----------------");
 	}
 
 	static void modelInitialisation() {
@@ -37,20 +39,21 @@ public class MainHeadless {
 		MaskRestrictionDataLoader.allMaskAndRistrictionUpdate();
 	}
 
-	static void run() {
-		ModelRunner runner = new ModelRunner();
+	static void runHeadless() {
+		ModelRunnerController.init();
 		ModelRunnerController.tick = new AtomicInteger(PathsLoader.getStartYear());
-		ModelRunnerController.outputfolderPath(ConfigLoader.config.output_folder_name);
+		Listener.outputfolderPath(ConfigLoader.config.output_folder_name);
 		if (ConfigLoader.config.export_LOGGER) {
 			CustomLogger
-					.configureLogger(Paths.get(ModelRunnerController.outPutFolderName + File.separator + "LOGGER.txt"));
+					.configureLogger(Paths.get(ConfigLoader.config.output_folder_name + File.separator + "LOGGER.txt"));
 		}
 		ModelRunnerController.demandEquilibrium();
 
 		for (int i = 0; i <= PathsLoader.getEndtYear() - PathsLoader.getStartYear(); i++) {
 			PathsLoader.setCurrentYear(ModelRunnerController.tick.get());
 			LOGGER.info("-------------   " + PathsLoader.getCurrentYear() + "   --------------");
-			runner.go();
+			System.out.println("-------------   " + PathsLoader.getCurrentYear() + "   --------------");
+			ModelRunnerController.runner.go();
 			ModelRunnerController.tick.getAndIncrement();
 		}
 	}

@@ -46,9 +46,6 @@ public class FxMain extends Application {
 
 		primaryStage.setTitle(" CRAFTY User Interface ");
 
-		// VBox vbox = new
-		// VBox(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")),
-		// anchor);
 		VBox vbox = new VBox();
 		vbox.getChildren().add(FXMLLoader.load(getClass().getResource("/fxmlControllers/MenuBar.fxml")));
 		vbox.getChildren().add(anchor);

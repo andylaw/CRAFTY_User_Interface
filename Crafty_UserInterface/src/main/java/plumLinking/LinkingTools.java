@@ -157,7 +157,6 @@ public class LinkingTools {
 				result.add(noMatchRow);
 			}
 		}
-		result.forEach(map -> System.out.println(map));
 		return result;
 	}
 }

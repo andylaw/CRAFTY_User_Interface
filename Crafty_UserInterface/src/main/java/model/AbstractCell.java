@@ -16,7 +16,6 @@ public abstract class AbstractCell {
 	ConcurrentHashMap<String, Double> currentProductivity = new ConcurrentHashMap<>();
 	String CurrentRegion;
 	Manager owner;
-	double tmpValueCell = 0;// a changer
 	protected Color color = Color.TRANSPARENT;
 	private String maskType;
 	
@@ -71,13 +70,6 @@ public abstract class AbstractCell {
 		this.owner = owner;
 	}
 
-	public double getTmpValueCell() {
-		return tmpValueCell;
-	}
-
-	public void setTmpValueCell(double tmpValueCell) {
-		this.tmpValueCell = tmpValueCell;
-	}
 
 	public ConcurrentHashMap<String, Double> getCapitals() {
 		return capitals;

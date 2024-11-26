@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import dataLoader.AFTsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.ServiceSet;
-import fxmlControllers.MasksPaneController;
 import javafx.scene.paint.Color;
+import main.ConfigLoader;
 
 /**
  * @author Mohamed Byari
@@ -134,7 +134,8 @@ public class Cell extends AbstractCell {
 
 	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
 			Region R) {
-		boolean Neighboor = ModelRunner.use_neighbor_priority && ModelRunner.neighbor_priority_probability > Math.random();
+		boolean Neighboor = ModelRunner.use_neighbor_priority
+				&& ConfigLoader.config.neighbor_priority_probability > Math.random();
 		Collection<Manager> afts = Neighboor
 				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.neighbor_radius)
 				: AFTsLoader.getActivateAFTsHash().values();
@@ -167,15 +168,6 @@ public class Cell extends AbstractCell {
 		}
 	}
 //------------------------------------------//
-
-	public void landStored(Manager a, Region R) {
-		double sum = 0;
-
-		for (String s : ServiceSet.getServicesList()) {
-			sum += productivity(a, s) * a.getProductivityLevel().get(s);
-		}
-		setTmpValueCell(sum);
-	}
 
 	@Override
 	public String toString() {

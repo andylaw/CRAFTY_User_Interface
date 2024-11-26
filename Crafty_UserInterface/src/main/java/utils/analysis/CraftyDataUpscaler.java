@@ -99,12 +99,12 @@ public class CraftyDataUpscaler {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		modelInitialisation();
-		DataFolderPath = PathTools.makeDirectory(PathsLoader.getProjectPath()+"_upscaled_"+scale);
+		DataFolderPath = PathTools.makeDirectory(PathsLoader.getProjectPath() + "_upscaled_" + scale);
 		createDataTemplate();
 		System.out.println(DataFolderPath);
-		//folderUpscaler(PathsLoader.getProjectPath() + PathTools.asFolder("worlds"));
-	//	folderUpscaler(PathsLoader.getProjectPath() + PathTools.asFolder("GIS"));
-		
+		folderUpscaler(PathsLoader.getProjectPath() + PathTools.asFolder("worlds"));
+		folderUpscaler(PathsLoader.getProjectPath() + PathTools.asFolder("GIS"));
+
 	}
 
 	static void folderUpscaler(String folderPath) {
