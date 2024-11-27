@@ -11,24 +11,21 @@ import dataLoader.ServiceSet;
 import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import model.CellsSet;
-import plumLinking.PlumToCrafty;
 import output.Listener;
 import utils.analysis.CustomLogger;
 
 public class MainHeadless {
 	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
-	static PlumToCrafty plumMaper= new PlumToCrafty();
+	
 
 	public static void main(String[] args) {
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
 		modelInitialisation();
-		plumMaper.initialize();
-		
-//		runHeadless();
+		runHeadless();
 		System.out.println("------------CRAFTY executed from Java-----------------");
 	}
 
-	static void modelInitialisation() {
+	public static void modelInitialisation() {
 		System.out.println("is linux:  " + System.getProperty("os.name").toLowerCase().contains("linux"));
 		PathsLoader.initialisation(Paths.get(ConfigLoader.config.project_path));
 		PathsLoader.setScenario(ConfigLoader.config.scenario);
@@ -57,5 +54,8 @@ public class MainHeadless {
 			ModelRunnerController.tick.getAndIncrement();
 		}
 	}
+	
+
+	
 
 }

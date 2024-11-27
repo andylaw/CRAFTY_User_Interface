@@ -37,6 +37,7 @@ public class PlumController {
 	// List<Map<String, String>> bio_crop_demand;
 
 	public void initialize() {
+		System.out.println("--------------------------------------------------");
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.85);
 		PtoC.initialize();
 	}
@@ -58,7 +59,7 @@ public class PlumController {
 	}
 
 	@FXML
-	void oneTick() {
+	public void oneTick() {
 		if (isPlumInitialized && isATickFinished) {
 			isATickFinished = false;
 			String year = (ModelConfig.BASE_YEAR + ModelMain.newStartYear) + "";
@@ -79,6 +80,7 @@ public class PlumController {
 			progressBarFunction(true, "Running PLUM for: " + year, runNTick, Build_demands_for_Crafty);
 		}
 	}
+
 
 	void CreateTextAreaAndGraphicConsole() {
 		TextArea console = new TextArea();
