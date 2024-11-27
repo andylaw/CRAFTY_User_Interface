@@ -13,6 +13,7 @@ import fxmlControllers.TabPaneController;
 import model.CellsSet;
 import output.Listener;
 import utils.analysis.CustomLogger;
+import utils.filesTools.PathTools;
 
 public class MainHeadless {
 	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
@@ -43,6 +44,8 @@ public class MainHeadless {
 		if (ConfigLoader.config.export_LOGGER) {
 			CustomLogger
 					.configureLogger(Paths.get(ConfigLoader.config.output_folder_name + File.separator + "LOGGER.txt"));
+			PathTools.writeFile(ConfigLoader.config.output_folder_name + File.separator + "config.txt",
+					ModelRunnerController.exportConfigurationFile(), false);
 		}
 		ModelRunnerController.demandEquilibrium();
 

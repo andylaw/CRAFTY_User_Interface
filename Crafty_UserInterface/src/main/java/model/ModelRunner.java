@@ -53,11 +53,12 @@ public class ModelRunner {
 	public void go() {
 		int year = Math.min(Math.max(PathsLoader.getCurrentYear(), PathsLoader.getStartYear()),
 				PathsLoader.getEndtYear());
-		totalSupply = new ConcurrentHashMap<>();
+		totalSupply = new ConcurrentHashMap<>(); 
 		LOGGER.info("Cells.updateCapitals");
 		TabPaneController.cellsLoader.updateCapitals(year);
 		AFTsLoader.updateAFTs();
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
+		RegionClassifier.aggregateServiceToWorldService(year- PathsLoader.getStartYear());
 		aggregateTotalSupply();
 		if (generate_csv_files) {
 			listner.outPutserviceDemandToCsv(year, totalSupply);

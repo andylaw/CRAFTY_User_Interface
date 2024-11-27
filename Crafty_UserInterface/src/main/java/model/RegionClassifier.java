@@ -40,17 +40,16 @@ public class RegionClassifier {
 		ServiceSet.initialseServices();
 		DemandModel.updateRegionsDemand();
 		S_WeightLoader.updateRegionsWeight();
-		aggregateServiceToWorldService();
+		aggregateServiceToWorldService(0);
 
 		LOGGER.info("Regions: " + regions.keySet());
 	}
 
-	public static void aggregateServiceToWorldService() {
+	public static void aggregateServiceToWorldService(int year) {
 		regions.values().forEach(r -> {
 			r.getServicesHash().forEach((ns, s) -> {
-				s.getDemands().forEach((year, value) -> {
-					ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
-				});
+					ServiceSet.worldService.get(ns).getDemands().merge(year, s.getDemands().get(year), Double::sum);
+				
 			});
 		});
 	}

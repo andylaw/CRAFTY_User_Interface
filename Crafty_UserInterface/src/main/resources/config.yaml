@@ -6,7 +6,7 @@ scenario: 'ssp126'                            #Scenario identifier
 regionalization: true						  # Only works if regional data is available (regional demands and GIS cell specificity).
 # CRAFTY Mechanisms
 initial_demand_supply_equilibrium: true       # Ensure balanced eco-service supply and demand during initial tick
-initial_DS_equilibrium_byRegions: false       # if true supply-demand balaced by each region otherwise for the total space
+initial_DS_equilibrium_byRegions: true       # if true supply-demand balaced by each region otherwise for the total space
 remove_negative_marginal_utility: false       # Set marginal utility of production to 0 if negative
 use_abandonment_threshold: true               # Abandon cell if agent competitiveness falls below threshold
 mutate_on_competition_win: false              # Create new agent with mutations if competitor wins competition

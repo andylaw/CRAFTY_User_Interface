@@ -77,7 +77,7 @@ public class ModelRunnerController {
 	private GridPane gridPaneLinnChart;
 	@FXML
 	private ScrollPane scroll;
-	
+
 	public static ModelRunner runner;
 
 	Timeline timeline;
@@ -177,7 +177,7 @@ public class ModelRunnerController {
 			ServiceSet.getServicesList().forEach(service -> {
 				lineChart.get(m.get()).getData().get(0).getData()
 						.add(new XYChart.Data<>(tick.get(), ServiceSet.worldService.get(service).getDemands()
-								.get(tick.get() - PathsLoader.getStartYear())));
+								.get(tick.get() - PathsLoader.getStartYear())/ServiceSet.worldService.get(service).getCalibration_Factor()));
 				lineChart.get(m.get()).getData().get(1).getData()
 						.add(new XYChart.Data<>(tick.get(), runner.totalSupply.get(service)));
 				m.getAndIncrement();
@@ -218,27 +218,17 @@ public class ModelRunnerController {
 		ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
 			RegionalRunner.initialDSEquilibrium();
 		});
-		ServiceSet.worldService.values().forEach(s -> {
-			s.getDemands().keySet().forEach(year -> {
-				s.getDemands().put(year, 0.);
-			});
-		});
-		RegionClassifier.regions.values().forEach(r -> {
-			r.getServicesHash().forEach((ns, s) -> {
-				s.getDemands().forEach((year, value) -> {
-					ServiceSet.worldService.get(ns).getDemands().merge(year, value, Double::sum);
-				});
-			});
-		});
-
 	}
+	
+
+	
 
 	public static void initialTotalDSEquilibrium() {
 		runner.go();
 		runner.totalSupply.forEach((serviceName, serviceSuplly) -> {
 			double factor = 1;
 			if (serviceSuplly != 0) {
-				if (ServiceSet.worldService.get(serviceName).getDemands().get(1) == 0) {
+				if (ServiceSet.worldService.get(serviceName).getDemands().get(0) == 0) {
 					LOGGER.warn("Demand for " + serviceName + " = 0");
 				} else {
 					factor = ServiceSet.worldService.get(serviceName).getDemands().get(0) / (serviceSuplly);
@@ -252,18 +242,18 @@ public class ModelRunnerController {
 			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
 				Service s = RegionalRunner.R.getServicesHash().get(serviceName);
 				s.setCalibration_Factor(f);
-				s.getDemands().forEach((year, value) -> {
-					s.getDemands().put(year, value / f);
-				});
+//				s.getDemands().forEach((year, value) -> {
+//					s.getDemands().put(year, value / f);
+//				});
 				int i = ServiceSet.getServicesList().indexOf(serviceName);
 				RegionalRunner.listner.DSEquilibriumListener[i + 1][0] = serviceName;
 				RegionalRunner.listner.DSEquilibriumListener[i + 1][1] = f + "";
 
 			});
-			ConcurrentHashMap<Integer, Double> ss = ServiceSet.worldService.get(serviceName).getDemands();
-			ss.keySet().forEach(year -> {
-				ss.put(year, ss.get(year) / f);
-			});
+//			ConcurrentHashMap<Integer, Double> ss = ServiceSet.worldService.get(serviceName).getDemands();
+//			ss.keySet().forEach(year -> {
+//				ss.put(year, ss.get(year) / f);
+//			});
 		});
 
 	}
@@ -376,12 +366,7 @@ public class ModelRunnerController {
 		LineChartTools.labelcolor(l);
 	}
 
-	Alert simulationFolderName() {
-		if (!ModelRunner.generate_csv_files) {
-			return null;
-		}
-		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-		alert.setHeaderText("Please enter OutPut folder name and any comments");
+	public static String exportConfigurationFile() {
 		String cofiguration = "";
 		try {
 			InputStream inputStream = ResourceReader.class.getResourceAsStream(ConfigLoader.configPath);
@@ -389,7 +374,17 @@ public class ModelRunnerController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return cofiguration;
+	}
 
+	Alert simulationFolderName() {
+		if (!ModelRunner.generate_csv_files) {
+			return null;
+		}
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.setHeaderText("Please enter OutPut folder name and any comments");
+		String cofiguration = exportConfigurationFile();
+		cofiguration = cofiguration + " \n " + "Add any comments \n ";
 		TextField textField = new TextField();
 		textField.setPromptText("Output_Folder_Name (if not specified, a default name will be created)");
 		Text txt = new Text(PathsLoader.getProjectPath() + PathTools.asFolder("output") + PathsLoader.getScenario()
@@ -405,7 +400,8 @@ public class ModelRunnerController {
 		alert.showAndWait().ifPresent(response -> {
 			if (response == ButtonType.OK) {
 				Listener.outputfolderPath(textField.getText());
-				PathTools.writeFile(ConfigLoader.config.output_folder_name + File.separator + "readme.txt", textArea.getText(), false);
+				PathTools.writeFile(ConfigLoader.config.output_folder_name + File.separator + "readme.txt",
+						textArea.getText(), false);
 				startRunin = true;
 			} else if (response == ButtonType.CANCEL) {
 				startRunin = false;
@@ -414,7 +410,5 @@ public class ModelRunnerController {
 		});
 		return alert;
 	}
-
-
 
 }

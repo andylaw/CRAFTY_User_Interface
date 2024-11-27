@@ -64,8 +64,9 @@ public class ListenerByRegion {
 		servicedemandListener[y][0] = year + "";
 		ServiceSet.getServicesList().forEach(name -> {
 			servicedemandListener[y][m.get()] = regionalSupply.get(name) + "";
-			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = R.getServicesHash().get(name)
-					.getDemands().get(year - PathsLoader.getStartYear()) + "";
+			servicedemandListener[y][m.get() + ServiceSet.getServicesList()
+					.size()] = (R.getServicesHash().get(name).getDemands().get(year - PathsLoader.getStartYear())
+							/ R.getServicesHash().get(name).getCalibration_Factor()) + "";
 			// DemandModel.getRegionalDemand(name, year, R.getName()) + "";
 			m.getAndIncrement();
 		});

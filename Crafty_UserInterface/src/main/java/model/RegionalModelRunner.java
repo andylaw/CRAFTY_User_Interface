@@ -69,13 +69,15 @@ public class RegionalModelRunner {
 		LOGGER.info("Rigion: [" + R.getName() + "] Total Supply = " + regionalSupply);
 		int tick = year - PathsLoader.getStartYear();
 		regionalSupply.forEach((serviceName, serviceSupply) -> {
-			double serviceDemand = R.getServicesHash().get(serviceName).getDemands().get(tick);
-			double marg = ConfigLoader.config.remove_negative_marginal_utility ? Math.max(serviceDemand - serviceSupply, 0)
+			Service s = R.getServicesHash().get(serviceName);
+			double serviceDemand = s.getDemands().get(tick)/s.getCalibration_Factor();
+			double marg = ConfigLoader.config.remove_negative_marginal_utility
+					? Math.max(serviceDemand - serviceSupply, 0)
 					: serviceDemand - serviceSupply;
 			if (ModelRunner.averaged_residual_demand_per_cell) {
 				marg = marg / R.getCells().size();
 			}
-			marg = marg * R.getServicesHash().get(serviceName).getWeights().get(tick);
+			marg = marg * s.getWeights().get(tick);
 			marginal.put(serviceName, marg);
 		});
 	}
@@ -101,38 +103,39 @@ public class RegionalModelRunner {
 
 	}
 
-	public void initialDSEquilibrium(ConcurrentHashMap<String, Service> ServiceHash,
-			ConcurrentHashMap<String, Double> supply) {
-		supply.forEach((serviceName, serviceSuplly) -> {
+	public void initialDSEquilibrium() {
+		regionalSupply();
+		regionalSupply.forEach((serviceName, serviceSuplly) -> {
 			double factor = 1;
 			if (serviceSuplly != 0) {
-				if (ServiceHash.get(serviceName).getDemands().get(1) == 0) {
+				if (R.getServicesHash().get(serviceName).getDemands().get(0) == 0) {
 					LOGGER.warn("Demand for " + serviceName + " = 0");
 				} else {
-					factor = ServiceHash.get(serviceName).getDemands().get(1) / (serviceSuplly);
+					factor = R.getServicesHash().get(serviceName).getDemands().get(0) / (serviceSuplly);
 				}
 			} else {
 				factor = Double.MAX_VALUE;
 				LOGGER.warn("Supply for " + serviceName + " = 0 (The AFT baseline map is unable to produce  "
 						+ serviceName + " service)");
 			}
-			ServiceHash.get(serviceName).setCalibration_Factor(factor != 0 ? factor : 1);
+			R.getServicesHash().get(serviceName).setCalibration_Factor(factor != 0 ? factor : 1);
 		});
-		listner.fillDSEquilibriumListener(ServiceHash);
-	}
-
-	public void initialDSEquilibrium() {
-		regionalSupply();
-		initialDSEquilibrium(R.getServicesHash(), regionalSupply);
-		R.getServicesHash().values().forEach(s -> {
-			s.getDemands().forEach((year, value) -> {
-				s.getDemands().put(year, value / s.getCalibration_Factor());
-			});
-		});
+		listner.fillDSEquilibriumListener(R.getServicesHash());
 		LOGGER.info(
 				"Initial Demand Service Equilibrium Factor= " + R.getName() + ": " + R.getServiceCalibration_Factor());
 	}
-	
+
+//	public void initialDSEquilibrium() {
+//		regionalSupply();
+//		initialDSEquilibrium(R.getServicesHash(), regionalSupply);
+//		R.getServicesHash().values().forEach(s -> {
+//			s.getDemands().forEach((year, value) -> {
+//				s.getDemands().put(year, value / s.getCalibration_Factor());
+//			});
+//		});
+//		LOGGER.info(
+//				"Initial Demand Service Equilibrium Factor= " + R.getName() + ": " + R.getServiceCalibration_Factor());
+//	}
 
 	public void go(int year) {
 		listner.exportFiles(year, regionalSupply);
@@ -143,7 +146,6 @@ public class RegionalModelRunner {
 		competition(year);
 		AFTsLoader.hashAgentNbr(R.getName());
 	}
-
 
 	private void giveUp() {
 		if (ModelRunner.use_abandonment_threshold) {
