@@ -128,7 +128,7 @@ public class TabPaneController {
 			DemandModel.updateRegionsDemand();
 			S_WeightLoader.updateWorldWeight();
 			S_WeightLoader.updateRegionsWeight();
-			RegionClassifier.aggregateServiceToWorldService();
+//			RegionClassifier.aggregateServiceToWorldService();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
 			new LineChartTools().lineChart((Pane) chart.getParent(), chart, DemandModel.serialisationWorldDemand());
 			cellsLoader.AFtsSet.updateAFTsForsenario();

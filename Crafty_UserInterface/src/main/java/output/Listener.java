@@ -15,6 +15,7 @@ import main.ConfigLoader;
 import model.ModelRunner;
 import model.RegionClassifier;
 import model.RegionalModelRunner;
+import model.Service;
 import utils.filesTools.CsvTools;
 import utils.filesTools.PathTools;
 import utils.graphicalTools.Tools;
@@ -25,7 +26,7 @@ public class Listener {
 	public static String[][] servicedemandListener;
 	private static String[][] DSEquilibriumListener;
 
-	public  void initializeListeners() {
+	public void initializeListeners() {
 		servicedemandListener = new String[PathsLoader.getEndtYear() - PathsLoader.getStartYear()
 				+ 2][ServiceSet.getServicesList().size() * 2 + 1];
 		servicedemandListener[0][0] = "Year";
@@ -58,10 +59,13 @@ public class Listener {
 		int y = year - PathsLoader.getStartYear() + 1;
 		servicedemandListener[y][0] = year + "";
 
-		ServiceSet.getServicesList().forEach(service -> {
-			servicedemandListener[y][m.get()] = totalSupply.get(service) + "";
-			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = ServiceSet.worldService
-					.get(service).getDemands().get(year - PathsLoader.getStartYear()) + "";
+		ServiceSet.getServicesList().forEach(serviceName -> {
+			servicedemandListener[y][m.get()] = totalSupply.get(serviceName) + "";
+			Service s = ServiceSet.worldService.get(serviceName);
+			System.out.print(s.getName() + "||  " + s.getCalibration_Factor() + "-->");
+			System.out.println(s.getDemands().get(year - PathsLoader.getStartYear()));
+			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (s.getDemands()
+					.get(year - PathsLoader.getStartYear())/ s.getCalibration_Factor() /* */) + "";
 			m.getAndIncrement();
 		});
 	}
@@ -104,7 +108,7 @@ public class Listener {
 					+ "-Cell-" + year + ".csv");
 		}
 	}
-	
+
 	public static void outputfolderPath(String textFieldGetText) {
 		if (textFieldGetText.equals("") || textFieldGetText.equalsIgnoreCase("Default")) {
 			ConfigLoader.config.output_folder_name = "Default simulation folder";
@@ -121,7 +125,5 @@ public class Listener {
 		dir = PathTools.makeDirectory(dir + File.separator + ConfigLoader.config.output_folder_name);
 		ConfigLoader.config.output_folder_name = dir;
 	}
-	
-	
 
 }

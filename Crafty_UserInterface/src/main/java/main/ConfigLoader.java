@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class ConfigLoader {
-	public static String configPath = "/config2.yaml";// ConfigLoader.loadConfig("C:\\Users\\byari-m\\Desktop\\config.yaml");//
+	public static String configPath = "/config.yaml";// ConfigLoader.loadConfig("C:\\Users\\byari-m\\Desktop\\config.yaml");//
 	public static Config config = ConfigLoader.loadConfig(configPath);
 
 	public static Config loadConfig(String resourcePath) {
