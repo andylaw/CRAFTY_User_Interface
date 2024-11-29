@@ -62,8 +62,6 @@ public class Listener {
 		ServiceSet.getServicesList().forEach(serviceName -> {
 			servicedemandListener[y][m.get()] = totalSupply.get(serviceName) + "";
 			Service s = ServiceSet.worldService.get(serviceName);
-			System.out.print(s.getName() + "||  " + s.getCalibration_Factor() + "-->");
-			System.out.println(s.getDemands().get(year - PathsLoader.getStartYear()));
 			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (s.getDemands()
 					.get(year - PathsLoader.getStartYear())/ s.getCalibration_Factor() /* */) + "";
 			m.getAndIncrement();

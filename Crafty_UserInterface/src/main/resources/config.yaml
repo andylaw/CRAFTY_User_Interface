@@ -26,10 +26,10 @@ land_abandonment_percentage: 0.05            # Percentage of land that can be ab
 
 # Output Configuration
 generate_csv_files: true                      # Enable CSV file output
-output_folder_name: 'PLUM_CRAFTY-test-2'  #if left empty defaults to timestamped folder,project_path\output\scenario\output_folder_name
+output_folder_name: 'newCalibrator-test'  #if left empty defaults to timestamped folder,project_path\output\scenario\output_folder_name
 csv_output_frequency: 10                      # Ticks interval for CSV output of land use and service supply
 track_changes: false                          # Enable change tracking in output
 export_LOGGER: true
-LOGGER_info: true
-LOGGER_warn: true
+LOGGER_info: false
+LOGGER_warn: false
 LOGGER_trace: false

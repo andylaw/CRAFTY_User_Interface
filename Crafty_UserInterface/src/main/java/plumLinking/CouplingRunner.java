@@ -19,10 +19,10 @@ public class CouplingRunner {
 	public static void main(String[] args) {
 		System.out.println("----------Crafty initialisation----------");
 		MainHeadless.modelInitialisation();
-		System.out.println("----------PLUM initialisation---------");
-		ModelMain.main(new String[] {});
-		System.out.println("----------Plum run first iteration ---------"+PathsLoader.getStartYear()+"\n\n\n\n\n");
-		ModelMain.theModel.runNTick(1);
+	//	System.out.println("----------PLUM initialisation---------");
+	//	ModelMain.main(new String[] {});
+	//	System.out.println("----------Plum run first iteration ---------"+PathsLoader.getStartYear()+"\n\n\n\n\n");
+	//	ModelMain.theModel.runNTick(1);
 		System.out.println("----------PLUM Mapper and Crafty deamnds initial Calibration---------");
 		plumMaper.initialize();
 		runHeadlessWithPlum();
@@ -35,13 +35,11 @@ public class CouplingRunner {
 			CustomLogger
 					.configureLogger(Paths.get(ConfigLoader.config.output_folder_name + File.separator + "LOGGER.txt"));
 		}
-		
-		
 		ModelRunnerController.tick = new AtomicInteger(PathsLoader.getStartYear());
 		for (int i = 0; i <= PathsLoader.getEndtYear() - PathsLoader.getStartYear(); i++) {
 			PathsLoader.setCurrentYear(ModelRunnerController.tick.get());
 			ModelRunnerController.runner.go();
-			ModelMain.theModel.runNTick(1);
+	//		ModelMain.theModel.runNTick(1);
 			plumMaper.iterative(ModelRunnerController.tick.get());
 			ModelRunnerController.tick.getAndIncrement();
 		}
