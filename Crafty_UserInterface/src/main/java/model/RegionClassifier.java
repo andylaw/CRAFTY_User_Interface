@@ -23,8 +23,9 @@ public class RegionClassifier {
 				regions.put(regionName, new Region(regionName));
 			});
 			CellsLoader.hashCell.values()/* .parallelStream() */.forEach(c -> {
-				if(c.getCurrentRegion()!=null) {
-				regions.get(c.getCurrentRegion()).getCells().put(c.getX() + "," + c.getY(), c);}
+				if (c.getCurrentRegion() != null) {
+					regions.get(c.getCurrentRegion()).getCells().put(c.getX() + "," + c.getY(), c);
+				}
 			});
 
 			if (!ServiceSet.isRegionalServicesExisted()) {
@@ -40,16 +41,18 @@ public class RegionClassifier {
 		ServiceSet.initialseServices();
 		DemandModel.updateRegionsDemand();
 		S_WeightLoader.updateRegionsWeight();
-		aggregateServiceToWorldService(0);
+		aggregateServicesToWorldService(0);
 
 		LOGGER.info("Regions: " + regions.keySet());
 	}
 
-	public static void aggregateServiceToWorldService(int year) {
+	public static void aggregateServicesToWorldService(int year) {
+		ServiceSet.worldService.forEach((ns, s) -> {
+			s.getDemands().put(year, 0.);
+		});
 		regions.values().forEach(r -> {
 			r.getServicesHash().forEach((ns, s) -> {
-					ServiceSet.worldService.get(ns).getDemands().merge(year, s.getDemands().get(year), Double::sum);
-				
+				ServiceSet.worldService.get(ns).getDemands().merge(year, s.getDemands().get(year), Double::sum);
 			});
 		});
 	}

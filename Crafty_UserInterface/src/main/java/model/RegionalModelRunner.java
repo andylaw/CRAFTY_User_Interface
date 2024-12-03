@@ -70,7 +70,7 @@ public class RegionalModelRunner {
 		int tick = year - PathsLoader.getStartYear();
 		regionalSupply.forEach((serviceName, serviceSupply) -> {
 			Service s = R.getServicesHash().get(serviceName);
-			double serviceDemand = s.getDemands().get(tick)/s.getCalibration_Factor();
+			double serviceDemand = s.getDemands().get(tick);
 			double marg = ConfigLoader.config.remove_negative_marginal_utility
 					? Math.max(serviceDemand - serviceSupply, 0)
 					: serviceDemand - serviceSupply;
@@ -138,6 +138,7 @@ public class RegionalModelRunner {
 //	}
 
 	public void go(int year) {
+		calibrateDemands(year);
 		listner.exportFiles(year, regionalSupply);
 		calculeMarginal(year);
 		calculeDistributionMean();
@@ -145,6 +146,14 @@ public class RegionalModelRunner {
 		takeOverUnmanageCells();
 		competition(year);
 		AFTsLoader.hashAgentNbr(R.getName());
+	}
+
+	private void calibrateDemands(int year) {
+		int tick = year - PathsLoader.getStartYear();
+		R.getServicesHash().values().forEach(s -> {
+			s.getDemands().put(tick, s.getDemands().get(tick) / s.getCalibration_Factor());
+		});
+
 	}
 
 	private void giveUp() {

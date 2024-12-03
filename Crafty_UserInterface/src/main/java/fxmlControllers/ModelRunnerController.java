@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -47,7 +46,6 @@ import javafx.util.Duration;
 import main.ConfigLoader;
 import model.CellsSet;
 import model.ModelRunner;
-import model.RegionClassifier;
 import model.Service;
 import output.Listener;
 import utils.analysis.CustomLogger;
@@ -177,7 +175,7 @@ public class ModelRunnerController {
 			ServiceSet.getServicesList().forEach(service -> {
 				lineChart.get(m.get()).getData().get(0).getData()
 						.add(new XYChart.Data<>(tick.get(), ServiceSet.worldService.get(service).getDemands()
-								.get(tick.get() - PathsLoader.getStartYear())/ServiceSet.worldService.get(service).getCalibration_Factor()));
+								.get(tick.get() - PathsLoader.getStartYear())));
 				lineChart.get(m.get()).getData().get(1).getData()
 						.add(new XYChart.Data<>(tick.get(), runner.totalSupply.get(service)));
 				m.getAndIncrement();
@@ -242,18 +240,11 @@ public class ModelRunnerController {
 			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
 				Service s = RegionalRunner.R.getServicesHash().get(serviceName);
 				s.setCalibration_Factor(f);
-//				s.getDemands().forEach((year, value) -> {
-//					s.getDemands().put(year, value / f);
-//				});
 				int i = ServiceSet.getServicesList().indexOf(serviceName);
 				RegionalRunner.listner.DSEquilibriumListener[i + 1][0] = serviceName;
 				RegionalRunner.listner.DSEquilibriumListener[i + 1][1] = f + "";
 
 			});
-//			ConcurrentHashMap<Integer, Double> ss = ServiceSet.worldService.get(serviceName).getDemands();
-//			ss.keySet().forEach(year -> {
-//				ss.put(year, ss.get(year) / f);
-//			});
 		});
 
 	}

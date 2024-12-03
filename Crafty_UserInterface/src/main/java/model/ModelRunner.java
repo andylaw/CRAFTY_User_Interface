@@ -58,10 +58,9 @@ public class ModelRunner {
 		TabPaneController.cellsLoader.updateCapitals(year);
 		AFTsLoader.updateAFTs();
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
-		RegionClassifier.aggregateServiceToWorldService(year- PathsLoader.getStartYear());
+		
 		aggregateTotalSupply();
 		if (generate_csv_files) {
-			listner.outPutserviceDemandToCsv(year, totalSupply);
 			listner.compositionAFT(year);
 		}
 		Tracker.trackSupply(year);
@@ -69,7 +68,9 @@ public class ModelRunner {
 		regionsModelRunner.values().forEach(RegionalRunner -> {
 			RegionalRunner.go(year);
 		});
+		RegionClassifier.aggregateServicesToWorldService(year- PathsLoader.getStartYear());
 		if (generate_csv_files) {
+			listner.outPutserviceDemandToCsv(year, totalSupply);
 			listner.writOutPutMap(year);
 			listner.updateCSVFilesWolrd();
 		}

@@ -21,7 +21,6 @@ import utils.filesTools.PathTools;
 import utils.graphicalTools.Tools;
 
 public class Listener {
-//	public static String outPutFolderName;
 	public static String[][] compositionAftListener;
 	public static String[][] servicedemandListener;
 	private static String[][] DSEquilibriumListener;
@@ -58,14 +57,10 @@ public class Listener {
 		AtomicInteger m = new AtomicInteger(1);
 		int y = year - PathsLoader.getStartYear() + 1;
 		servicedemandListener[y][0] = year + "";
-
 		ServiceSet.getServicesList().forEach(serviceName -> {
 			servicedemandListener[y][m.get()] = totalSupply.get(serviceName) + "";
-			Service s = ServiceSet.worldService.get(serviceName);
-			System.out.print(s.getName() + "||  " + s.getCalibration_Factor() + "-->");
-			System.out.println(s.getDemands().get(year - PathsLoader.getStartYear()));
-			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (s.getDemands()
-					.get(year - PathsLoader.getStartYear())/ s.getCalibration_Factor() /* */) + "";
+			Service ds = ServiceSet.worldService.get(serviceName);
+			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (ds.getDemands().get(year - PathsLoader.getStartYear())) + "";
 			m.getAndIncrement();
 		});
 	}
@@ -94,7 +89,6 @@ public class Listener {
 		Path aggregateServiceDemand = Paths.get(ConfigLoader.config.output_folder_name + File.separator
 				+ PathsLoader.getScenario() + "Total-AggregateServiceDemand.csv");
 		CsvTools.writeCSVfile(servicedemandListener, aggregateServiceDemand);
-
 		Path DSEquilibriumPath = Paths.get(ConfigLoader.config.output_folder_name + File.separator
 				+ PathsLoader.getScenario() + "Total-AggregateDemandServicesEquilibrium.csv");
 		DSEquilibriumListener();
