@@ -10,7 +10,6 @@ import dataLoader.AFTsLoader;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
 import main.ConfigLoader;
-import model.ModelRunner;
 import model.Region;
 import model.RegionClassifier;
 import model.Service;
@@ -81,7 +80,7 @@ public class ListenerByRegion {
 	private void CSVFilesWriter() {
 		String dir = PathTools.makeDirectory(ConfigLoader.config.output_folder_name + File.separator + "region_"
 				+ R.getName() + File.separator + "");
-		if (ModelRunner.generate_csv_files) {
+		if (ConfigLoader.config.generate_csv_files) {
 			Path aggregateAFTComposition = Paths.get(dir + "region_" + R.getName() + "-AggregateAFTComposition.csv");
 			CsvTools.writeCSVfile(compositionAftListener, aggregateAFTComposition);
 			Path aggregateServiceDemand = Paths.get(dir + "region_" + R.getName() + "-AggregateServiceDemand.csv");
@@ -92,7 +91,7 @@ public class ListenerByRegion {
 	}
 
 	public void exportFiles(int year, ConcurrentHashMap<String, Double> regionalSupply) {
-		if (ModelRunner.generate_csv_files && RegionClassifier.regions.size() > 1) {
+		if (ConfigLoader.config.generate_csv_files && RegionClassifier.regions.size() > 1) {
 			servicedemandListener(year, regionalSupply);
 			Tracker.trackSupply(year, R.getName());
 			compositionAFTListener(year);

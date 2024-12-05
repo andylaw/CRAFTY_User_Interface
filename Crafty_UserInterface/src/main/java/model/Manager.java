@@ -5,6 +5,7 @@ import java.util.Random;
 import dataLoader.CellsLoader;
 import dataLoader.ServiceSet;
 import javafx.scene.paint.Color;
+import main.ConfigLoader;
 
 /**
  * @author Mohamed Byari
@@ -31,15 +32,15 @@ public class Manager extends AbstractManager{
 			this.label = other.label;
 			this.color = other.color;
 			other.sensitivity.forEach((n, v) -> {
-				this.sensitivity.put(n, v * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1)));
+				this.sensitivity.put(n, v * (1 + ConfigLoader.config.mutation_interval * (2*new Random().nextDouble() - 1)));
 
 			});
 			other.productivityLevel.forEach((n, v) -> {
-				this.productivityLevel.put(n, v * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1)));
+				this.productivityLevel.put(n, v * (1 + ConfigLoader.config.mutation_interval * (2*new Random().nextDouble() - 1)));
 			});
-			this.giveInMean = other.giveInMean * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1));
-			this.giveUpMean = other.giveUpMean * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1));
-			this.giveUpProbabilty = other.giveUpProbabilty * (1 + ModelRunner.mutation_interval * (2*new Random().nextDouble() - 1));
+			this.giveInMean = other.giveInMean * (1 + ConfigLoader.config.mutation_interval * (2*new Random().nextDouble() - 1));
+			this.giveUpMean = other.giveUpMean * (1 + ConfigLoader.config.mutation_interval * (2*new Random().nextDouble() - 1));
+			this.giveUpProbabilty = other.giveUpProbabilty * (1 + ConfigLoader.config.mutation_interval * (2*new Random().nextDouble() - 1));
 		}
 
 	}

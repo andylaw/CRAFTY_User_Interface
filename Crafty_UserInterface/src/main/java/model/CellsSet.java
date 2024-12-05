@@ -49,7 +49,7 @@ public class CellsSet {
 	static int maxX;
 	public static int maxY;
 	private static String regioneselected = "Region_Code";
-	private static String colortype = "FR";
+	private static String colortype = "AFT";
 	private static CellsLoader cellsSet;
 
 	public static void plotCells() {
@@ -124,7 +124,7 @@ public class CellsSet {
 		}
 		LOGGER.info("Changing the map colors...");
 		Set<Double> values = Collections.synchronizedSet(new HashSet<>());
-		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")) {
+		if (colortype.equalsIgnoreCase("FR") || colortype.equalsIgnoreCase("Agent")|| colortype.equalsIgnoreCase("AFT")) {
 			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
 				if (c.getOwner() != null) {
 					c.ColorP(c.getOwner().getColor());

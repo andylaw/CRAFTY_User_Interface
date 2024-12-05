@@ -74,7 +74,7 @@ public class RegionalModelRunner {
 			double marg = ConfigLoader.config.remove_negative_marginal_utility
 					? Math.max(serviceDemand - serviceSupply, 0)
 					: serviceDemand - serviceSupply;
-			if (ModelRunner.averaged_residual_demand_per_cell) {
+			if (ConfigLoader.config.averaged_residual_demand_per_cell) {
 				marg = marg / R.getCells().size();
 			}
 			marg = marg * s.getWeights().get(tick);
@@ -157,9 +157,9 @@ public class RegionalModelRunner {
 	}
 
 	private void giveUp() {
-		if (ModelRunner.use_abandonment_threshold) {
+		if (ConfigLoader.config.use_abandonment_threshold) {
 			ConcurrentHashMap<String, Cell> randomCellsubSetForGiveUp = CellsSet.getRandomSubset(R.getCells(),
-					ModelRunner.land_abandonment_percentage);
+					 ConfigLoader.config.land_abandonment_percentage);
 			if (randomCellsubSetForGiveUp != null) {
 				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
 					c.giveUp(marginal, distributionMean, R);
@@ -171,10 +171,10 @@ public class RegionalModelRunner {
 	private void competition(int year) {
 		// Randomly select % of the land available for competition
 		ConcurrentHashMap<String, Cell> randomCellsubSet = CellsSet.getRandomSubset(R.getCells(),
-				ModelRunner.participating_cells_percentage);
+				ConfigLoader.config.participating_cells_percentage);
 		if (randomCellsubSet != null) {
 			List<ConcurrentHashMap<String, Cell>> subsubsets = Utils.splitIntoSubsets(randomCellsubSet,
-					ModelRunner.marginal_utility_calculations_per_tick);
+					ConfigLoader.config.marginal_utility_calculations_per_tick);
 			ConcurrentHashMap<String, Double> servicesBeforeCompetition = new ConcurrentHashMap<>();
 			ConcurrentHashMap<String, Double> servicesAfterCompetition = new ConcurrentHashMap<>();
 

@@ -154,7 +154,7 @@ public class TabPaneController {
 								SpatialDataController.getInstance().histogrameCapitals(
 										PathsLoader.getCurrentYear() + "", CellsLoader.getCapitalsList().get(i));
 							} else {
-								CellsSet.colorMap("FR");
+								CellsSet.colorMap("AFT");
 							}
 						}
 					}

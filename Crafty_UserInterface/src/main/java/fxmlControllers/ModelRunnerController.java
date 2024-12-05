@@ -43,6 +43,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import main.Config;
 import main.ConfigLoader;
 import model.CellsSet;
 import model.ModelRunner;
@@ -79,15 +80,15 @@ public class ModelRunnerController {
 	public static ModelRunner runner;
 
 	Timeline timeline;
+	
 	public static AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
-
-	public static boolean chartSynchronisation = true;
-	public static int chartSynchronisationGap = 5;
-
-	double KeyFramelag = 1;
+	
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
+
+
+	
 
 	private boolean startRunin = true;
 	private static final CustomLogger LOGGER = new CustomLogger(ModelRunnerController.class);
@@ -168,8 +169,8 @@ public class ModelRunnerController {
 	}
 
 	private void updateSupplyDemandLineChart() {
-		if (chartSynchronisation
-				&& ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % chartSynchronisationGap == 0
+		if (Config.chartSynchronisation
+				&& ((PathsLoader.getCurrentYear() - PathsLoader.getStartYear()) % Config.chartSynchronisationGap == 0
 						|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
 			ServiceSet.getServicesList().forEach(service -> {
@@ -196,14 +197,14 @@ public class ModelRunnerController {
 			CustomLogger
 					.configureLogger(Paths.get(ConfigLoader.config.output_folder_name + File.separator + "LOGGER.txt"));
 		}
-		if (startRunin || !ModelRunner.generate_csv_files) {
+		if (startRunin || !ConfigLoader.config.generate_csv_files) {
 			demandEquilibrium();
 			scheduleIteravitveTicks(Duration.millis(1000));
 		}
 	}
 
 	public static void demandEquilibrium() {
-		if (ModelRunner.initial_demand_supply_equilibrium) {
+		if (ConfigLoader.config.initial_demand_supply_equilibrium) {
 			if (ConfigLoader.config.initial_DS_equilibrium_byRegions) {
 				RegionalDemandEquilibrium();
 			} else {
@@ -369,11 +370,11 @@ public class ModelRunnerController {
 	}
 
 	Alert simulationFolderName() {
-		if (!ModelRunner.generate_csv_files) {
+		if (!ConfigLoader.config.generate_csv_files) {
 			return null;
 		}
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-		alert.setHeaderText("Please enter OutPut folder name and any comments");
+		alert.setHeaderText("Please enter OutPut folder name");
 		String cofiguration = exportConfigurationFile();
 		cofiguration = cofiguration + " \n " + "Add any comments \n ";
 		TextField textField = new TextField();

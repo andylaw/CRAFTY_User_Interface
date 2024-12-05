@@ -154,7 +154,7 @@ public class MasksPaneController {
 			r.fireEvent(new ActionEvent());
 		});
 		iscolored = true;
-		CellsSet.colorMap("FR");
+		CellsSet.colorMap("AFT");
 	}
 
 	private ArrayList<PlotItem> initPlotItem() {

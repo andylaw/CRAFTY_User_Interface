@@ -72,7 +72,7 @@ public class MapToolsBarController {
 	public void handleearthAction(ActionEvent event) {
 		FxMain.scene.setCursor(Cursor.DEFAULT);
 		FxMain.camera.defaultcamera(CellsSet.getCanvas(), FxMain.subScene);
-		CellsSet.colorMap("FR");
+		CellsSet.colorMap("AFT");
 	}
 
 	// Event Listener on Button[#eyeButton].onAction

@@ -18,21 +18,9 @@ import utils.analysis.Tracker;
 
 public class ModelRunner {
 	private static final CustomLogger LOGGER = new CustomLogger(ModelRunner.class);
-	public String colorDisplay = "FR";
+	public String colorDisplay = "AFT";
 	public static boolean mapSynchronisation = true;
 	public static int mapSynchronisationGap = 5;
-	public static boolean generate_csv_files = ConfigLoader.config.generate_csv_files;
-	public static boolean initial_demand_supply_equilibrium = ConfigLoader.config.initial_demand_supply_equilibrium;
-	public static boolean use_abandonment_threshold = ConfigLoader.config.use_abandonment_threshold;
-	public static boolean mutate_on_competition_win = ConfigLoader.config.mutate_on_competition_win;
-	public static double MostCompetitorAFTProbability = ConfigLoader.config.MostCompetitorAFTProbability;
-	public static boolean averaged_residual_demand_per_cell = ConfigLoader.config.averaged_residual_demand_per_cell;
-	public static boolean use_neighbor_priority = ConfigLoader.config.use_neighbor_priority;
-	public static int neighbor_radius = ConfigLoader.config.neighbor_radius;
-	public static double participating_cells_percentage = ConfigLoader.config.participating_cells_percentage;
-	public static int marginal_utility_calculations_per_tick = ConfigLoader.config.marginal_utility_calculations_per_tick;
-	public static double mutation_interval = ConfigLoader.config.mutation_interval;
-	public static double land_abandonment_percentage = ConfigLoader.config.land_abandonment_percentage;
 
 	public ConcurrentHashMap<String, Double> totalSupply;
 	public static ConcurrentHashMap<String, RegionalModelRunner> regionsModelRunner;
@@ -60,7 +48,7 @@ public class ModelRunner {
 		MasksPaneController.Maskloader.CellSetToMaskLoader(year);
 		
 		aggregateTotalSupply();
-		if (generate_csv_files) {
+		if (ConfigLoader.config.generate_csv_files) {
 			listner.compositionAFT(year);
 		}
 		Tracker.trackSupply(year);
@@ -69,7 +57,7 @@ public class ModelRunner {
 			RegionalRunner.go(year);
 		});
 		RegionClassifier.aggregateServicesToWorldService(year- PathsLoader.getStartYear());
-		if (generate_csv_files) {
+		if (ConfigLoader.config.generate_csv_files) {
 			listner.outPutserviceDemandToCsv(year, totalSupply);
 			listner.writOutPutMap(year);
 			listner.updateCSVFilesWolrd();

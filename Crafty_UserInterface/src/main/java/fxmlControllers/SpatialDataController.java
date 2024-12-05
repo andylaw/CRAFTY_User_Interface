@@ -129,7 +129,7 @@ public class SpatialDataController {
 				}
 			}
 			histogramCapitals.getData().clear();
-			CellsSet.colorMap("FR");
+			CellsSet.colorMap("AFT");
 		});
 	}
 
@@ -187,7 +187,7 @@ public class SpatialDataController {
 				color.put(a.getLabel(), a.getColor());
 			});
 			new PieChartTools().updateChart(convertedMap, color, chart);
-			CellsSet.colorMap("FR");
+			CellsSet.colorMap("AFT");
 		};
 
 		Consumer<String> saveInPutData = x -> {

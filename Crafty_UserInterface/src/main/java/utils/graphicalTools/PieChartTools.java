@@ -110,11 +110,11 @@ public class PieChartTools {
 							n.setStyle("-fx-pie-color: " + ColorsTools.getStringColor(colorPicker.getValue()) + ";");
 						}
 						AFTsLoader.getAftHash().get(data.get(j).getName()).setColor(colorPicker.getValue());
-						CellsSet.colorMap("FR");
+						CellsSet.colorMap("AFT");
 //						Agents.aftReSet.forEach((name,agent) -> {
 //							if (dataName.equals(name)) {
 //								agent.color = colorPicker.getValue();
-//								Lattice.colorMap("FR");}
+//								Lattice.colorMap("AFT");}
 //						});
 					}
 				}

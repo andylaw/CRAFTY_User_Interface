@@ -58,7 +58,7 @@ public class CellWindow {
 		AtomicInteger i = new AtomicInteger(0);
 		cell.getCapitals().forEach((k, v) -> {
 			data[i.get()][0] = k;
-			if (data[i.get()][0].equals("FR")) {
+			if (data[i.get()][0].equals("AFT")) {
 				data[i.get()][1] = cell.getOwner().getLabel();
 			} else if (data[i.get()][0].equals("Region")) {
 				// data[i.get()][1] = patch.country;

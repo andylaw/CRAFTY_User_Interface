@@ -60,7 +60,7 @@ public class OutPutTabController {
 				if (k < ServiceSet.getServicesList().size()) {
 					CellsSet.colorMap(ServiceSet.getServicesList().get(k));
 				} else if (k == ServiceSet.getServicesList().size()) {
-					CellsSet.colorMap("FR");
+					CellsSet.colorMap("AFT");
 				}
 
 			});

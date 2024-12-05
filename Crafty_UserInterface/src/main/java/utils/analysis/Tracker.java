@@ -11,14 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import main.ConfigLoader;
-import model.ModelRunner;
 import model.RegionClassifier;
 
 public class Tracker {
 	private static final CustomLogger LOGGER = new CustomLogger(Tracker.class);
 
 	public static void trackSupply(int year) {
-		if (ModelRunner.generate_csv_files && ConfigLoader.config.track_changes) {
+		if (ConfigLoader.config.generate_csv_files && ConfigLoader.config.track_changes) {
 			if (ConfigLoader.config.output_folder_name != null) {
 				long staetTime = System.currentTimeMillis();
 				ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> container = new ConcurrentHashMap<>();

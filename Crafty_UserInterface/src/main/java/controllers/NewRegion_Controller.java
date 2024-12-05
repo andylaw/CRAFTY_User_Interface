@@ -92,7 +92,7 @@ public class NewRegion_Controller {
 
 
 	public static void colorMap(String name) {
-		if (name.equals("FR")) {
+		if (name.equals("AFT")) {
 			patchsInRergion.forEach(p -> {
 				if (p.getOwner() != null) {
 					p.ColorP(p.getOwner().getColor());

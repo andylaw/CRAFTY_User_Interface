@@ -31,5 +31,7 @@ public class Config {
 	public boolean LOGGER_info;
 	public boolean LOGGER_warn;
 	public boolean LOGGER_trace;
+	public static boolean chartSynchronisation = true;
+	public static int chartSynchronisationGap = 5;
 
 }

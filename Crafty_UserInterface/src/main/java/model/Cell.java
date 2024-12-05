@@ -103,14 +103,14 @@ public class Cell extends AbstractCell {
 
 			if (owner == null || owner.isAbandoned()) {
 				if (uC > 0)
-					owner = ModelRunner.mutate_on_competition_win ? new Manager(competitor) : competitor;
+					owner = ConfigLoader.config.mutate_on_competition_win ? new Manager(competitor) : competitor;
 			} else {
 				double nbr = distributionMean != null
 						? (distributionMean.get(owner)
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
 				if ((uC - uO > nbr) && uC > 0) {
-					owner = ModelRunner.mutate_on_competition_win ? new Manager(competitor) : competitor;
+					owner = ConfigLoader.config.mutate_on_competition_win ? new Manager(competitor) : competitor;
 				}
 			}
 		}
@@ -134,13 +134,13 @@ public class Cell extends AbstractCell {
 
 	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
 			Region R) {
-		boolean Neighboor = ModelRunner.use_neighbor_priority
+		boolean Neighboor = ConfigLoader.config.use_neighbor_priority
 				&& ConfigLoader.config.neighbor_priority_probability > Math.random();
 		Collection<Manager> afts = Neighboor
-				? CellsSubSets.detectExtendedNeighboringAFTs(this, ModelRunner.neighbor_radius)
+				? CellsSubSets.detectExtendedNeighboringAFTs(this, ConfigLoader.config.neighbor_radius)
 				: AFTsLoader.getActivateAFTsHash().values();
 
-		if (Math.random() < ModelRunner.MostCompetitorAFTProbability) {
+		if (Math.random() < ConfigLoader.config.MostCompetitorAFTProbability) {
 			Competition(mostCompetitiveAgent(afts, marginal), marginal, distributionMean);
 		} else {
 			Competition(AFTsLoader.getRandomAFT(afts), marginal, distributionMean);
