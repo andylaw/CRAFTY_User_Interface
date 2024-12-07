@@ -41,18 +41,19 @@ public class RegionClassifier {
 		ServiceSet.initialseServices();
 		DemandModel.updateRegionsDemand();
 		S_WeightLoader.updateRegionsWeight();
-		aggregateServicesToWorldService(0);
+		aggregateServicesToWorldService(PathsLoader.getStartYear());
 
 		LOGGER.info("Regions: " + regions.keySet());
 	}
 
 	public static void aggregateServicesToWorldService(int year) {
+		int y = year - PathsLoader.getStartYear();
 		ServiceSet.worldService.forEach((ns, s) -> {
-			s.getDemands().put(year, 0.);
+			s.getDemands().put(y, 0.);
 		});
 		regions.values().forEach(r -> {
 			r.getServicesHash().forEach((ns, s) -> {
-				ServiceSet.worldService.get(ns).getDemands().merge(year, s.getDemands().get(year), Double::sum);
+				ServiceSet.worldService.get(ns).getDemands().merge(y, s.getDemands().get(y), Double::sum);
 			});
 		});
 	}

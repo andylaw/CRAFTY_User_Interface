@@ -87,9 +87,6 @@ public class ModelRunnerController {
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
 
-
-	
-
 	private boolean startRunin = true;
 	private static final CustomLogger LOGGER = new CustomLogger(ModelRunnerController.class);
 
@@ -162,7 +159,7 @@ public class ModelRunnerController {
 	public void oneStep() {
 		LOGGER.info("------------------- Start of Tick  |" + tick.get() + "| -------------------");
 		PathsLoader.setCurrentYear(tick.get());
-		runner.go();
+		runner.step();
 		tickTxt.setText(tick.toString());
 		updateSupplyDemandLineChart();
 		tick.getAndIncrement();
@@ -219,11 +216,8 @@ public class ModelRunnerController {
 		});
 	}
 	
-
-	
-
 	public static void initialTotalDSEquilibrium() {
-		runner.go();
+		runner.step();
 		runner.totalSupply.forEach((serviceName, serviceSuplly) -> {
 			double factor = 1;
 			if (serviceSuplly != 0) {
@@ -247,7 +241,6 @@ public class ModelRunnerController {
 
 			});
 		});
-
 	}
 
 	private void displayRunAsOutput() {

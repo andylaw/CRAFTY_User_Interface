@@ -142,7 +142,7 @@ public class ReaderFile {
 			c.setOwner(AFTsLoader.getAftHash().get(immutableList.get(indexof.get("FR"))));
 
 			CellsLoader.hashCell.put(x + "," + y, c);
-			c.setIndex(CellsLoader.hashCell.size());
+			c.setID(CellsLoader.hashCell.size());
 		}
 		CellsLoader.getCapitalsList().forEach(capital_name -> {
 			double capital_value = Tools.sToD(immutableList.get(indexof.get(capital_name.toUpperCase())));

@@ -125,19 +125,7 @@ public class RegionalModelRunner {
 				"Initial Demand Service Equilibrium Factor= " + R.getName() + ": " + R.getServiceCalibration_Factor());
 	}
 
-//	public void initialDSEquilibrium() {
-//		regionalSupply();
-//		initialDSEquilibrium(R.getServicesHash(), regionalSupply);
-//		R.getServicesHash().values().forEach(s -> {
-//			s.getDemands().forEach((year, value) -> {
-//				s.getDemands().put(year, value / s.getCalibration_Factor());
-//			});
-//		});
-//		LOGGER.info(
-//				"Initial Demand Service Equilibrium Factor= " + R.getName() + ": " + R.getServiceCalibration_Factor());
-//	}
-
-	public void go(int year) {
+	public void step(int year) {
 		calibrateDemands(year);
 		listner.exportFiles(year, regionalSupply);
 		calculeMarginal(year);
@@ -201,7 +189,7 @@ public class RegionalModelRunner {
 	private void productivityForAllExecutor() {
 		LOGGER.info("Productivity calculation for all cells ");
 		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		List<Map<String, Cell>> partitions = partitionMap(R.getCells(), 10); // Partition into 10
+		List<Map<String, Cell>> partitions = Utils.partitionMap(R.getCells(), 10); // Partition into 10
 																				// sub-maps
 		try {
 			for (Map<String, Cell> subMap : partitions) {
@@ -216,19 +204,5 @@ public class RegionalModelRunner {
 		}
 	}
 
-	private static List<Map<String, Cell>> partitionMap(Map<String, Cell> originalMap, int numberOfPartitions) {
-		List<Map<String, Cell>> partitions = new ArrayList<>();
-		int size = originalMap.size() / numberOfPartitions;
-		Iterator<Map.Entry<String, Cell>> iterator = originalMap.entrySet().iterator();
-		for (int i = 0; i < numberOfPartitions; i++) {
-			Map<String, Cell> part = new HashMap<>();
-			for (int j = 0; j < size && iterator.hasNext(); j++) {
-				Map.Entry<String, Cell> entry = iterator.next();
-				part.put(entry.getKey(), entry.getValue());
-			}
-			partitions.add(part);
-		}
-		return partitions;
-	}
 
 }

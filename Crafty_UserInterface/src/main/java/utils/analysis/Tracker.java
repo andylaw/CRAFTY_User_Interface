@@ -17,27 +17,26 @@ public class Tracker {
 	private static final CustomLogger LOGGER = new CustomLogger(Tracker.class);
 
 	public static void trackSupply(int year) {
-		if (ConfigLoader.config.generate_csv_files && ConfigLoader.config.track_changes) {
-			if (ConfigLoader.config.output_folder_name != null) {
-				long staetTime = System.currentTimeMillis();
-				ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> container = new ConcurrentHashMap<>();
-				AFTsLoader.getAftHash().values().forEach(a -> {
-					ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
-					container.put(a.getLabel(), tmp);
+		if (ConfigLoader.config.track_changes) {
+			long staetTime = System.currentTimeMillis();
+			ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> container = new ConcurrentHashMap<>();
+			AFTsLoader.getAftHash().values().forEach(a -> {
+				ConcurrentHashMap<String, Double> tmp = new ConcurrentHashMap<>();
+				container.put(a.getLabel(), tmp);
+			});
+			CellsLoader.hashCell.values().parallelStream().forEach(c -> {
+				c.getCurrentProductivity().forEach((s, v) -> {
+					if (c.getOwner() != null)
+						container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
 				});
-				CellsLoader.hashCell.values().parallelStream().forEach(c -> {
-					c.getCurrentProductivity().forEach((s, v) -> {
-						if (c.getOwner() != null)
-							container.get(c.getOwner().getLabel()).merge(s, v, Double::sum);
-					});
-				});
-				AFTsLoader.hashAgentNbr.forEach((label, a) -> {
-					container.get(label).put("AggregateAFT", (double) a);
-				});
-				writeCSV(container,
-						ConfigLoader.config.output_folder_name + File.separator + "SupplyTracker_" + year + ".csv");
-				LOGGER.trace("Time taken for trackSupply " + (System.currentTimeMillis() - staetTime) + " ms");
-			}
+			});
+			AFTsLoader.hashAgentNbr.forEach((label, a) -> {
+				container.get(label).put("AggregateAFT", (double) a);
+			});
+			writeCSV(container,
+					ConfigLoader.config.output_folder_name + File.separator + "SupplyTracker_" + year + ".csv");
+			LOGGER.trace("Time taken for trackSupply " + (System.currentTimeMillis() - staetTime) + " ms");
+
 		}
 	}
 

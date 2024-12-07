@@ -1,4 +1,4 @@
-package model;
+package modelRunner;
 
 public interface ModelState {
 

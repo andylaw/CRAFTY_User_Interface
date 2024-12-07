@@ -52,7 +52,7 @@ public class MainHeadless {
 			PathsLoader.setCurrentYear(ModelRunnerController.tick.get());
 			LOGGER.info("-------------   " + PathsLoader.getCurrentYear() + "   --------------");
 			System.out.println("-------------   " + PathsLoader.getCurrentYear() + "   --------------");
-			ModelRunnerController.runner.go();
+			ModelRunnerController.runner.step();
 			ModelRunnerController.tick.getAndIncrement();
 		}
 	}

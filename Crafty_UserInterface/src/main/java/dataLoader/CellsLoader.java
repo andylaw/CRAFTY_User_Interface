@@ -97,6 +97,7 @@ public class CellsLoader {
 	}
 
 	public void updateCapitals(int year) {
+		LOGGER.info("Cells.updateCapitals");
 		year = Math.min(year, PathsLoader.getEndtYear());
 
 		if (!PathsLoader.getScenario().equalsIgnoreCase("Baseline")) {

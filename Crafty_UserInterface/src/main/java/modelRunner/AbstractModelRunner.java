@@ -3,19 +3,17 @@ package modelRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.ModelState;
-
 public abstract class AbstractModelRunner {
 
 	List<ModelState> stateManager = new ArrayList<>();
 
-	public void start() {
+	public AbstractModelRunner() {
 		loadStateManager();
-		setup(this);
+		setup();
 		toSchedule();
 	}
 
-	public abstract void setup(AbstractModelRunner abstractModelRunner);
+	public abstract void setup();
 
 	public abstract void toSchedule();
 

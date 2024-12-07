@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import main.Config;
 import main.ConfigLoader;
-import model.ModelRunner;
 import utils.graphicalTools.Tools;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Slider;
@@ -89,7 +88,7 @@ public class RunCofigController {
 		InitialEquilibriumRegion.setSelected(ConfigLoader.config.initial_DS_equilibrium_byRegions);
 
 		removeNegative.setSelected(ConfigLoader.config.remove_negative_marginal_utility);
-		MapSync.setSelected(ModelRunner.mapSynchronisation);
+		MapSync.setSelected(Config.mapSynchronisation);
 		neighbours.setSelected(ConfigLoader.config.use_neighbor_priority);
 		creatCSV.setSelected(ConfigLoader.config.generate_csv_files);
 		gUP.setSelected(ConfigLoader.config.use_abandonment_threshold);
@@ -104,10 +103,10 @@ public class RunCofigController {
 			CellPersT.setText(Math.round(cellsPersS.getValue() * 10) / 10. + ""); // ;
 		});
 
-		MapSync_GapS.setValue(ModelRunner.mapSynchronisationGap);
+		MapSync_GapS.setValue(Config.mapSynchronisationGap);
 		MapSync_GapT.setText((int) MapSync_GapS.getValue() + "");
 		MapSync_GapS.valueProperty().addListener((ov, oldval, newval) -> {
-			ModelRunner.mapSynchronisationGap = (int) MapSync_GapS.getValue();
+			Config.mapSynchronisationGap = (int) MapSync_GapS.getValue();
 			MapSync_GapT.setText((int) MapSync_GapS.getValue() + "");
 		});
 
@@ -186,7 +185,7 @@ public class RunCofigController {
 	// Event Listener on CheckBox[#MapSync].onAction
 	@FXML
 	public void mapSyn(ActionEvent event) {
-		ModelRunner.mapSynchronisation = MapSync.isSelected();
+		Config.mapSynchronisation = MapSync.isSelected();
 	}
 
 	// Event Listener on CheckBox[#gUP].onAction

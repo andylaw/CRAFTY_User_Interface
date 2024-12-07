@@ -10,17 +10,15 @@ import javafx.scene.paint.Color;
  */
 public abstract class AbstractCell {
 	static int size = 1;
-	int index;
-	int x, y;
+	int id;
+	int x;
+	int y;
 	ConcurrentHashMap<String, Double> capitals = new ConcurrentHashMap<>();
 	ConcurrentHashMap<String, Double> currentProductivity = new ConcurrentHashMap<>();
 	String CurrentRegion;
 	Manager owner;
 	protected Color color = Color.TRANSPARENT;
 	private String maskType;
-	
-	
-	
 
 	public String getCurrentRegion() {
 		return CurrentRegion;
@@ -70,7 +68,6 @@ public abstract class AbstractCell {
 		this.owner = owner;
 	}
 
-
 	public ConcurrentHashMap<String, Double> getCapitals() {
 		return capitals;
 	}
@@ -78,7 +75,6 @@ public abstract class AbstractCell {
 	public ConcurrentHashMap<String, Double> getCurrentProductivity() {
 		return currentProductivity;
 	}
-
 
 	public static int getSize() {
 		return size;
@@ -88,12 +84,19 @@ public abstract class AbstractCell {
 		AbstractCell.size = size;
 	}
 
-	public int getIndex() {
-		return index;
+	public int getID() {
+		return id;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
+	public void setID(int index) {
+		this.id = index;
+	}
+	
+	@Override
+	public String toString() {
+		return "Cell [index=" + id + ", x=" + x + ", y=" + y + ", CurrentRegion=" + CurrentRegion + "\n, Mask="
+				+ getMaskType() + ", getOwner()=" + (getOwner() != null ? getOwner().getLabel() : "Unmanaged")
+				+ ", getCapitals()=" + getCapitals() + ", getCurrentProductivity()=" + getCurrentProductivity() + "]";
 	}
 
 }

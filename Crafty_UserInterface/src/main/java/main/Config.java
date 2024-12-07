@@ -33,5 +33,7 @@ public class Config {
 	public boolean LOGGER_trace;
 	public static boolean chartSynchronisation = true;
 	public static int chartSynchronisationGap = 5;
+	public static boolean mapSynchronisation = true;
+	public static int mapSynchronisationGap = 5;
 
 }

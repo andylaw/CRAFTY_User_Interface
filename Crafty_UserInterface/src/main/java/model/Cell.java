@@ -29,7 +29,7 @@ public class Cell extends AbstractCell {
 	}
 
 	public void ColorP(Color color) {
-		CellsSet.pixelWriter.setColor(getX(), /* CellsSet.getMaxY() - */getY(), color);
+		CellsSet.pixelWriter.setColor(getX(), getY(), color);
 	}
 
 	// ----------------------------------//
@@ -167,20 +167,5 @@ public class Cell extends AbstractCell {
 			}
 		}
 	}
-//------------------------------------------//
-
-	@Override
-	public String toString() {
-		return "Cell [index=" + index + ", x=" + x + ", y=" + y + ", CurrentRegion=" + CurrentRegion + "\n, Mask="
-				+ getMaskType() + ", getOwner()=" + (getOwner() != null ? getOwner().getLabel() : "Unmanaged")
-				+ ", getCapitals()=" + getCapitals() + ", getCurrentProductivity()=" + getCurrentProductivity() + "]";
-	}
-
-//	@Override
-//	public String toString() {
-//		return " ------------------------------------------- \n" + "Patch [Index= " + index + "  x=" + x + " y= " + y
-//				+ "\n capitalsValue=" + capitals + "\n ow=" + owner.getLabel() + "\n" + owner.toString() + "] \n "
-//				+ "------------------------------------------- \n";
-//	}
 
 }

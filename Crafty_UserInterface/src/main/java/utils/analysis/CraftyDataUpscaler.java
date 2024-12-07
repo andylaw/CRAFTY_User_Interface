@@ -20,6 +20,7 @@ import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.TabPaneController;
+import main.Config;
 import main.ConfigLoader;
 import model.CellsSet;
 import utils.filesTools.CsvTools;
