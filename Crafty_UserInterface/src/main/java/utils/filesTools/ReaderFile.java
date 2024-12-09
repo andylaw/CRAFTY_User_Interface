@@ -22,6 +22,7 @@ import model.Cell;
 import model.CellsSet;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.AddCellToColumnException;
+import tech.tablesaw.io.csv.CsvReadOptions;
 import utils.analysis.CustomLogger;
 import utils.graphicalTools.Tools;
 
@@ -38,7 +39,9 @@ public class ReaderFile {
 		HashMap<String, ArrayList<String>> hash = new HashMap<>();
 		Table T = null;
 		try {
-			T = Table.read().csv(filePath.toFile());
+			CsvReadOptions options = CsvReadOptions.builder(filePath.toFile()).separator(',').build();
+			T = Table.read().usingOptions(options);
+			LOGGER.trace(T.print());
 		} catch (AddCellToColumnException s) {
 
 			LOGGER.error(s.getMessage());
@@ -57,11 +60,15 @@ public class ReaderFile {
 		List<String> columnNames = T.columnNames();
 
 		for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
-			String name = (String) iterator.next();
-
+			String name = String.valueOf(iterator.next());
 			ArrayList<String> tmp = new ArrayList<String>();
 			for (int i = 0; i < T.column(name).size(); i++) {
-				tmp.add(T.column(name).getString(i));
+				Object s = T.column(name).get(i);
+				if (s instanceof Double) {
+					tmp.add(String.valueOf(s));
+				} else {
+					tmp.add(T.column(name).getString(i));
+				}
 			}
 			hash.put(name, tmp);
 		}
@@ -117,8 +124,6 @@ public class ReaderFile {
 			}
 		}
 	}
-
-
 
 	static void associateCapitalsToCells(ConcurrentHashMap<String, Integer> indexof, String data) {
 		List<String> immutableList = Collections.unmodifiableList(Arrays.asList(data.split(",")));

@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import model.Cell;
 import model.RegionClassifier;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.csv.CsvReadOptions;
 import utils.analysis.CustomLogger;
 import utils.filesTools.PathTools;
 import utils.filesTools.ReaderFile;
@@ -75,7 +76,9 @@ public class CellsLoader {
 			Path path = PathTools.fileFilter(true, File.separator + "GIS" + File.separator).get(0);
 			PathsLoader.WorldName = path.toFile().getName().replace("_Regions", "").replace(".csv", "");
 			LOGGER.info("WorldName = " + PathsLoader.WorldName);
-			Table T = Table.read().csv(path.toFile());
+			CsvReadOptions options = CsvReadOptions.builder(path.toFile()).separator(',').build();
+			Table T = Table.read().usingOptions(options);
+
 			for (int i = 0; i < T.columns().iterator().next().size(); i++) {
 				String coor = T.column("X").get(i) + "," + T.column("Y").get(i);
 				int ii = i;

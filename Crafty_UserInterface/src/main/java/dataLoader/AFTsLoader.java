@@ -16,6 +16,7 @@ import model.Manager;
 import model.ManagerTypes;
 import model.RegionClassifier;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.csv.CsvReadOptions;
 import utils.analysis.CustomLogger;
 import utils.filesTools.CsvTools;
 import utils.filesTools.PathTools;
@@ -244,14 +245,17 @@ public class AFTsLoader extends HashSet<Manager> {
 	}
 
 	public static void updateSensitivty(Manager a, File file) {
-		Table T;
 		try {
-			T = Table.read().csv(file);
-
+			CsvReadOptions options = CsvReadOptions.builder(file).separator(',').build();
+			Table T = Table.read().usingOptions(options);
 			CellsLoader.getCapitalsList().forEach((Cn) -> {
 				ServiceSet.getServicesList().forEach((Sn) -> {
-					a.getSensitivity().put((Cn + "_" + Sn),
-							Tools.sToD(T.column(Cn).getString(T.column(0).indexOf(Sn))));
+					Object s = T.column(Cn).get(T.column(0).indexOf(Sn));
+					if (s instanceof Double) {
+						a.getSensitivity().put((Cn + "_" + Sn), (double) s);
+					} else if (s instanceof Integer) {
+						a.getSensitivity().put((Cn + "_" + Sn), ((Integer) s).doubleValue());
+					}
 				});
 			});
 		} catch (IOException e) {
