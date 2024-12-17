@@ -16,17 +16,23 @@ import utils.filesTools.SaveAs;
 
 public class MousePressed {
 
-
-/**
- * @author Mohamed Byari
- *
- */
+	/**
+	 * @author Mohamed Byari
+	 *
+	 */
 
 	public static void mouseControle(Pane pane, Node node) {
-		mouseControle(pane, node, null);
+		mouseControle(pane, node, null, "titel");
+	}
+	public static void mouseControle(Pane pane, Node node, String titel) {
+		mouseControle(pane, node, null, titel);
+	}
+	public static void mouseControle(Pane box, Node node, HashMap<String, Consumer<String>> othersMenuItems) {
+		mouseControle(box, node, othersMenuItems, "titel");
 	}
 
-	public static void mouseControle(Pane box, Node node, HashMap<String, Consumer<String>> othersMenuItems) {
+	public static void mouseControle(Pane box, Node node, HashMap<String, Consumer<String>> othersMenuItems,
+			String titel) {
 		HashMap<String, Consumer<String>> hashAction = new HashMap<>();
 		if (othersMenuItems != null) {
 			othersMenuItems.forEach((name, action) -> {
@@ -35,7 +41,7 @@ public class MousePressed {
 		}
 
 		hashAction.put("Save as PNG", (x) -> {
-			SaveAs.png(node);
+			SaveAs.png(titel, node);
 
 		});
 //		hashAction.put("Close", (x) -> {
@@ -78,7 +84,5 @@ public class MousePressed {
 			}
 		});
 	}
-
-
 
 }

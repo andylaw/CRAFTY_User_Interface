@@ -143,7 +143,7 @@ public class SpatialDataController {
 			Integer v = numbersInInterval.get(i);
 			dataSeries.getData().add(new XYChart.Data<>((i) + "", v));
 		}
-		histogramCapitals.getData().add(dataSeries);
+		histogramCapitals.getData().add(dataSeries); 
 		String ItemName = "Clear Histogram";
 		Consumer<String> action = x -> {
 			histogramCapitals.getData().clear();

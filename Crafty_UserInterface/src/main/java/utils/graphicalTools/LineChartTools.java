@@ -27,6 +27,7 @@ import javafx.util.Duration;
  */
 
 public class LineChartTools {
+	
 
 	public void lineChart(Pane box, LineChart<Number, Number> lineChart, Map<String, ArrayList<Double>> hash) {
 		if (hash == null) {

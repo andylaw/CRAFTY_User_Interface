@@ -201,7 +201,7 @@ public class CellsSet {
 							System.out.println(CellsLoader.hashCell.get(cx + "," + cy));
 						});
 						menu.put("Save Map as PNG", e -> {
-							SaveAs.png(canvas);
+							SaveAs.png("",canvas);
 						});
 						menu.put("Select region ", e -> {
 							CellsSubSets.selectZone(CellsLoader.hashCell.get(cx + "," + cy), regioneselected);

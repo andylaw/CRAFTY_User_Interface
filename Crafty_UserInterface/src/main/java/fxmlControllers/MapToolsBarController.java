@@ -86,7 +86,7 @@ public class MapToolsBarController {
 	@FXML
 	public void handlePNGAction(ActionEvent event) {
 		FxMain.scene.setCursor(Cursor.DEFAULT);
-		SaveAs.png(CellsSet.getCanvas());
+		SaveAs.png("",CellsSet.getCanvas());
 	}
 
 	@FXML

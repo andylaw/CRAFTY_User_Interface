@@ -25,7 +25,7 @@ public class MainHeadless {
 		System.out.println("------------CRAFTY executed from Java-----------------");
 	}
 
-	static void modelInitialisation() {
+	public static void modelInitialisation() {
 		System.out.println("is linux:  " + System.getProperty("os.name").toLowerCase().contains("linux"));
 		PathsLoader.initialisation(Paths.get(ConfigLoader.config.project_path));
 		PathsLoader.setScenario(ConfigLoader.config.scenario);

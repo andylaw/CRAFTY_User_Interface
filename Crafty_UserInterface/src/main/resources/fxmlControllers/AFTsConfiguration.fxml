@@ -45,7 +45,7 @@
 				</HBox>
 				<HBox spacing="10.0">
 					<children>
-					<!-- 
+					<!-- -->
 						<Button fx:id="removeBtn" onAction="#removeBtnSetOnAction"
 							text="Remove" styleClass="button-icon">
 							<graphic>
@@ -94,7 +94,7 @@
 							<tooltip>
 								<Tooltip text="Current AFT analysis" />
 							</tooltip>
-						</Button>-->
+						</Button>
 					</children>
 				</HBox>
 			</children>

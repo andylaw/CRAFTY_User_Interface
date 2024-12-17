@@ -45,6 +45,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import model.CellsSet;
 import model.Manager;
+import utils.analysis.AFT_analyzer;
+import utils.analysis.CapitalsAnalyzer;
 import utils.filesTools.CsvTools;
 import utils.filesTools.PathTools;
 import utils.graphicalTools.CSVTableView;
@@ -204,7 +206,8 @@ public class AFTsConfigurationController {
 
 	@FXML
 	public void addAFTSetOnAction() {
-		newAftPane.addaft();
+		//newAftPane.addaft();
+		CapitalsAnalyzer.generateGrapheDataByScenarios();
 	};
 
 	@FXML
@@ -217,7 +220,10 @@ public class AFTsConfigurationController {
 
 	@FXML
 	public void saveModefication() {
-		creatCsvFiles(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), "");
+		//creatCsvFiles(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), "");
+		AFT_analyzer.generateChart(1000,100, AFTsLoader.getAftHash().get(AFTChoisButton.getValue()));
+//		AFT_analyzer.generateBartChart(1000,100, AFTsLoader.getAftHash().get(AFTChoisButton.getValue()));
+		
 	}
 
 	@FXML
