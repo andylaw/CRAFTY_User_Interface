@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -182,7 +183,7 @@ public class AFTsConfigurationController {
 
 	void colorland(Manager a) {
 		CellsLoader.hashCell.values().forEach(C -> {
-		//	C.landStored(a);
+			// C.landStored(a);
 		});
 		CellsSet.colorMap("tmp");
 	}
@@ -206,7 +207,7 @@ public class AFTsConfigurationController {
 
 	@FXML
 	public void addAFTSetOnAction() {
-		//newAftPane.addaft();
+		// newAftPane.addaft();
 		CapitalsAnalyzer.generateGrapheDataByScenarios();
 	};
 
@@ -220,10 +221,20 @@ public class AFTsConfigurationController {
 
 	@FXML
 	public void saveModefication() {
-		//creatCsvFiles(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), "");
-		AFT_analyzer.generateChart(1000,100, AFTsLoader.getAftHash().get(AFTChoisButton.getValue()));
-//		AFT_analyzer.generateBartChart(1000,100, AFTsLoader.getAftHash().get(AFTChoisButton.getValue()));
-		
+		// creatCsvFiles(AFTsLoader.getAftHash().get(AFTChoisButton.getValue()), "");
+
+		String thisAFT = AFTChoisButton.getValue().replace("Int", "").replace("VExt", "").replace("Ext", "");
+		List<Manager> aList = new ArrayList<>();
+		AFTsLoader.getAftHash().forEach((label, agent) -> {
+			String AFTtype = label.replace("Int", "").replace("VExt", "").replace("Ext", "");
+			if (thisAFT.equals(AFTtype))
+				aList.add(agent);
+		});
+		Map<String, ArrayList<Double>> data = AFT_analyzer.productivitySample(1000, 100, aList.toArray(new Manager[0]));
+		AFT_analyzer.generateChart(thisAFT, data);
+
+		Map<String, ArrayList<Double>> data2 =  AFT_analyzer.productivitySample(1000, 100, AFTsLoader.getAftHash().get(AFTChoisButton.getValue()));
+		AFT_analyzer.generateChart(AFTChoisButton.getValue(), data2);
 	}
 
 	@FXML
@@ -242,8 +253,10 @@ public class AFTsConfigurationController {
 			Text text = new Text(ServiceSet.getServicesList().get(i));
 			text.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
 			text.setFill(Color.BLUE);
-			vbox.getChildren().addAll(
-					ychart(vbox, newAFT, ServiceSet.getServicesList().get(i)/* , (FxMain.sceneWidth * 1.3 - 100) / nbrColumn */), text);
+			vbox.getChildren()
+					.addAll(ychart(vbox, newAFT,
+							ServiceSet.getServicesList().get(i)/* , (FxMain.sceneWidth * 1.3 - 100) / nbrColumn */),
+							text);
 			grid.add(vbox, j++, k);
 			if (j % nbrColumn == 0) {
 				k++;
@@ -275,8 +288,8 @@ public class AFTsConfigurationController {
 	}
 
 	String[][] sensitivityTable(Manager a) {
-		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size() + 1][CellsLoader.getCapitalsList().size()
-				+ 1];
+		String[][] sensetivtyTable = new String[ServiceSet.getServicesList().size()
+				+ 1][CellsLoader.getCapitalsList().size() + 1];
 		for (int i = 0; i < ServiceSet.getServicesList().size(); i++) {
 			sensetivtyTable[i + 1][0] = ServiceSet.getServicesList().get(i);
 			for (int j = 0; j < CellsLoader.getCapitalsList().size(); j++) {

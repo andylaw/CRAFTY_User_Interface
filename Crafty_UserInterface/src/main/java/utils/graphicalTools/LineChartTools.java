@@ -63,14 +63,41 @@ public class LineChartTools {
 				k.getAndIncrement();
 			}
 		});
+//		if (hash.size() > 8) {
+//			AtomicInteger K = new AtomicInteger();
+//			sortedKeys.forEach((key) -> {
+//				ArrayList<Double> value = hash.get(key);
+//				if (value != null) {
+//					for (int j = 0; j < value.size(); j++) {
+//						series[K.get()].getData().add(new XYChart.Data<>(j, +value.get(j)));
+//						series[K.get()].getNode().lookup(".chart-series-line").setStyle(
+//								"-fx-stroke: " + ColorsTools.getStringColor(ColorsTools.colorlist(K.get())) + ";");
+//					}
+//					K.getAndIncrement();
+//				}
+//			});
+//			if (TabPaneController.cellsLoader != null)
+//				labelcolor( lineChart);
+//			lineChart.setCreateSymbols(false);
+//		}
+		strokeColor(lineChart, hash);
+//		if (box != null) {
+//			MousePressed.mouseControle(box, lineChart);
+//		}
+		LineChartTools.addSeriesTooltips(lineChart);
+	}
+	
+	public static void strokeColor(LineChart<Number, Number> lineChart, Map<String, ArrayList<Double>> hash) {
+		List<String> sortedKeys = new ArrayList<>(hash.keySet());
+		Collections.sort(sortedKeys);
 		if (hash.size() > 8) {
 			AtomicInteger K = new AtomicInteger();
 			sortedKeys.forEach((key) -> {
 				ArrayList<Double> value = hash.get(key);
 				if (value != null) {
 					for (int j = 0; j < value.size(); j++) {
-						series[K.get()].getData().add(new XYChart.Data<>(j, +value.get(j)));
-						series[K.get()].getNode().lookup(".chart-series-line").setStyle(
+						lineChart.getData().get(K.get()).getData().add(new XYChart.Data<>(j, +value.get(j)));
+						lineChart.getData().get(K.get()).getNode().lookup(".chart-series-line").setStyle(
 								"-fx-stroke: " + ColorsTools.getStringColor(ColorsTools.colorlist(K.get())) + ";");
 					}
 					K.getAndIncrement();
@@ -80,10 +107,6 @@ public class LineChartTools {
 				labelcolor( lineChart);
 			lineChart.setCreateSymbols(false);
 		}
-//		if (box != null) {
-//			MousePressed.mouseControle(box, lineChart);
-//		}
-		LineChartTools.addSeriesTooltips(lineChart);
 	}
 
 	public static void addSeriesTooltips(LineChart<Number, Number> lineChart) {
