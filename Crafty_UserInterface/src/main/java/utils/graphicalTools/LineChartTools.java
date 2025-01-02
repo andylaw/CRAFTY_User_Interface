@@ -160,5 +160,18 @@ public class LineChartTools {
 			}
 		});
 	}
-
+	public static void configurexYxis(LineChart<Number, Number> demandsChart, double start, double end) {
+		NumberAxis yAxis = ((NumberAxis) demandsChart.getYAxis());
+		yAxis.setAutoRanging(false);
+		yAxis.setLowerBound(start);
+		yAxis.setUpperBound(end);
+		yAxis.setTickUnit((end - start) / 10);
+		yAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(yAxis) {
+		    @Override
+		    public String toString(Number object) {
+		        // Use %.3f to format to 3 decimal places
+		        return String.format("%.3f", object.doubleValue());
+		    }
+		});
+	}
 }

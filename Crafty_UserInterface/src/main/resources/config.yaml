@@ -1,7 +1,8 @@
 # Configuration for CRAFTY Model
 
-# Paths and Data
-project_path: 'C:\Users\byari-m\Desktop\CRAFTY_DATA\CRAFTY-EU-1km_upscaled_16' #
+# Paths and Data # if linux used /mnt/c/Users/byari-m/Desktop/CRAFTY_DATA/CRAFTY-EU-1km_upscaled_16
+project_path: 'C:\Users\byari-m\Desktop\CRAFTY_DATA\CRAFTY-EU-1km_upscaled_16' 
+
 scenario: 'ssp126'                            #Scenario identifier
 regionalization: false						  # Only works if regional data is available (regional demands and GIS cell specificity).
 # CRAFTY Mechanisms

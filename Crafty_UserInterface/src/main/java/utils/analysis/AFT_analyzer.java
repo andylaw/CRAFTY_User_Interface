@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
@@ -21,6 +22,7 @@ import javafx.scene.layout.Pane;
 import main.MainHeadless;
 import model.Cell;
 import model.Manager;
+import utils.filesTools.SaveAs;
 import utils.graphicalTools.LineChartTools;
 import utils.graphicalTools.MousePressed;
 import utils.graphicalTools.NewWindow;
@@ -113,6 +115,14 @@ public class AFT_analyzer {
 		LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(), new NumberAxis());
 		chart.setTitle(titel);
 		lineChart(chart, data, titel);
+		String ItemName = "Save as CSV";
+		Consumer<String> action = x -> {
+			SaveAs.exportLineChartDataToCSV(chart);
+		};
+		HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
+		othersMenuItems.put(ItemName, action);
+		MousePressed.mouseControle((Pane) chart.getParent(), chart, othersMenuItems);
+		
 		LineChartTools.strokeColor(chart, data);
 		NewWindow win = new NewWindow();
 		win.creatwindows("", chart);

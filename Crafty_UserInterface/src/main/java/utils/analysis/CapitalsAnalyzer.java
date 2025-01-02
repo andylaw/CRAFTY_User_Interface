@@ -2,15 +2,15 @@ package utils.analysis;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
-import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.PathsLoader;
-import fxmlControllers.SpatialDataController;
 import fxmlControllers.TabPaneController;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -18,21 +18,18 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.Pane;
 import main.MainHeadless;
-import model.Cell;
-import model.CellsSet;
-import model.Manager;
+import utils.filesTools.SaveAs;
 import utils.graphicalTools.LineChartTools;
 import utils.graphicalTools.MousePressed;
 import utils.graphicalTools.NewWindow;
-import utils.graphicalTools.Tools;
 
 public class CapitalsAnalyzer {
 
-	public static void main(String[] args) {
-		MainHeadless.modelInitialisation();
-//		generateGrapheData();
-
-	}
+//	public static void main(String[] args) {
+//		MainHeadless.modelInitialisation();
+////		generateGrapheData();
+//
+//	}
 
 	static ConcurrentHashMap<String, Double> mapToValues(int year) {
 		PathsLoader.setCurrentYear(year);
@@ -44,6 +41,10 @@ public class CapitalsAnalyzer {
 				capiHash.merge(cn, cv, Double::sum);
 			});
 		});
+		CellsLoader.getCapitalsList().forEach(cn->{
+			capiHash.put(cn, capiHash.get(cn)/CellsLoader.getNbrOfCells());
+		});
+		
 		return capiHash;
 	}
 
@@ -87,13 +88,25 @@ public class CapitalsAnalyzer {
 		LineChart<Number, Number> chart = new LineChart<>(new NumberAxis(), new NumberAxis());
 		chart.setTitle(titel);
 		lineChart(chart, data, titel);
+
 		LineChartTools.configurexAxis(chart,PathsLoader.getStartYear(), PathsLoader.getEndtYear());
+		double minY= getMinimumValue(data);
+		double maxY= getMaximumValue(data);
+		LineChartTools.configurexYxis(chart,minY, maxY);
+		String ItemName = "Save as CSV";
+		Consumer<String> action = x -> {
+			SaveAs.exportLineChartDataToCSV(chart);
+		};
+		HashMap<String, Consumer<String>> othersMenuItems = new HashMap<>();
+		othersMenuItems.put(ItemName, action);
+		MousePressed.mouseControle((Pane) chart.getParent(), chart, othersMenuItems);
 		NewWindow win = new NewWindow();
 		win.creatwindows("", chart);
 	}
 
 	public static void lineChart(LineChart<Number, Number> lineChart, Map<String, ArrayList<Double>> hash,
 			String titel) {
+		
 		Series<Number, Number>[] series = new XYChart.Series[hash.size()];
 
 		AtomicInteger i = new AtomicInteger();
@@ -116,11 +129,37 @@ public class CapitalsAnalyzer {
 				series[k.get()].getData().add(new XYChart.Data<>(j+PathsLoader.getStartYear(), value.get(j)));
 			}
 			k.getAndIncrement();
-
 		});
 
 		MousePressed.mouseControle((Pane) lineChart.getParent(), lineChart, titel);
 
 		LineChartTools.addSeriesTooltips(lineChart);
 	}
+	
+	
+	public static double getMinimumValue(Map<String, ArrayList<Double>> hash) {
+        double min = Double.MAX_VALUE;
+        
+        for (Map.Entry<String, ArrayList<Double>> entry : hash.entrySet()) {
+            for (double val : entry.getValue()) {
+                if (val < min) {
+                    min = val;
+                }
+            }
+        }
+        return min;
+    }
+	
+	public static double getMaximumValue(Map<String, ArrayList<Double>> hash) {
+        double max = Double.MIN_VALUE;
+        
+        for (Map.Entry<String, ArrayList<Double>> entry : hash.entrySet()) {
+            for (double val : entry.getValue()) {
+                if (val > max) {
+                    max = val;
+                }
+            }
+        }
+        return max;
+    }
 }

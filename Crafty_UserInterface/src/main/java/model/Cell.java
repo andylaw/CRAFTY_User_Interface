@@ -109,7 +109,7 @@ public class Cell extends AbstractCell {
 						? (distributionMean.get(owner)
 								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
 						: 0;
-				if ((uC - uO > nbr) && uC > 0) {
+				if ((uC - uO > 0) && uC > 0) {
 					owner = ConfigLoader.config.mutate_on_competition_win ? new Manager(competitor) : competitor;
 				}
 			}
