@@ -1,8 +1,5 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,8 +21,8 @@ import output.ListenerByRegion;
 public class RegionalModelRunner {
 	private static final CustomLogger LOGGER = new CustomLogger(RegionalModelRunner.class);
 	ConcurrentHashMap<String, Double> regionalSupply;
-	private ConcurrentHashMap<String, Double> marginal = new ConcurrentHashMap<>();
-	private ConcurrentHashMap<Manager, Double> distributionMean;
+	ConcurrentHashMap<String, Double> marginal = new ConcurrentHashMap<>();
+	ConcurrentHashMap<Manager, Double> distributionMean;
 	public Region R;
 
 	public ListenerByRegion listner;
@@ -54,7 +51,7 @@ public class RegionalModelRunner {
 		distributionMean = new ConcurrentHashMap<>();
 		R.getCells().values().parallelStream().forEach(c -> {
 			if (c.getOwner() != null) {
-				distributionMean.merge(c.getOwner(), c.utility(marginal), Double::sum);
+				distributionMean.merge(c.getOwner(), Competitiveness.utility(c, c.owner, this), Double::sum);
 			}
 		});
 		AFTsLoader.getActivateAFTsHash().values().forEach(a -> distributionMean.computeIfAbsent(a, key -> 0.));
@@ -85,7 +82,7 @@ public class RegionalModelRunner {
 	void takeOverUnmanageCells() {
 		LOGGER.trace("Region: [" + R.getName() + "] Take over unmanaged cells & Launching the competition process...");
 		R.getUnmanageCellsR().parallelStream().forEach(c -> {
-			c.competition(marginal, distributionMean, R);
+			Competitiveness.competition(c, this);
 			if (c.getOwner() != null && !c.getOwner().isAbandoned()) {
 				R.getUnmanageCellsR().remove(c);
 			}
@@ -147,10 +144,10 @@ public class RegionalModelRunner {
 	private void giveUp() {
 		if (ConfigLoader.config.use_abandonment_threshold) {
 			ConcurrentHashMap<String, Cell> randomCellsubSetForGiveUp = CellsSet.getRandomSubset(R.getCells(),
-					 ConfigLoader.config.land_abandonment_percentage);
+					ConfigLoader.config.land_abandonment_percentage);
 			if (randomCellsubSetForGiveUp != null) {
 				randomCellsubSetForGiveUp.values().parallelStream().forEach(c -> {
-					c.giveUp(marginal, distributionMean, R);
+					c.giveUp(this, distributionMean);
 				});
 			}
 		}
@@ -172,7 +169,7 @@ public class RegionalModelRunner {
 						if (c.getOwner() != null && c.getOwner().isActive()) {
 							c.getCurrentProductivity()
 									.forEach((key, value) -> servicesBeforeCompetition.merge(key, value, Double::sum));
-							c.competition(marginal, distributionMean, R);
+							Competitiveness.competition(c, this);
 							c.calculateCurrentProductivity(R);
 							c.getCurrentProductivity()
 									.forEach((key, value) -> servicesAfterCompetition.merge(key, value, Double::sum));
@@ -190,7 +187,7 @@ public class RegionalModelRunner {
 		LOGGER.info("Productivity calculation for all cells ");
 		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		List<Map<String, Cell>> partitions = Utils.partitionMap(R.getCells(), 10); // Partition into 10
-																				// sub-maps
+																					// sub-maps
 		try {
 			for (Map<String, Cell> subMap : partitions) {
 				executor.submit(() -> subMap.values().parallelStream().forEach(c -> c.calculateCurrentProductivity(R)));
@@ -203,6 +200,5 @@ public class RegionalModelRunner {
 			} // Wait for all tasks to complete
 		}
 	}
-
 
 }

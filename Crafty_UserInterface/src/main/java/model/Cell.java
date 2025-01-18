@@ -1,16 +1,10 @@
 package model;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import dataLoader.AFTsLoader;
-import dataLoader.MaskRestrictionDataLoader;
-import dataLoader.ServiceSet;
 import javafx.scene.paint.Color;
-import main.ConfigLoader;
 
 /**
  * @author Mohamed Byari
@@ -56,97 +50,6 @@ public class Cell extends AbstractCell {
 		currentProductivity.put(service.getName(), pr);
 	}
 
-	double utility(Manager a, ConcurrentHashMap<String, Double> marginal) {
-		if (a == null || !a.isInteract()) {
-			return 0;
-		}
-		return ServiceSet.getServicesList().stream().mapToDouble(sname -> marginal.get(sname) * productivity(a, sname))
-				.sum();
-	}
-
-	double utility(ConcurrentHashMap<String, Double> marginal) {
-		if (owner == null || !owner.isInteract()) {
-			return 0;
-		}
-		try {
-			return ServiceSet.getServicesList().stream()
-					.mapToDouble(sname -> marginal.get(sname) * currentProductivity.get(sname)).sum();
-		} catch (NullPointerException e) {
-			return 0;
-		}
-	}
-
-	private void Competition(Manager competitor, ConcurrentHashMap<String, Double> marginal,
-			ConcurrentHashMap<Manager, Double> distributionMean) {
-		if (competitor == null || !competitor.isInteract()) {
-			return;
-		}
-
-		boolean makeCopetition = true;
-		if (getMaskType() != null) {
-			HashMap<String, Boolean> mask = MaskRestrictionDataLoader.restrictions.get(getMaskType());
-			if (mask != null) {
-				if (owner == null) {
-					if (mask.get(competitor.getLabel() + "_" + competitor.getLabel()) != null)
-						makeCopetition = mask.get(competitor.getLabel() + "_" + competitor.getLabel());
-				} else {
-					if (mask.get(owner.getLabel() + "_" + competitor.getLabel()) != null)
-						makeCopetition = mask.get(owner.getLabel() + "_" + competitor.getLabel());
-				}
-
-			}
-		}
-
-		if (makeCopetition) {
-			double uC = utility(competitor, marginal);
-			double uO = utility(marginal);
-
-			if (owner == null || owner.isAbandoned()) {
-				if (uC > 0)
-					owner = ConfigLoader.config.mutate_on_competition_win ? new Manager(competitor) : competitor;
-			} else {
-				double nbr = distributionMean != null
-						? (distributionMean.get(owner)
-								* (owner.getGiveInMean() + owner.getGiveInSD() * new Random().nextGaussian()))
-						: 0;
-				if ((uC - uO > 0) && uC > 0) {
-					owner = ConfigLoader.config.mutate_on_competition_win ? new Manager(competitor) : competitor;
-				}
-			}
-		}
-	}
-
-	Manager mostCompetitiveAgent(Collection<Manager> setAfts, ConcurrentHashMap<String, Double> marginal) {
-		if (setAfts.size() == 0) {
-			return owner;
-		}
-		double uti = 0;
-		Manager theBestAFT = setAfts.iterator().next();
-		for (Manager agent : setAfts) {
-			double u = utility(agent, marginal);
-			if (u > uti) {
-				uti = u;
-				theBestAFT = agent;
-			}
-		}
-		return theBestAFT;
-	}
-
-	void competition(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
-			Region R) {
-		boolean Neighboor = ConfigLoader.config.use_neighbor_priority
-				&& ConfigLoader.config.neighbor_priority_probability > Math.random();
-		Collection<Manager> afts = Neighboor
-				? CellsSubSets.detectExtendedNeighboringAFTs(this, ConfigLoader.config.neighbor_radius)
-				: AFTsLoader.getActivateAFTsHash().values();
-
-		if (Math.random() < ConfigLoader.config.MostCompetitorAFTProbability) {
-			Competition(mostCompetitiveAgent(afts, marginal), marginal, distributionMean);
-		} else {
-			Competition(AFTsLoader.getRandomAFT(afts), marginal, distributionMean);
-		}
-	}
-
 	public void calculateCurrentProductivity(Region R) {
 		currentProductivity.clear();
 		R.getServicesHash().values().forEach(serviceName -> {
@@ -154,16 +57,15 @@ public class Cell extends AbstractCell {
 		});
 	}
 
-	void giveUp(ConcurrentHashMap<String, Double> marginal, ConcurrentHashMap<Manager, Double> distributionMean,
-			Region R) {
+	void giveUp(RegionalModelRunner r, ConcurrentHashMap<Manager, Double> distributionMean) {
 		if (getOwner() != null && getOwner().isInteract()) {
-			double utility = utility(marginal);
+			double utility = Competitiveness.utility(this, owner, r);
 			double averageutility = distributionMean.get(getOwner());
 			if ((utility < averageutility
 					* (getOwner().getGiveUpMean() + getOwner().getGiveUpSD() * new Random().nextGaussian())
 					&& getOwner().getGiveUpProbabilty() > Math.random())) {
 				setOwner(null);
-				R.getUnmanageCellsR().add(this);
+				r.R.getUnmanageCellsR().add(this);
 			}
 		}
 	}
