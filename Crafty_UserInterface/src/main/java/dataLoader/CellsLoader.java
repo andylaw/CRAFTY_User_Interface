@@ -32,27 +32,25 @@ public class CellsLoader {
 	public AFTsLoader AFtsSet;
 
 	private static int nbrOfCells = 0;
-
+ 
 	public void loadMap() {
-
 		AFtsSet = new AFTsLoader();
 		hashCell.clear();
+
 		Path baseLindPath = PathTools.fileFilter(PathTools.asFolder("worlds"), "Baseline_map").iterator().next();
 		ReaderFile.processCSV(this, baseLindPath, "Baseline");
 		nbrOfCells = hashCell.size();
-		if (nbrOfCells < 1000) {// temporal for very small maps visualization
+		if (nbrOfCells < 1000) {// temporal for the visualization of very small maps 
 			Cell.setSize(200);
 		}
 
 		loadGisData();
-		RegionClassifier.initialation();
-		S_WeightLoader.updateWorldWeight();
 		AFTsLoader.hashAgentNbr();
-		AFTsLoader.hashAgentNbrRegions();
 
 		LOGGER.info("Number of cells for each AFT: " + AFTsLoader.hashAgentNbr);
-
 	}
+	
+	
 
 	public static void loadCapitalsList() {
 		capitalsList = Collections.synchronizedList(new ArrayList<>());

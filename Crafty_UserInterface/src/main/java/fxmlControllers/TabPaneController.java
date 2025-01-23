@@ -97,12 +97,9 @@ public class TabPaneController {
 	@FXML
 	public void regionalization() {
 		RegionClassifier.regionalization = regionalBox.isSelected();
-		ConfigLoader.config.regionalization=regionalBox.isSelected();
-		if (!regionalBox.isSelected()) {
-			ConfigLoader.config.initial_DS_equilibrium_byRegions = false;
-		}
+		ConfigLoader.config.regionalization = regionalBox.isSelected();
 		RegionClassifier.initialation();
-		ModelRunner.initializeRegions();
+		ModelRunner.setup();
 		AFTsLoader.hashAgentNbrRegions();
 
 		AtomicInteger nbr = new AtomicInteger();
@@ -124,11 +121,11 @@ public class TabPaneController {
 			// DemandModel.updateDemand();// =
 			// CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
 			ServiceSet.initialseServices();
-//			DemandModel.updateWorldDemand();
 			DemandModel.updateRegionsDemand();
-			S_WeightLoader.updateWorldWeight();
 			S_WeightLoader.updateRegionsWeight();
-//			RegionClassifier.aggregateServiceToWorldService();
+			S_WeightLoader.updateWorldWeight();
+			RegionClassifier.aggregateDemandToWorldServiceDemand();
+			ModelRunner.listner.initializeListeners();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
 			new LineChartTools().lineChart((Pane) chart.getParent(), chart, DemandModel.serialisationWorldDemand());
 			cellsLoader.AFtsSet.updateAFTsForsenario();

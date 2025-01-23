@@ -49,7 +49,7 @@ class CsvToolsTest {
 				fileReder[i][y] = max - Integer.parseInt(fileReder[i][y]) + "";
 		//		System.out.println(fileReder[i][y]);
 			}
-			Path pp= Paths.get("C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\samaka.csv");
+			Path pp= Paths.get("C:\\Users\\byari-m\\Desktop\\data-DE\\worlds\\dd.csv");
 	CsvTools.writeCSVfile(fileReder, pp/*p.toPath()*/);
 		});
 

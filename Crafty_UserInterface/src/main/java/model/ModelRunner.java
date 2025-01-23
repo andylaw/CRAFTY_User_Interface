@@ -8,7 +8,6 @@ import fxmlControllers.MasksPaneController;
 import fxmlControllers.TabPaneController;
 import main.Config;
 import main.ConfigLoader;
-import modelRunner.AbstractModelRunner;
 import output.Listener;
 import utils.analysis.Tracker;
 
@@ -17,25 +16,25 @@ import utils.analysis.Tracker;
  *
  */
 
-public class ModelRunner extends AbstractModelRunner {
+public class ModelRunner  {
 //	private static final CustomLogger LOGGER = new CustomLogger(ModelRunner.class);
 	public String colorDisplay = "AFT";
 	public ConcurrentHashMap<String, Double> totalSupply;
 	public static ConcurrentHashMap<String, RegionalModelRunner> regionsModelRunner;
-	static Listener listner = new Listener();
+	public static Listener listner = new Listener();
 
-	@Override
-	public void setup() {
-		initializeRegions();
-	}
-
-	public static void initializeRegions() {
+	
+	public static void setup() {
 		regionsModelRunner = new ConcurrentHashMap<>();
+		RegionClassifier.initialation();
+		AFTsLoader.hashAgentNbrRegions();
+//		S_WeightLoader.updateWorldWeight();
 		RegionClassifier.regions.keySet().forEach(regionName -> {
 			regionsModelRunner.put(regionName, new RegionalModelRunner(regionName));
 		});
 		listner.initializeListeners();
 	}
+
 
 	public void step() {
 		int year = Math.min(Math.max(PathsLoader.getCurrentYear(), PathsLoader.getStartYear()),
@@ -49,8 +48,6 @@ public class ModelRunner extends AbstractModelRunner {
 		regionsModelRunner.values().forEach(RegionalRunner -> {
 			RegionalRunner.step(year);
 		});
-
-		RegionClassifier.aggregateServicesToWorldService(year);
 		listnerOutput(year);
 		mapSynchronisation();
 		AFTsLoader.hashAgentNbr();
@@ -79,16 +76,6 @@ public class ModelRunner extends AbstractModelRunner {
 			RegionalRunner.regionalSupply();
 			RegionalRunner.regionalSupply.forEach((key, value) -> totalSupply.merge(key, value, Double::sum));
 		});
-	}
-
-	@Override
-	public void toSchedule() {
-
-	}
-
-	@Override
-	public void loadStateManager() {
-
 	}
 
 }

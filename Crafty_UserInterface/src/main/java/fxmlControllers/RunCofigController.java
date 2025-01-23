@@ -15,8 +15,6 @@ public class RunCofigController {
 	@FXML
 	private CheckBox InitialEquilibrium;
 	@FXML
-	private CheckBox InitialEquilibriumRegion;
-	@FXML
 	private CheckBox removeNegative;
 	@FXML
 	private CheckBox gUP;
@@ -85,7 +83,6 @@ public class RunCofigController {
 	public void initialize() {
 		System.out.println("initialize " + getClass().getSimpleName());
 		InitialEquilibrium.setSelected(ConfigLoader.config.initial_demand_supply_equilibrium);
-		InitialEquilibriumRegion.setSelected(ConfigLoader.config.initial_DS_equilibrium_byRegions);
 
 		removeNegative.setSelected(ConfigLoader.config.remove_negative_marginal_utility);
 		MapSync.setSelected(Config.mapSynchronisation);
@@ -167,14 +164,9 @@ public class RunCofigController {
 	@FXML
 	public void initialEquilibrium(ActionEvent event) {
 		ConfigLoader.config.initial_demand_supply_equilibrium = InitialEquilibrium.isSelected();
-		InitialEquilibriumRegion.setDisable(!ConfigLoader.config.initial_demand_supply_equilibrium);
 	}
 
-	@FXML
-	public void initialEquilibriumRegion(ActionEvent event) {
-		ConfigLoader.config.initial_DS_equilibrium_byRegions = InitialEquilibriumRegion.isSelected()&&ConfigLoader.config.regionalization;
-			InitialEquilibriumRegion.setSelected(ConfigLoader.config.initial_DS_equilibrium_byRegions );
-	}
+
 
 	// Event Listener on CheckBox[#removeNegative].onAction
 	@FXML

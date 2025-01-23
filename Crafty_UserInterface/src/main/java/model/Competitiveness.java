@@ -13,28 +13,33 @@ import main.ConfigLoader;
 public class Competitiveness {
 	static boolean utilityUsingPrice = true;
 
-	static double utilityMarginal(Cell c, Manager a, RegionalModelRunner r) {
+	static double utility(Cell c, Manager a, RegionalModelRunner r) {
+		if (a == null || !a.isInteract()) {
+			return 0;
+		}
 		return ServiceSet.getServicesList().stream()
 				.mapToDouble(sname -> r.marginal.get(sname) * c.productivity(a, sname)).sum();
 	}
 
 	static double utilityPrice(Cell c, Manager a, RegionalModelRunner r) {
-		return ServiceSet.getServicesList().stream()
-				.mapToDouble(sname -> r.R.getServicesHash().get(sname).getWeights().get(PathsLoader.getCurrentYear()-PathsLoader.getStartYear())
-						* c.productivity(a, sname))
-				.sum();
-	}
-
-	static double utility(Cell c, Manager a, RegionalModelRunner r) {
 		if (a == null || !a.isInteract()) {
 			return 0;
 		}
-		if (utilityUsingPrice) {
-			return utilityPrice(c, a, r);
-		} else {
-			return utilityMarginal(c, a, r);
-		}
+		int tick = PathsLoader.getCurrentYear() - PathsLoader.getStartYear();
+		return ServiceSet.getServicesList().stream()
+				.mapToDouble(sname -> (r.R.getServicesHash().get(sname).getWeights().get(tick)
+						/ r.R.getServicesHash().get(sname).getCalibration_Factor()) * c.productivity(a, sname))
+				.sum();
 	}
+
+//	static double utility2(Cell c, Manager a, RegionalModelRunner r) {
+//
+//		if (utilityUsingPrice) {
+//			return utilityPrice(c, a, r);
+//		} else {
+//			return utility(c, a, r); //utilityMarginal(c, a, r);
+//		}
+//	}
 
 	static Manager mostCompetitiveAgent(Cell c, Collection<Manager> setAfts, RegionalModelRunner r) {
 		if (setAfts.size() == 0) {
@@ -56,7 +61,6 @@ public class Competitiveness {
 		if (competitor == null || !competitor.isInteract()) {
 			return;
 		}
-
 		boolean makeCopetition = true;
 		if (c.getMaskType() != null) {
 			HashMap<String, Boolean> mask = MaskRestrictionDataLoader.restrictions.get(c.getMaskType());
@@ -68,7 +72,6 @@ public class Competitiveness {
 					if (mask.get(c.owner.getLabel() + "_" + competitor.getLabel()) != null)
 						makeCopetition = mask.get(c.owner.getLabel() + "_" + competitor.getLabel());
 				}
-
 			}
 		}
 

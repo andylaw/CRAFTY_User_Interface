@@ -60,7 +60,7 @@ public class Listener {
 		ServiceSet.getServicesList().forEach(serviceName -> {
 			servicedemandListener[y][m.get()] = totalSupply.get(serviceName) + "";
 			Service ds = ServiceSet.worldService.get(serviceName);
-			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (ds.getDemands().get(year - PathsLoader.getStartYear())) + "";
+			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (ds.getDemands().get(year)) + "";
 			m.getAndIncrement();
 		});
 	}

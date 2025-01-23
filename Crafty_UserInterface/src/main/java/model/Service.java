@@ -11,7 +11,7 @@ public class Service {
 
 	public Service(String name) {
 		this.name = name;
-		 demands = new ConcurrentHashMap<>();
+		demands = new ConcurrentHashMap<>();
 	}
 
 	public String getName() {
@@ -48,8 +48,8 @@ public class Service {
 
 	@Override
 	public String toString() {
-		return "Service [name=" + name + /* ", Utility_Weight=" + Utility_Weight + */ ", calibration_Factor="
-				+ calibration_Factor + "]";
+		return "-------- \n" + "Service [name= " + name + ", calibration_Factor= " + calibration_Factor
+				+ ", Utility_Weight= " + weights + "\n Demands= " + demands + "]";
 	}
 
 }

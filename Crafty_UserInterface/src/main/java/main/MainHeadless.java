@@ -4,13 +4,16 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
+import dataLoader.S_WeightLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.ModelRunnerController;
 import fxmlControllers.TabPaneController;
 import model.CellsSet;
+import model.RegionClassifier;
 import output.Listener;
 import utils.analysis.CustomLogger;
 import utils.filesTools.PathTools;
@@ -19,7 +22,6 @@ public class MainHeadless {
 	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
 
 	public static void main(String[] args) {
-		System.out.println("samaka");
 		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
 		modelInitialisation();
 		runHeadless();
@@ -33,6 +35,9 @@ public class MainHeadless {
 		CellsLoader.loadCapitalsList();
 		ServiceSet.loadServiceList();
 		TabPaneController.cellsLoader.loadMap();
+		RegionClassifier.initialation();
+		S_WeightLoader.updateWorldWeight();
+		AFTsLoader.hashAgentNbrRegions();
 		CellsSet.setCellsSet(TabPaneController.cellsLoader);
 		MaskRestrictionDataLoader.allMaskAndRistrictionUpdate();
 	}

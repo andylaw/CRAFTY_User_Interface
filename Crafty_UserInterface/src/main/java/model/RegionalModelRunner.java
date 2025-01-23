@@ -64,17 +64,16 @@ public class RegionalModelRunner {
 
 	private void calculeMarginal(int year) {
 		LOGGER.info("Rigion: [" + R.getName() + "] Total Supply = " + regionalSupply);
-		int tick = year - PathsLoader.getStartYear();
 		regionalSupply.forEach((serviceName, serviceSupply) -> {
 			Service s = R.getServicesHash().get(serviceName);
-			double serviceDemand = s.getDemands().get(tick);
+			double serviceDemand = s.getDemands().get(year);
 			double marg = ConfigLoader.config.remove_negative_marginal_utility
 					? Math.max(serviceDemand - serviceSupply, 0)
 					: serviceDemand - serviceSupply;
 			if (ConfigLoader.config.averaged_residual_demand_per_cell) {
 				marg = marg / R.getCells().size();
 			}
-			marg = marg * s.getWeights().get(tick);
+			marg = marg * s.getWeights().get(year);
 			marginal.put(serviceName, marg);
 		});
 	}
@@ -100,22 +99,23 @@ public class RegionalModelRunner {
 
 	}
 
-	public void initialDSEquilibrium() {
+	public void initialDSEquilibriumFactorCalculation() {
 		regionalSupply();
 		regionalSupply.forEach((serviceName, serviceSuplly) -> {
 			double factor = 1;
 			if (serviceSuplly != 0) {
-				if (R.getServicesHash().get(serviceName).getDemands().get(0) == 0) {
+				if (R.getServicesHash().get(serviceName).getDemands().get(PathsLoader.getStartYear()) == 0) {
 					LOGGER.warn("Demand for " + serviceName + " = 0");
 				} else {
-					factor = R.getServicesHash().get(serviceName).getDemands().get(0) / (serviceSuplly);
+					factor = R.getServicesHash().get(serviceName).getDemands().get(PathsLoader.getStartYear())
+							/ (serviceSuplly);
 				}
 			} else {
-				factor = Double.MAX_VALUE;
+				// factor = Double.MAX_VALUE;
 				LOGGER.warn("Supply for " + serviceName + " = 0 (The AFT baseline map is unable to produce  "
-						+ serviceName + " service)");
+						+ serviceName + " service => this service will not be standardised");
 			}
-			R.getServicesHash().get(serviceName).setCalibration_Factor(factor != 0 ? factor : 1);
+			R.getServicesHash().get(serviceName).setCalibration_Factor(factor);
 		});
 		listner.fillDSEquilibriumListener(R.getServicesHash());
 		LOGGER.info(
@@ -123,7 +123,6 @@ public class RegionalModelRunner {
 	}
 
 	public void step(int year) {
-		calibrateDemands(year);
 		listner.exportFiles(year, regionalSupply);
 		calculeMarginal(year);
 		calculeDistributionMean();
@@ -131,14 +130,6 @@ public class RegionalModelRunner {
 		takeOverUnmanageCells();
 		competition(year);
 		AFTsLoader.hashAgentNbr(R.getName());
-	}
-
-	private void calibrateDemands(int year) {
-		int tick = year - PathsLoader.getStartYear();
-		R.getServicesHash().values().forEach(s -> {
-			s.getDemands().put(tick, s.getDemands().get(tick) / s.getCalibration_Factor());
-		});
-
 	}
 
 	private void giveUp() {

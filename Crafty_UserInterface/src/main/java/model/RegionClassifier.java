@@ -39,23 +39,29 @@ public class RegionClassifier {
 		}
 
 		ServiceSet.initialseServices();
-		DemandModel.updateRegionsDemand();
-		S_WeightLoader.updateRegionsWeight();
-		aggregateServicesToWorldService(PathsLoader.getStartYear());
+		serviceupdater();
 
 		LOGGER.info("Regions: " + regions.keySet());
 	}
+	
+	public static void serviceupdater() {
+		DemandModel.updateRegionsDemand();
+		S_WeightLoader.updateRegionsWeight();
+		aggregateDemandToWorldServiceDemand();
+	}
 
-	public static void aggregateServicesToWorldService(int year) {
-		int y = year - PathsLoader.getStartYear();
-		ServiceSet.worldService.forEach((ns, s) -> {
-			s.getDemands().put(y, 0.);
-		});
-		regions.values().forEach(r -> {
-			r.getServicesHash().forEach((ns, s) -> {
-				ServiceSet.worldService.get(ns).getDemands().merge(y, s.getDemands().get(y), Double::sum);
+	public static void aggregateDemandToWorldServiceDemand() {
+		for (int i = PathsLoader.getStartYear(); i <= PathsLoader.getEndtYear(); i++) {
+			int year = i;
+			ServiceSet.worldService.forEach((ns, s) -> {
+				s.getDemands().put(year, 0.);
 			});
-		});
+			regions.values().forEach(r -> {
+				r.getServicesHash().forEach((ns, s) -> {
+					ServiceSet.worldService.get(ns).getDemands().merge(year, s.getDemands().get(year), Double::sum);
+				});
+			});
+		}
 	}
 
 }

@@ -17,6 +17,7 @@ public class DemandModel {
 	private static final CustomLogger LOGGER = new CustomLogger(DemandModel.class);
 
 	public static void updateRegionsDemand() {
+		LOGGER.info("update Regions Demand...");
 		RegionClassifier.regions.values().forEach(r -> {
 			updateDemand(r);
 		});
@@ -25,7 +26,8 @@ public class DemandModel {
 	private static void updateDemand(Region R) {
 		Path path;
 		try {
-			path = PathTools.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("demand"), "_"+R.getName()).get(0);
+			path = PathTools.fileFilter(PathsLoader.getScenario(), PathTools.asFolder("demand"), "_" + R.getName())
+					.get(0);
 		} catch (NullPointerException e) {
 			LOGGER.warn("No demand file fund for region: |" + R.getName() + "|");
 			return;
@@ -38,9 +40,10 @@ public class DemandModel {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();
 				for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
 					if (i < vect.size()) {
-						dv.put(i, Tools.sToD(vect.get(i)));
+						dv.put(PathsLoader.getStartYear() +i, Tools.sToD(vect.get(i)));
 					}
 				}
+				R.getServicesHash().get(serviceName).getDemands().clear();
 				R.getServicesHash().get(serviceName).setDemands(dv);
 			}
 		});

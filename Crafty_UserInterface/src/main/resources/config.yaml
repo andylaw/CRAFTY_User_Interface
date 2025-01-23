@@ -4,10 +4,9 @@
 project_path: 'C:\Users\byari-m\Desktop\CRAFTY_DATA\CRAFTY-EU-1km_upscaled_16' 
 
 scenario: 'ssp126'                            #Scenario identifier
-regionalization: true						  # Only works if regional data is available (regional demands and GIS cell specificity).
+regionalization: false						  # Only works if regional data is available (regional demands and GIS cell specificity).
 # CRAFTY Mechanisms
 initial_demand_supply_equilibrium: true       # Ensure balanced eco-service supply and demand during initial tick
-initial_DS_equilibrium_byRegions: true        # if true supply-demand balaced by each region otherwise for the total space
 remove_negative_marginal_utility: false       # Set marginal utility of production to 0 if negative
 use_abandonment_threshold: true               # Abandon cell if agent competitiveness falls below threshold
 mutate_on_competition_win: false              # Create new agent with mutations if competitor wins competition
@@ -21,16 +20,16 @@ neighbor_priority_probability: 0.95           # Probability of selecting neighbo
 neighbor_radius: 2                            # Radius defining neighborhood if neighbor effect is enabled
 
 # Competitiveness Process
-participating_cells_percentage: 0.03          # Percentage of cells participating in competitiveness process
-marginal_utility_calculations_per_tick: 1    # Number of times the marginal utility calculated per tick
-land_abandonment_percentage: 0.05            # Percentage of land that can be abandoned per tick
+participating_cells_percentage: 0.02          # Percentage of cells participating in competitiveness process
+marginal_utility_calculations_per_tick: 1     # Number of times the marginal utility calculated per tick
+land_abandonment_percentage: 0.02             # Percentage of land that can be abandoned per tick
 
 # Output Configuration
 generate_csv_files: true                      # Enable CSV file output
-output_folder_name: ''            #if left empty defaults to timestamped folder,project_path\output\scenario\output_folder_name
+output_folder_name: ''                        #if left empty defaults to timestamped folder,project_path\output\scenario\output_folder_name
 csv_output_frequency: 10                      # Ticks interval for CSV output of land use and service supply
 track_changes: false                          # Enable change tracking in output
-export_LOGGER: true
-LOGGER_info: true
-LOGGER_warn: true
+export_LOGGER: false
+LOGGER_info: false
+LOGGER_warn: false
 LOGGER_trace: false

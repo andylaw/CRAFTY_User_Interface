@@ -7,7 +7,6 @@ public class Config {
 	public boolean regionalization;
 	// CRAFTY Mechanisms
 	public boolean initial_demand_supply_equilibrium;
-	public boolean initial_DS_equilibrium_byRegions;
 	public boolean remove_negative_marginal_utility;
 	public boolean use_abandonment_threshold;
 	public boolean mutate_on_competition_win;

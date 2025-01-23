@@ -47,6 +47,7 @@ import main.Config;
 import main.ConfigLoader;
 import model.CellsSet;
 import model.ModelRunner;
+import model.RegionClassifier;
 import model.Service;
 import output.Listener;
 import utils.analysis.CustomLogger;
@@ -80,10 +81,10 @@ public class ModelRunnerController {
 	public static ModelRunner runner;
 
 	Timeline timeline;
-	
+
 	public static AtomicInteger tick;
 	ArrayList<LineChart<Number, Number>> lineChart;
-	
+
 	RadioButton[] radioColor;
 	NewWindow colorbox = new NewWindow();
 
@@ -100,10 +101,6 @@ public class ModelRunnerController {
 		ConfigLoader.config.output_folder_name = PathsLoader.getScenario();
 		initilaseChart(lineChart);
 		initialzeRadioColorBox();
-
-		// gridPaneLinnChart.setMinWidth(Screen.getPrimary().getBounds().getWidth()/3);
-		// gridPaneLinnChart.setPrefWidth(scroll.getWidth()/3);
-
 		scroll.setPrefHeight(Screen.getPrimary().getBounds().getHeight() * 0.8);
 
 		initializeGridpane(2);
@@ -112,6 +109,7 @@ public class ModelRunnerController {
 
 	public static void init() {
 		runner = new ModelRunner();
+		ModelRunner.setup();
 		tick = new AtomicInteger(PathsLoader.getStartYear());
 	}
 
@@ -171,9 +169,8 @@ public class ModelRunnerController {
 						|| PathsLoader.getCurrentYear() == PathsLoader.getEndtYear())) {
 			AtomicInteger m = new AtomicInteger();
 			ServiceSet.getServicesList().forEach(service -> {
-				lineChart.get(m.get()).getData().get(0).getData()
-						.add(new XYChart.Data<>(tick.get(), ServiceSet.worldService.get(service).getDemands()
-								.get(tick.get() - PathsLoader.getStartYear())));
+				lineChart.get(m.get()).getData().get(0).getData().add(new XYChart.Data<>(tick.get(),
+						ServiceSet.worldService.get(service).getDemands().get(tick.get())));
 				lineChart.get(m.get()).getData().get(1).getData()
 						.add(new XYChart.Data<>(tick.get(), runner.totalSupply.get(service)));
 				m.getAndIncrement();
@@ -202,43 +199,32 @@ public class ModelRunnerController {
 
 	public static void demandEquilibrium() {
 		if (ConfigLoader.config.initial_demand_supply_equilibrium) {
-			if (ConfigLoader.config.initial_DS_equilibrium_byRegions) {
-				RegionalDemandEquilibrium();
-			} else {
-				initialTotalDSEquilibrium();
-			}
+			RegionalDemandEquilibrium_calculation();
+			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
+				RegionalRunner.R.getServicesHash().forEach((ns, s) -> {
+					s.getDemands().forEach((year, v) -> {
+						s.getDemands().put(year, v / s.getCalibration_Factor());
+					});
+				});
+			});
+			initialTotalDSEquilibriumListrner();
+			RegionClassifier.aggregateDemandToWorldServiceDemand();
 		}
 	}
 
-	public static void RegionalDemandEquilibrium() {
+	private static void RegionalDemandEquilibrium_calculation() {
 		ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
-			RegionalRunner.initialDSEquilibrium();
+			RegionalRunner.initialDSEquilibriumFactorCalculation();
 		});
 	}
-	
-	public static void initialTotalDSEquilibrium() {
-		runner.step();
-		runner.totalSupply.forEach((serviceName, serviceSuplly) -> {
-			double factor = 1;
-			if (serviceSuplly != 0) {
-				if (ServiceSet.worldService.get(serviceName).getDemands().get(0) == 0) {
-					LOGGER.warn("Demand for " + serviceName + " = 0");
-				} else {
-					factor = ServiceSet.worldService.get(serviceName).getDemands().get(0) / (serviceSuplly);
-				}
-			} else {
-				LOGGER.warn("Supply for " + serviceName + " = 0 (The AFT baseline map is unable to produce it)");
-			}
-			ServiceSet.worldService.get(serviceName).setCalibration_Factor(factor != 0 ? factor : 1);
-			double f = factor;
 
+	public static void initialTotalDSEquilibriumListrner() {
+		ServiceSet.worldService.forEach((serviceName, service) -> {
 			ModelRunner.regionsModelRunner.values().forEach(RegionalRunner -> {
 				Service s = RegionalRunner.R.getServicesHash().get(serviceName);
-				s.setCalibration_Factor(f);
 				int i = ServiceSet.getServicesList().indexOf(serviceName);
 				RegionalRunner.listner.DSEquilibriumListener[i + 1][0] = serviceName;
-				RegionalRunner.listner.DSEquilibriumListener[i + 1][1] = f + "";
-
+				RegionalRunner.listner.DSEquilibriumListener[i + 1][1] = s.getCalibration_Factor() + "";
 			});
 		});
 	}
@@ -254,7 +240,7 @@ public class ModelRunnerController {
 	}
 
 	private void scheduleIteravitveTicks(Duration delay) {
-		if (PathsLoader.getCurrentYear() >= PathsLoader.getEndtYear()) {
+		if (PathsLoader.getCurrentYear() > PathsLoader.getEndtYear()) {
 			// Stop if max iterations reached
 			if (ConfigLoader.config.generate_csv_files)
 				displayRunAsOutput();
@@ -289,15 +275,19 @@ public class ModelRunnerController {
 
 	@FXML
 	public void stop() {
+
+		tick.set(PathsLoader.getStartYear());
+		PathsLoader.setCurrentYear(PathsLoader.getStartYear());
 		TabPaneController.cellsLoader.loadMap();
 		CellsSet.colorMap();
+		RegionClassifier.serviceupdater();
+
 		try {
 			timeline.stop();
 		} catch (RuntimeException e) {
 		}
 		run.setDisable(false);
-		tick.set(PathsLoader.getStartYear());
-		PathsLoader.setCurrentYear(PathsLoader.getStartYear());
+
 		gridPaneLinnChart.getChildren().clear();
 		lineChart.clear();
 		initilaseChart(lineChart);

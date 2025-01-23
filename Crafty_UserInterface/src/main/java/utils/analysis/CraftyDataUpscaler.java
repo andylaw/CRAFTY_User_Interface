@@ -15,14 +15,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import dataLoader.AFTsLoader;
 import dataLoader.CellsLoader;
 import dataLoader.MaskRestrictionDataLoader;
 import dataLoader.PathsLoader;
+import dataLoader.S_WeightLoader;
 import dataLoader.ServiceSet;
 import fxmlControllers.TabPaneController;
-import main.Config;
 import main.ConfigLoader;
 import model.CellsSet;
+import model.RegionClassifier;
 import utils.filesTools.CsvTools;
 import utils.filesTools.PathTools;
 import utils.filesTools.ReaderFile;
@@ -93,6 +95,9 @@ public class CraftyDataUpscaler {
 		CellsLoader.loadCapitalsList();
 		ServiceSet.loadServiceList();
 		TabPaneController.cellsLoader.loadMap();
+		RegionClassifier.initialation();
+		S_WeightLoader.updateWorldWeight();
+		AFTsLoader.hashAgentNbrRegions();
 		CellsSet.setCellsSet(TabPaneController.cellsLoader);
 		MaskRestrictionDataLoader.allMaskAndRistrictionUpdate();
 	}

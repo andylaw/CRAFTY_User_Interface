@@ -64,7 +64,7 @@ public class ListenerByRegion {
 		ServiceSet.getServicesList().forEach(name -> {
 			servicedemandListener[y][m.get()] = regionalSupply.get(name) + "";
 			servicedemandListener[y][m.get() + ServiceSet.getServicesList().size()] = (R.getServicesHash().get(name)
-					.getDemands().get(year - PathsLoader.getStartYear())) + "";
+					.getDemands().get(year)) + "";
 			m.getAndIncrement();
 		});
 	}

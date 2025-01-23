@@ -84,7 +84,7 @@ public class S_WeightLoader {
 			ServiceSet.getServicesList().forEach((serviceName) -> {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();
 				for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
-					dv.put(i, 1.);
+					dv.put(i+PathsLoader.getStartYear(), 1.);
 				}
 				R.getServicesHash().get(serviceName).setWeights(dv);
 
@@ -99,7 +99,7 @@ public class S_WeightLoader {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();
 				for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
 					if (i < vect.size()) {
-						dv.put(i, Tools.sToD(vect.get(i)));
+						dv.put(i+PathsLoader.getStartYear(), Tools.sToD(vect.get(i)));
 					}
 				}
 				R.getServicesHash().get(serviceName).setWeights(dv);
