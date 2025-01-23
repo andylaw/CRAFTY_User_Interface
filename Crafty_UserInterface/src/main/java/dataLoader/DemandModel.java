@@ -34,13 +34,13 @@ public class DemandModel {
 		}
 
 		HashMap<String, ArrayList<String>> hashDemand = ReaderFile.ReadAsaHash(path);
-		LOGGER.info("Update Demand for [" + R + "]: " + path);
+		LOGGER.info("Update Demand for [" + R.getName() + "]: " + path);
 		hashDemand.forEach((serviceName, vect) -> {
 			if (ServiceSet.getServicesList().contains(serviceName)) {
 				ConcurrentHashMap<Integer, Double> dv = new ConcurrentHashMap<>();
 				for (int i = 0; i < PathsLoader.getEndtYear() - PathsLoader.getStartYear() + 1; i++) {
 					if (i < vect.size()) {
-						dv.put(PathsLoader.getStartYear() +i, Tools.sToD(vect.get(i)));
+						dv.put(PathsLoader.getStartYear() + i, Tools.sToD(vect.get(i)));
 					}
 				}
 				R.getServicesHash().get(serviceName).getDemands().clear();

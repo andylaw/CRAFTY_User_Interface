@@ -30,6 +30,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.CellsSet;
+import model.RegionClassifier;
 import utils.filesTools.SaveAs;
 import utils.graphicalTools.LineChartTools;
 import utils.graphicalTools.MousePressed;
@@ -75,7 +76,8 @@ public class SpatialDataController {
 		TabPaneController.cellsLoader.loadMap();
 		CellsSet.setCellsSet(TabPaneController.cellsLoader);
 		CellsSet.plotCells();
-
+		RegionClassifier.initialation();
+		RegionClassifier.serviceupdater();
 		new LineChartTools().lineChart((Pane) demandsChart.getParent(), demandsChart,
 				DemandModel.serialisationWorldDemand());
 		String ItemName = "Save as CSV";

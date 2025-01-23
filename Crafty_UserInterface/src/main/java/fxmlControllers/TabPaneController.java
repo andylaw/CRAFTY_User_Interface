@@ -121,10 +121,7 @@ public class TabPaneController {
 			// DemandModel.updateDemand();// =
 			// CsvTools.csvReader(Path.fileFilter(Path.scenario, "demand").get(0));
 			ServiceSet.initialseServices();
-			DemandModel.updateRegionsDemand();
-			S_WeightLoader.updateRegionsWeight();
-			S_WeightLoader.updateWorldWeight();
-			RegionClassifier.aggregateDemandToWorldServiceDemand();
+			RegionClassifier.serviceupdater();
 			ModelRunner.listner.initializeListeners();
 			LineChart<Number, Number> chart = SpatialDataController.getInstance().getDemandsChart();
 			new LineChartTools().lineChart((Pane) chart.getParent(), chart, DemandModel.serialisationWorldDemand());

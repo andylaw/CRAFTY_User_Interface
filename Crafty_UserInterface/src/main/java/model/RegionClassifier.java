@@ -43,10 +43,11 @@ public class RegionClassifier {
 
 		LOGGER.info("Regions: " + regions.keySet());
 	}
-	
+
 	public static void serviceupdater() {
 		DemandModel.updateRegionsDemand();
 		S_WeightLoader.updateRegionsWeight();
+		S_WeightLoader.updateWorldWeight();
 		aggregateDemandToWorldServiceDemand();
 	}
 
