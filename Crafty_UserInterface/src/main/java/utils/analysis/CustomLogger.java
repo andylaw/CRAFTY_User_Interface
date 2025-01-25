@@ -22,12 +22,12 @@ public class CustomLogger {
 	}
 
 	public void info(String message) {
-		if (ConfigLoader.config.LOGGER_info)
+//		if (ConfigLoader.config.LOGGER_info)
 			logger.info(message);
 	}
 
 	public void warn(String message) {
-		if (ConfigLoader.config.LOGGER_warn)
+//		if (ConfigLoader.config.LOGGER_warn)
 			logger.warn(message);
 	}
 
@@ -40,7 +40,7 @@ public class CustomLogger {
 	}
 
 	public void trace(String message) {
-		if (ConfigLoader.config.LOGGER_trace)
+//		if (ConfigLoader.config.LOGGER_trace)
 			logger.trace(message);
 	}
 
