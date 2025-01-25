@@ -22,7 +22,13 @@ public class MainHeadless {
 	private static final CustomLogger LOGGER = new CustomLogger(MainHeadless.class);
 
 	public static void main(String[] args) {
-		LOGGER.info(/* "\u001B[33m"+ */"--Starting runing CRAFTY--"/* +"\u001B[0m" */);
+		LOGGER.info(/* "\u001B[33m"+ */"--Starting running CRAFTY--"/* +"\u001B[0m" */);
+		CraftyOptions options = OptionsParser.parseArguments(args);
+		ConfigLoader.config = ConfigLoader.loadConfig(options.getConfigFilePath());
+		String projectDirectoryPath = options.getProjectDirectoryPath();
+		if (projectDirectoryPath != null) {
+			ConfigLoader.config.project_path = projectDirectoryPath;
+		}
 		modelInitialisation();
 		runHeadless();
 		System.out.println("------------CRAFTY executed from Java-----------------");
